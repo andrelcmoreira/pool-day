@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.18)
 
 project(pool_day)
 
+option(BUILD_TEST "build the test application" OFF)
+
 set(PROJECT_NAME "pool_day")
 set(SOURCES src/queue.c src/pool_day)
 

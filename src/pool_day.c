@@ -24,7 +24,7 @@ static void *thread_routine(void *param) {
       break;
     }
 
-    task_node_t *entry = dequeue(pool->tasks);
+    task_t *entry = dequeue(pool->tasks);
     if (entry) {
       entry->task(entry->param);
       free(entry);
@@ -34,7 +34,7 @@ static void *thread_routine(void *param) {
   return NULL;
 }
 
-void enqueue_task(pool_day_t pool, task_node_t *t) {
+void enqueue_task(pool_day_t pool, task_t *t) {
   enqueue(pool->tasks, t);
   sem_post(&pool->semaphore);
 }

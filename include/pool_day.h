@@ -16,12 +16,13 @@ typedef struct pool_day_t *pool_day_t;
  * @param pool Handle to the thread pool.
  * @param t The task to be enqueued.
  */
-void enqueue_task(pool_day_t pool, task_node_t *t);
+void enqueue_task(pool_day_t pool, task_t *t);
 
 /**
  * @brief Create a new pool.
  *
  * @param pool_size Size of the pool.
+ *
  * @return The pool handle.
  */
 pool_day_t create_pool(const uint8_t pool_size);

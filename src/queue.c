@@ -4,8 +4,8 @@
 #include "queue.h"
 
 struct task_queue_t {
-  task_node_t *tail;
-  task_node_t *head;
+  task_t *tail;
+  task_t *head;
   pthread_mutex_t mutex;
 };
 
@@ -23,10 +23,10 @@ int queue_size(task_queue_t *queue) {
   return size;
 }
 
-task_node_t *create_task(void (*task)(void *), void *param) {
-  struct task_node_t *node = NULL;
+task_t *create_task(void (*task)(void *), void *param) {
+  struct task_t *node = NULL;
 
-  node = (task_node_t *)malloc(sizeof(task_node_t));
+  node = (task_t *)malloc(sizeof(task_t));
   if (node) {
     node->next = node->prev = NULL;
     node->task = task;
@@ -36,7 +36,7 @@ task_node_t *create_task(void (*task)(void *), void *param) {
   return node;
 }
 
-void enqueue(task_queue_t *queue, task_node_t *elem) {
+void enqueue(task_queue_t *queue, task_t *elem) {
   pthread_mutex_lock(&queue->mutex);
 
   /* if the queue is empty */
@@ -51,8 +51,8 @@ void enqueue(task_queue_t *queue, task_node_t *elem) {
   pthread_mutex_unlock(&queue->mutex);
 }
 
-struct task_node_t *dequeue(task_queue_t *queue) {
-  struct task_node_t *to_del = queue->head;
+struct task_t *dequeue(task_queue_t *queue) {
+  struct task_t *to_del = queue->head;
 
   pthread_mutex_lock(&queue->mutex);
 
@@ -84,7 +84,7 @@ void init_queue(task_queue_t **queue) {
 
 void destroy_queue(task_queue_t *queue) {
   for_each_task_safe(curr, queue) {
-    struct task_node_t *node = dequeue(queue);
+    struct task_t *node = dequeue(queue);
 
     free(node);
   }

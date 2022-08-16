@@ -41,7 +41,7 @@ void test_3() {
   printf("STARTING %s\n\n", __FUNCTION__);
 
   pool_day_t pool;
-  task_node_t *task_1, *task_2, *task_3, *task_4, *task_5;
+  task_t *task_1, *task_2, *task_3, *task_4, *task_5;
 
   pool = create_pool(2);
   if (pool) {
@@ -70,7 +70,7 @@ void test_4() {
   printf("STARTING %s\n\n", __FUNCTION__);
 
   pool_day_t pool;
-  task_node_t *task_1, *task_2, *task_3, *task_4, *task_5;
+  task_t *task_1, *task_2, *task_3, *task_4, *task_5;
 
   pool = create_pool(3);
   if (pool) {
@@ -107,7 +107,7 @@ void test_5() {
   printf("STARTING %s\n\n", __FUNCTION__);
 
   pool_day_t pool;
-  task_node_t *task_1, *task_2, *task_3, *task_4, *task_5;
+  task_t *task_1, *task_2, *task_3, *task_4, *task_5;
 
   pool = create_pool(1);
   if (pool) {
