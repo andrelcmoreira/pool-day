@@ -7,7 +7,7 @@ option(BUILD_TEST "build the test application" OFF)
 set(PROJECT_NAME "pool_day")
 set(SOURCES src/queue.c src/pool_day)
 
-set(CMAKE_C_CFLAGS "-Wall -Werror -Wextra")
+set(CMAKE_C_CFLAGS "${CMAKE_C_CFLAGS} -Wall -Werror -Wextra")
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include

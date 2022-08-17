@@ -3,6 +3,14 @@
 
 #include "pool_day.h"
 
+#define RUN_TEST(test_name) \
+  printf("starting %s\n\n", __FUNCTION__); \
+  run_test_name(); \
+  printf("finishing %s\n\n", __FUNCTION__);
+
+#define TESTCASE(test_name) \
+  void run_##test_name()
+
 void func(void *param) {
   char *str = (char *)param;
 
@@ -12,34 +20,25 @@ void func(void *param) {
   }
 }
 
-void test_1() {
-  printf("STARTING %s\n\n", __FUNCTION__);
+TESTCASE(test_1) {
   pool_day_t pool;
 
   pool = create_pool(1);
   if (pool) {
     destroy_pool(&pool);
   }
-
-  printf("FINISHING %s\n\n", __FUNCTION__);
 }
 
-void test_2() {
-  printf("STARTING %s\n\n", __FUNCTION__);
-
+TESTCASE(test_2) {
   pool_day_t pool;
 
   pool = create_pool(4);
   if (pool) {
     destroy_pool(&pool);
   }
-
-  printf("FINISHING %s\n\n", __FUNCTION__);
 }
 
-void test_3() {
-  printf("STARTING %s\n\n", __FUNCTION__);
-
+TESTCASE(test_3) {
   pool_day_t pool;
   task_t *task_1, *task_2, *task_3, *task_4, *task_5;
 
@@ -62,13 +61,9 @@ void test_3() {
     getchar();
     destroy_pool(&pool);
   }
-
-  printf("FINISHING %s\n\n", __FUNCTION__);
 }
 
-void test_4() {
-  printf("STARTING %s\n\n", __FUNCTION__);
-
+TESTCASE(test_4) {
   pool_day_t pool;
   task_t *task_1, *task_2, *task_3, *task_4, *task_5;
 
@@ -99,13 +94,9 @@ void test_4() {
     getchar();
     destroy_pool(&pool);
   }
-
-  printf("FINISHING %s\n\n", __FUNCTION__);
 }
 
-void test_5() {
-  printf("STARTING %s\n\n", __FUNCTION__);
-
+TESTCASE(test_5) {
   pool_day_t pool;
   task_t *task_1, *task_2, *task_3, *task_4, *task_5;
 
@@ -141,16 +132,14 @@ void test_5() {
     getchar();
     destroy_pool(&pool);
   }
-
-  printf("FINISHING %s\n\n", __FUNCTION__);
 }
 
 int main(void) {
-  test_1();
-  test_2();
-  test_3();
-  test_4();
-  test_5();
+  RUN_TEST(test_1);
+  RUN_TEST(test_2);
+  RUN_TEST(test_3);
+  RUN_TEST(test_4);
+  RUN_TEST(test_5);
 
   return 0;
 }
