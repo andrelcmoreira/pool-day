@@ -4,9 +4,9 @@
 #include "pool_day.h"
 
 #define RUN_TEST(test_name) \
-  printf("starting %s\n\n", __FUNCTION__); \
-  run_test_name(); \
-  printf("finishing %s\n\n", __FUNCTION__);
+  printf("starting %s\n\n", #test_name); \
+  run_##test_name(); \
+  printf("finishing %s\n\n", #test_name);
 
 #define TESTCASE(test_name) \
   void run_##test_name()
