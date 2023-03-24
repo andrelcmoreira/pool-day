@@ -1,3 +1,8 @@
+/**
+ * @file
+ *
+ * @brief Contains the basic definitions and data structures of the task queue.
+ */
 #ifndef QUEUE_H_
 #define QUEUE_H_
 

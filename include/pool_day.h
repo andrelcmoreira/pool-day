@@ -1,3 +1,8 @@
+/**
+ * @file
+ *
+ * @brief Contains the basic definitions and data structures of the library.
+ */
 #ifndef POOL_DAY_H_
 #define POOL_DAY_H_
 
