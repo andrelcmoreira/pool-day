@@ -6,26 +6,36 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
+/**
+ * @brief For-each macro implementation.
+ *
+ * @details It can be used to iterate over the queue.
+ */
 #define for_each_task(curr, queue) \
   for (struct task_t *curr = queue->head; curr; curr = curr->prev)
 
+/**
+ * @brief Safe implementation of for-each macro.
+ *
+ * @details It can be used to delete elements of the queue while iterating over
+ * it.
+ */
 #define for_each_task_safe(curr, queue) \
   for (struct task_t *curr = queue->head, *tmp = curr ? curr->prev : NULL; \
     curr; \
     curr = tmp, tmp = tmp ? tmp->prev : NULL)
 
-/**
- * @brief Structure representing an item on the task queue.
- */
 struct task_t {
-  struct task_t *next;
-  struct task_t *prev;
-  void (*task)(void *);
-  void *param;
+  struct task_t *next;  //!< Next element of the current instance.
+  struct task_t *prev;  //!< Previous element of the current instance.
+  void (*task)(void *); //!< Task callback.
+  void *param;          //!< Parameter of the task callback.
 };
 
-typedef struct task_t task_t;
-typedef struct task_queue_t task_queue_t;
+typedef struct task_t task_t; //!< Structure representing an item on the task
+                              // queue.
+typedef struct task_queue_t task_queue_t; //!< Structure representing the queue
+                                          // itself.
 
 /**
  * @brief Get the queue size.

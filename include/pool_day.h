@@ -10,10 +10,7 @@
 
 #include "queue.h"
 
-/*
- * @brief Handle to the pool.
- */
-typedef struct pool_day_t *pool_day_t;
+typedef struct pool_day_t *pool_day_t;  //!< Handle to the pool.
 
 /**
  * @brief Enqueue a new task into the pool.
