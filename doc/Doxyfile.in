@@ -8,7 +8,7 @@ PROJECT_NAME           = "pool-day"
 PROJECT_NUMBER         =
 PROJECT_BRIEF          = "Thread pool library."
 PROJECT_LOGO           =
-OUTPUT_DIRECTORY       = build/doc
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@
 CREATE_SUBDIRS         = NO
 CREATE_SUBDIRS_LEVEL   = 8
 ALLOW_UNICODE_NAMES    = NO
@@ -121,7 +121,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = include
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/../include
 INPUT_ENCODING         = UTF-8
 INPUT_FILE_ENCODING    =
 FILE_PATTERNS          = *.c \

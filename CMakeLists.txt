@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(pool_day)
+project(pool-day)
 
 option(BUILD_TEST "build the test application" OFF)
 option(BUILD_DOCUMENTATION "build the documentation of the library" OFF)
 
-set(PROJECT_NAME "pool_day")
+set(PROJECT_NAME "pool-day")
 set(SOURCES src/queue.c src/pool_day.c)
 
 set(CMAKE_C_CFLAGS "${CMAKE_C_CFLAGS} -Wall -Werror -Wextra")
