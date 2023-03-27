@@ -27,7 +27,7 @@ void enqueue_task(pool_day_t pool, task_t *t);
  *
  * @return The pool handle.
  */
-pool_day_t create_pool(const uint8_t pool_size);
+pool_day_t create_pool(uint8_t pool_size);
 
 /**
  * @brief Destroy the pool.

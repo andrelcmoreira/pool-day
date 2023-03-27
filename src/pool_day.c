@@ -39,7 +39,7 @@ void enqueue_task(pool_day_t pool, task_t *t) {
   sem_post(&pool->semaphore);
 }
 
-pool_day_t create_pool(const uint8_t pool_size) {
+pool_day_t create_pool(uint8_t pool_size) {
   pool_day_t pool;
 
   pool = malloc(sizeof(*pool));
