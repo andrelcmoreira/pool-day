@@ -34,8 +34,8 @@ static void *thread_routine(void *param) {
   return NULL;
 }
 
-void enqueue_task(pool_day_t pool, task_t *t) {
-  enqueue(pool->tasks, t);
+void enqueue_task(pool_day_t pool, task_t *task) {
+  enqueue(pool->tasks, task);
   sem_post(&pool->semaphore);
 }
 
