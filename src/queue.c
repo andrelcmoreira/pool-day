@@ -42,7 +42,7 @@ task_t *create_task(void (*task)(void *), void *param) {
 }
 
 void enqueue(task_queue_t *queue, task_t *elem) {
-  if (queue) {
+  if (queue && elem) {
     THREAD_SAFE_ZONE(&queue->mutex, {
       // if the queue is empty
       if (!queue->head && !queue->tail) {

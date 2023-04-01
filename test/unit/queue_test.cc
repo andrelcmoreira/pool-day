@@ -53,3 +53,78 @@ TEST_F(QueueTest, GetQueueSizeWithNotEmptyQueue) {
 TEST_F(QueueTest, GetQueueSizeWithNullQueue) {
   EXPECT_EQ(queue_size(nullptr), 0);
 }
+
+/**
+ * @brief Given we have an empty queue, when we add several elements into it,
+ * then its size must be greater than 0.
+ */
+TEST_F(QueueTest, EnqueueElementWithEmptyQueue) {
+  task_t *t1 = create_task(nullptr, nullptr);
+  task_t *t2 = create_task(nullptr, nullptr);
+
+  enqueue(queue_, t1);
+  enqueue(queue_, t2);
+
+  EXPECT_EQ(queue_size(queue_), 2);
+}
+
+/**
+ * @brief Given we have a not empty queue, when we add several elements into it,
+ * then its size must be greater than 0.
+ */
+TEST_F(QueueTest, EnqueueElementWithNotEmptyQueue) {
+  {
+    task_t *t1 = create_task(nullptr, nullptr);
+    task_t *t2 = create_task(nullptr, nullptr);
+
+    enqueue(queue_, t1);
+    enqueue(queue_, t2);
+
+    EXPECT_EQ(queue_size(queue_), 2);
+  }
+
+  task_t *t3 = create_task(nullptr, nullptr);
+
+  enqueue(queue_, t3);
+
+  EXPECT_EQ(queue_size(queue_), 3);
+}
+
+/**
+ * @brief Given we have an empty queue, when we try to add a null elements into
+ * it, then its size must remain 0.
+ */
+TEST_F(QueueTest, EnqueueNullElementWithEmptyQueue) {
+  EXPECT_EQ(queue_size(queue_), 0);
+  enqueue(queue_, nullptr);
+  EXPECT_EQ(queue_size(queue_), 0);
+}
+
+/**
+ * @brief Given we have a non empty queue, when we try to add a null element
+ * into it, then its size must remain 0.
+ */
+TEST_F(QueueTest, EnqueueNullElementWithNotEmptyQueue) {
+  {
+    task_t *t1 = create_task(nullptr, nullptr);
+    task_t *t2 = create_task(nullptr, nullptr);
+
+    enqueue(queue_, t1);
+    enqueue(queue_, t2);
+  }
+
+  EXPECT_EQ(queue_size(queue_), 2);
+  enqueue(queue_, nullptr);
+  EXPECT_EQ(queue_size(queue_), 2);
+}
+
+/**
+ * @brief Given we have a null queue, when we try to add a element into it,
+ * then nothing must happen.
+ */
+TEST_F(QueueTest, EnqueueElementWithNullQueue) {
+  task_t *t1 = create_task(nullptr, nullptr);
+
+  enqueue(nullptr, t1);
+  free(t1);
+}
