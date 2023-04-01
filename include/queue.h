@@ -6,6 +6,8 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
+#include <stdint.h>
+
 /**
  * @brief For-each macro implementation.
  *
@@ -44,7 +46,7 @@ typedef struct task_queue_t task_queue_t; //!< Structure representing the queue
  *
  * @return The size of the queue.
  */
-int queue_size(task_queue_t *queue);
+uint8_t queue_size(task_queue_t *queue);
 
 /**
  * @brief Create a new task.
@@ -54,7 +56,7 @@ int queue_size(task_queue_t *queue);
  *
  * @return Pointer to the new task.
  */
-struct task_t *create_task(void (*task)(void *), void *param);
+task_t *create_task(void (*task)(void *), void *param);
 
 /**
  * @brief Enqueue a new task into the queue.
@@ -71,7 +73,7 @@ void enqueue(task_queue_t *queue, task_t *task);
  *
  * @return The head task.
  */
-struct task_t *dequeue(task_queue_t *queue);
+task_t *dequeue(task_queue_t *queue);
 
 /**
  * @brief Initialize the queue.

@@ -35,8 +35,10 @@ static void *thread_routine(void *param) {
 }
 
 void enqueue_task(pool_day_t pool, task_t *task) {
-  enqueue(pool->tasks, task);
-  sem_post(&pool->semaphore);
+  if (pool) {
+    enqueue(pool->tasks, task);
+    sem_post(&pool->semaphore);
+  }
 }
 
 pool_day_t create_pool(uint8_t pool_size) {
@@ -59,7 +61,7 @@ pool_day_t create_pool(uint8_t pool_size) {
   init_queue(&pool->tasks);
   sem_init(&pool->semaphore, 0, 0);
 
-  for (int i = 0; i < pool_size; i++) {
+  for (uint8_t i = 0; i < pool_size; i++) {
     pthread_create(&pool->threads[i], NULL, thread_routine, pool);
   }
 
@@ -67,12 +69,16 @@ pool_day_t create_pool(uint8_t pool_size) {
 }
 
 void destroy_pool(pool_day_t *pool) {
+  if (!(*pool)) {
+    return;
+  }
+
   (*pool)->must_stop = true;
-  for (int i = 0; i < (*pool)->size; i++) {
+  for (uint8_t i = 0; i < (*pool)->size; i++) {
     sem_post(&(*pool)->semaphore);
   }
 
-  for (int i = 0; i < (*pool)->size; i++) {
+  for (uint8_t i = 0; i < (*pool)->size; i++) {
     pthread_join((*pool)->threads[i], NULL);
   }
 
