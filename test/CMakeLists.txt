@@ -6,7 +6,7 @@ project(pool-day-tests)
 
 set(PROJECT_NAME "pool-day-tests")
 
-set(TEST_MAIN_SOURCE ${CMAKE_CURRENT_LIST_DIR}/main.cc)
+set(TEST_MAIN_SOURCE ${CMAKE_CURRENT_LIST_DIR}/src/main.cc)
 set(SOURCES_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 include_directories(
@@ -18,7 +18,7 @@ link_directories(${CMAKE_SOURCE_DIR}/../../build)
 
 set(
   SOURCES
-  ${SOURCES_DIR}/queue_test.cc
+  ${SOURCES_DIR}/src/queue_test.cc
   ${TEST_MAIN_SOURCE}
 )
 
