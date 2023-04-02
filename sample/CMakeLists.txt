@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(pool-day-test)
+project(pool-day-sample)
 
-set(PROJECT_NAME "pool-day-test")
+set(PROJECT_NAME "pool-day-sample")
 set(SOURCES main.c)
 
-set(CMAKE_C_CFLAGS "-Wall -Werror -Wextra")
+set(CMAKE_C_FLAGS "-Wall -Werror -Wextra")
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
