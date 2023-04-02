@@ -6,12 +6,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * @brief Main structure of the library, it defines a handle to the pool.
+ */
 struct pool_day_t {
-  uint8_t size;
-  bool must_stop;
-  sem_t semaphore;
-  pthread_t *threads;
-  task_queue_t *tasks;
+  uint8_t size;        //!< Size of the pool.
+  bool must_stop;      //!< Flag indicating wheter all threads must stop its
+                       //   execution.
+  sem_t semaphore;     //!< Pool's semaphore.
+  pthread_t *threads;  //!< Threads whose makes part of the pool.
+  task_queue_t *tasks; //!< Pool's tasks.
 };
 
 static void *thread_routine(void *param) {
