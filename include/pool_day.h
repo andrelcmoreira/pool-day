@@ -10,7 +10,7 @@
 
 #include "queue.h"
 
-typedef struct pool_day_t *pool_day_t;  //!< Handle to the pool.
+typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
 
 /**
  * @brief Enqueue a new task into the pool.
@@ -48,5 +48,14 @@ pool_day_t create_pool(uint8_t pool_size);
  * @param pool Pointer to the pool handle.
  */
 void destroy_pool(pool_day_t *pool);
+
+/**
+ * @brief Get the number of idle tasks, waiting for execution, in the queue.
+ *
+ * @param pool Handle to the thread pool.
+ *
+ * @return The number of tasks in the queue.
+ */
+uint8_t idle_tasks(pool_day_t pool);
 
 #endif  // POOL_DAY_H_

@@ -9,7 +9,7 @@
 /**
  * @brief Main structure of the library, it defines a handle to the pool.
  */
-struct pool_day_t {
+struct pool_day {
   uint8_t size;        //!< Size of the pool.
   bool must_stop;      //!< Flag indicating wheter all threads must stop its
                        //   execution.
@@ -92,4 +92,8 @@ void destroy_pool(pool_day_t *pool) {
 
   free(*pool);
   *pool = NULL;
+}
+
+uint8_t idle_tasks(pool_day_t pool) {
+  return queue_size(pool->tasks);
 }
