@@ -15,6 +15,19 @@ typedef struct pool_day_t *pool_day_t;  //!< Handle to the pool.
 /**
  * @brief Enqueue a new task into the pool.
  *
+ * Sample:
+ * @code{.c}
+ * pool_day_t pool;
+ *
+ * pool = create_pool(size);
+ * if (pool) {
+ *   task_t *t = create_task(callback, (void *)param);
+ *
+ *   enqueue_task(pool, t);
+ *   destroy_pool(&pool);
+ * }
+ * @endcode
+ *
  * @param pool Handle to the thread pool.
  * @param task The task to be enqueued.
  */
