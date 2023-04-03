@@ -21,3 +21,21 @@ jobs:
         run: |
           cmake -S . -B build
           cmake --build build
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: andrelcmoreira/pool-day:v0
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run unit tests
+        run: |
+          cmake -DBUILD_UNIT_TESTS=ON -S . -B build
+          cmake --build build
+          build/test/pool-day-tests
