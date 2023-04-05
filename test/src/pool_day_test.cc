@@ -55,6 +55,7 @@ TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
   task_t *t = create_task(nullptr, nullptr);
 
   enqueue_task(nullptr, t);
+  free(t);
 }
 
 /**
