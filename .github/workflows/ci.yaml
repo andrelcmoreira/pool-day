@@ -57,3 +57,19 @@ jobs:
           cmake -DBUILD_UNIT_TESTS=ON -S . -B build
           cmake --build build
           valgrind --leak-check=full --error-exitcode=1 build/test/pool-day-tests
+
+  check_documentation:
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v0
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run documentation checking
+        run: |
+          cmake -DBUILD_DOCUMENTATION=ON -S . -B build
+          cmake --build build
