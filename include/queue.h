@@ -14,7 +14,7 @@
  * @details It can be used to iterate over the queue.
  */
 #define for_each_task(curr, queue) \
-  for (struct task_t *curr = queue->head; curr; curr = curr->prev)
+  for (struct task *curr = queue->head; curr; curr = curr->prev)
 
 /**
  * @brief Safe implementation of for-each macro.
@@ -23,24 +23,24 @@
  * it.
  */
 #define for_each_task_safe(curr, queue) \
-  for (struct task_t *curr = queue->head, *tmp = curr ? curr->prev : NULL; \
+  for (struct task *curr = queue->head, *tmp = curr ? curr->prev : NULL; \
     curr; \
     curr = tmp, tmp = tmp ? tmp->prev : NULL)
 
 /**
  * @brief Pool task definition.
  */
-struct task_t {
-  struct task_t *next;  //!< Next element of the current instance.
-  struct task_t *prev;  //!< Previous element of the current instance.
+struct task {
+  struct task *next;    //!< Next element of the current instance.
+  struct task *prev;    //!< Previous element of the current instance.
   void (*task)(void *); //!< Task callback.
   void *param;          //!< Parameter of the task callback.
 };
 
-typedef struct task_t task_t; //!< Structure representing an item on the task
-                              // queue.
-typedef struct task_queue_t task_queue_t; //!< Structure representing the queue
-                                          // itself.
+typedef struct task task_t; //!< Structure representing an item on the task
+                            // queue.
+typedef struct task_queue task_queue_t; //!< Structure representing the queue
+                                        // itself.
 
 /**
  * @brief Get the queue size.

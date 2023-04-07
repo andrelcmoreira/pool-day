@@ -11,7 +11,7 @@
 /**
  * @brief Task queue definition.
  */
-struct task_queue_t {
+struct task_queue {
   task_t *tail;           //!< Tail of the queue.
   task_t *head;           //!< Head of the queue.
   pthread_mutex_t mutex;  //!< Mutex of the queue.
