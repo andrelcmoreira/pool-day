@@ -28,7 +28,7 @@
     curr = tmp, tmp = tmp ? tmp->prev : NULL)
 
 /**
- * @brief Doubly linked list, whose defines a pool's task.
+ * @brief Pool task definition.
  */
 struct task_t {
   struct task_t *next;  //!< Next element of the current instance.

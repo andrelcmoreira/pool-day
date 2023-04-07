@@ -8,10 +8,13 @@
   code \
   pthread_mutex_unlock(mutex);
 
+/**
+ * @brief Task queue definition.
+ */
 struct task_queue_t {
-  task_t *tail;
-  task_t *head;
-  pthread_mutex_t mutex;
+  task_t *tail;           //!< Tail of the queue.
+  task_t *head;           //!< Head of the queue.
+  pthread_mutex_t mutex;  //!< Mutex of the queue.
 };
 
 uint8_t queue_size(task_queue_t *queue) {
