@@ -22,7 +22,7 @@ jobs:
           cmake -S . -B build
           cmake --build build
 
-  tests:
+  unit_tests:
     runs-on: ubuntu-latest
     needs: build
     container:
@@ -45,7 +45,7 @@ jobs:
 
   dynamic_analysis:
     runs-on: ubuntu-latest
-    needs: tests
+    needs: unit_tests
     container:
       image: andrelcmoreira/pool-day:v0
       volumes:
