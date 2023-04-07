@@ -34,11 +34,14 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASS }}
     steps:
       - uses: actions/checkout@v2
-      - name: Run unit tests
+
+      - name: Build tests
         run: |
           cmake -DBUILD_UNIT_TESTS=ON -S . -B build
           cmake --build build
-          build/test/pool-day-tests
+
+      - name: Run unit tests
+        run: build/test/pool-day-tests
 
   dynamic_analysis:
     runs-on: ubuntu-latest
@@ -52,11 +55,14 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASS }}
     steps:
       - uses: actions/checkout@v2
-      - name: Run dynamic analysis
+
+      - name: Build tests
         run: |
           cmake -DBUILD_UNIT_TESTS=ON -S . -B build
           cmake --build build
-          valgrind --leak-check=full --error-exitcode=1 build/test/pool-day-tests
+
+      - name: Run dynamic analysis
+        run: valgrind --leak-check=full --error-exitcode=1 build/test/pool-day-tests
 
   check_documentation:
     runs-on: ubuntu-latest
@@ -69,7 +75,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASS }}
     steps:
       - uses: actions/checkout@v2
-      - name: Check library documentation
+      - name: Build library documentation
         run: |
           cmake -DBUILD_DOCUMENTATION=ON -S . -B build
           cmake --build build
