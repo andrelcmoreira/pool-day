@@ -95,7 +95,7 @@ void destroy_pool(pool_day_t *pool) {
 }
 
 uint8_t idle_tasks(pool_day_t pool) {
-  return queue_size(pool->tasks);
+  return pool ? queue_size(pool->tasks) : 0;
 }
 
 void abort_tasks(pool_day_t pool) {
