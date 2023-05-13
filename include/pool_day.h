@@ -32,6 +32,9 @@ typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
  * }
  * @endcode
  *
+ * @note In case of error, the errno variable is set with the suitable error
+ * code.
+ *
  * @param pool Handle to the thread pool.
  * @param task The task to be enqueued.
  */
@@ -39,6 +42,9 @@ void enqueue_task(pool_day_t pool, task_t *task);
 
 /**
  * @brief Create a new pool according to the specified size.
+ *
+ * @note In case of error, the errno variable is set with the suitable error
+ * code.
  *
  * @param pool_size Size of the pool to be created.
  *
@@ -49,12 +55,18 @@ pool_day_t create_pool(uint8_t pool_size);
 /**
  * @brief Destroy the pool.
  *
+ * @note In case of error, the errno variable is set with the suitable error
+ * code.
+ *
  * @param pool Pointer to the pool handle.
  */
 void destroy_pool(pool_day_t *pool);
 
 /**
  * @brief Get the number of idle tasks, waiting for execution, in the queue.
+ *
+ * @note In case of error, the errno variable is set with the suitable error
+ * code.
  *
  * @param pool Handle to the thread pool.
  *
@@ -64,6 +76,9 @@ uint8_t idle_tasks(pool_day_t pool);
 
 /**
  * @brief Abort the execution of incoming tasks.
+ *
+ * @note In case of error, the errno variable is set with the suitable error
+ * code.
  *
  * @param pool Handle to the thread pool.
  */

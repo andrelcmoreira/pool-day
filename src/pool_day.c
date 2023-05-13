@@ -1,5 +1,6 @@
 #include "pool_day.h"
 
+#include <errno.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdbool.h>
@@ -39,10 +40,13 @@ static void *thread_routine(void *param) {
 }
 
 void enqueue_task(pool_day_t pool, task_t *task) {
-  if (pool) {
-    enqueue(pool->tasks, task);
-    sem_post(&pool->semaphore);
+  if (!pool) {
+    errno = EINVAL;
+    return;
   }
+
+  enqueue(pool->tasks, task);
+  sem_post(&pool->semaphore);
 }
 
 pool_day_t create_pool(uint8_t pool_size) {
@@ -50,6 +54,7 @@ pool_day_t create_pool(uint8_t pool_size) {
 
   pool = malloc(sizeof(*pool));
   if (!pool) {
+    errno = ENOMEM;
     return NULL;
   }
 
@@ -58,6 +63,7 @@ pool_day_t create_pool(uint8_t pool_size) {
   pool->threads = malloc(sizeof(pthread_t) * pool_size);
 
   if (!pool->threads) {
+    errno = ENOMEM;
     free(pool);
     return NULL;
   }
@@ -74,6 +80,7 @@ pool_day_t create_pool(uint8_t pool_size) {
 
 void destroy_pool(pool_day_t *pool) {
   if (!(*pool)) {
+    errno = EINVAL;
     return;
   }
 
@@ -95,11 +102,19 @@ void destroy_pool(pool_day_t *pool) {
 }
 
 uint8_t idle_tasks(pool_day_t pool) {
-  return pool ? queue_size(pool->tasks) : 0;
+  if (!pool) {
+    errno = EINVAL;
+    return 0;
+  }
+
+  return queue_size(pool->tasks);
 }
 
 void abort_tasks(pool_day_t pool) {
-  if (pool) {
-    pool->must_stop = true;
+  if (!pool) {
+    errno = EINVAL;
+    return;
   }
+
+  pool->must_stop = true;
 }
