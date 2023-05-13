@@ -8,6 +8,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 #include "queue.h"
 
 typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
@@ -64,5 +68,9 @@ uint8_t idle_tasks(pool_day_t pool);
  * @param pool Handle to the thread pool.
  */
 void abort_tasks(pool_day_t pool);
+
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 #endif  // POOL_DAY_H_
