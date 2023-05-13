@@ -59,7 +59,7 @@ void destroy_pool(pool_day_t *pool);
 uint8_t idle_tasks(pool_day_t pool);
 
 /**
- * @brief Abort the the execution for incoming tasks.
+ * @brief Abort the execution of incoming tasks.
  *
  * @param pool Handle to the thread pool.
  */
