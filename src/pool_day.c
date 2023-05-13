@@ -79,7 +79,7 @@ pool_day_t create_pool(uint8_t pool_size) {
 }
 
 void destroy_pool(pool_day_t *pool) {
-  if (!(*pool)) {
+  if (!pool || !(*pool)) {
     errno = EINVAL;
     return;
   }
