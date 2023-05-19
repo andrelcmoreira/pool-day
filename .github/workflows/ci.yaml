@@ -106,7 +106,7 @@ jobs:
         run: |
           mkdir ${{ env.COVERAGE_REPORT_DIR }}
           build/test/pool-day-tests
-          gcovr -r . --html --html-details \
+          gcovr -r . -s --html --html-details \
             --fail-under-line ${{ env.MINIMUM_COVERAGE }} \
             -o ${{ env.COVERAGE_REPORT_DIR }}/pool-day.html
 
