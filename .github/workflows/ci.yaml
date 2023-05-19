@@ -6,13 +6,14 @@ on:
       - main
 
 env:
-  COVERAGE_REPORT_DIR: build/coverage-report
+  COVERAGE_REPORT_DIR: build/coverage
+  MINIMUM_COVERAGE: 80
 
 jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: andrelcmoreira/pool-day:v0
+      image: andrelcmoreira/pool-day:v1
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -29,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     container:
-      image: andrelcmoreira/pool-day:v0
+      image: andrelcmoreira/pool-day:v1
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -50,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit_tests
     container:
-      image: andrelcmoreira/pool-day:v0
+      image: andrelcmoreira/pool-day:v1
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -70,7 +71,7 @@ jobs:
   check_documentation:
     runs-on: ubuntu-latest
     container:
-      image: andrelcmoreira/pool-day:v0
+      image: andrelcmoreira/pool-day:v1
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -87,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit_tests
     container:
-      image: andrelcmoreira/pool-day:v0
+      image: andrelcmoreira/pool-day:v1
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -102,15 +103,15 @@ jobs:
           cmake --build build
 
       - name: Generate coverage report
-        env:
-          LCOV_OUTPUT_FILE: /tmp/lcov_out
-          LCOV_OUTPUT_DIR: build/CMakeFiles/pool-day.dir/src/
         run: |
+          mkdir ${{ env.COVERAGE_REPORT_DIR }}
           build/test/pool-day-tests
-          lcov -c -d ${{ env.LCOV_OUTPUT_DIR }} -o ${{ env.LCOV_OUTPUT_FILE }}
-          genhtml -o ${{ env.COVERAGE_REPORT_DIR }} ${{ env.LCOV_OUTPUT_FILE }}
+          gcovr -r . --html --html-details \
+            --fail-under-line ${{ env.MINIMUM_COVERAGE }} \
+            -o ${{ env.COVERAGE_REPORT_DIR }}/pool-day.html
 
       - name: Upload coverage report
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
