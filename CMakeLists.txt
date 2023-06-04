@@ -10,7 +10,7 @@ option(BUILD_COVERAGE "build the coverage data" OFF)
 set(PROJECT_NAME "pool-day")
 set(SOURCES src/queue.c src/pool_day.c)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wpedantic")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake")
 
 include(doc)
