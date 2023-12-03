@@ -50,12 +50,14 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
 
 /**
  * @brief Given we have a task, when we try to enqueue it to a null pool handle,
- * then nothing must happen.
+ * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
   task_t *t = create_task(nullptr, nullptr);
 
-  enqueue_task(nullptr, t);
+  auto ret = enqueue_task(nullptr, t);
+  EXPECT_EQ(ret, POOL_DAY_ERROR_NULL_PARAM);
+
   free(t);
 }
 
@@ -114,8 +116,10 @@ TEST_F(PoolDayTest, GetIdleTasksWithNullHandle) {
 
 /**
  * @brief Given we have a null pool handle, when we try to destroy it, then
- * nothing must happen.
+ * nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
-  destroy_pool(nullptr);
+  auto ret = destroy_pool(nullptr);
+
+  EXPECT_EQ(ret, POOL_DAY_ERROR_NULL_PARAM);
 }

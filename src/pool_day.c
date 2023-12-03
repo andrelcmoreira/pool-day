@@ -38,13 +38,15 @@ static void *thread_routine(void *param) {
   return NULL;
 }
 
-void enqueue_task(pool_day_t pool, task_t *task) {
+pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   if (!pool) {
-    return;
+    return POOL_DAY_ERROR_NULL_PARAM;
   }
 
   enqueue(pool->tasks, task);
   sem_post(&pool->semaphore);
+
+  return POOL_DAY_SUCCESS;
 }
 
 pool_day_t create_pool(uint8_t pool_size) {
@@ -74,9 +76,9 @@ pool_day_t create_pool(uint8_t pool_size) {
   return pool;
 }
 
-void destroy_pool(pool_day_t *pool) {
+pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   if (!pool || !(*pool)) {
-    return;
+    return POOL_DAY_ERROR_NULL_PARAM;
   }
 
   (*pool)->must_stop = true;
@@ -94,20 +96,20 @@ void destroy_pool(pool_day_t *pool) {
 
   free(*pool);
   *pool = NULL;
+
+  return POOL_DAY_SUCCESS;
 }
 
 uint8_t idle_tasks(pool_day_t pool) {
-  if (!pool) {
-    return 0;
-  }
-
-  return queue_size(pool->tasks);
+  return pool ? queue_size(pool->tasks) : 0;
 }
 
-void abort_tasks(pool_day_t pool) {
+pool_day_retcode_t abort_tasks(pool_day_t pool) {
   if (!pool) {
-    return;
+    return POOL_DAY_ERROR_NULL_PARAM;
   }
 
   pool->must_stop = true;
+
+  return POOL_DAY_SUCCESS;
 }
