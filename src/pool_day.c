@@ -114,7 +114,7 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   free(*pool);
   *pool = NULL;
 
-  POOL_DAY_LOG("pool destroyied with success\n");
+  POOL_DAY_LOG("pool destroyed with success\n");
 
   return POOL_DAY_SUCCESS;
 }
