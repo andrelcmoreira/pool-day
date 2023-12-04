@@ -6,16 +6,18 @@
 #ifndef LOG_H_
 #define LOG_H_
 
-#ifdef LIB_LOGGING
+#include <stdio.h>
+
+#ifdef LOGGING
 #define POOL_DAY_LOG(...) \
-  fprintf(stdout, "%s:%d | %s | INFO: "__VA_ARGS__, __FILE__, __LINE__, \
-          __FUNCTION__)
+  fprintf(stdout, "%s:%d | %s | INFO: ", __FILE__, __LINE__, __func__); \
+  fprintf(stdout, __VA_ARGS__);
 #define POOL_DAY_ERROR(...) \
-  fprintf(stderr, "%s:%d | %s | ERROR: "__VA_ARGS__, __FILE__, __LINE__, \
-          __FUNCTION__)
+  fprintf(stderr, "%s:%d | %s | ERROR: ", __FILE__, __LINE__, __func__); \
+  fprintf(stderr, __VA_ARGS__);
 #else
 #define POOL_DAY_LOG(...)
 #define POOL_DAY_ERROR(...)
-#endif  // LIB_LOGGING
+#endif  // LOGGING
 
 #endif  // LOG_H_

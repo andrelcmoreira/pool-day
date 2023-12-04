@@ -20,7 +20,7 @@ struct pool_day {
   task_queue_t *tasks; //!< Pool's tasks.
 };
 
-static void *thread_routine(void *param) {
+static void __attribute__((unused)) *thread_routine(void *param) {
   pool_day_t pool = (pool_day_t)param;
 
   while (!pool->must_stop) {
@@ -79,7 +79,9 @@ pool_day_t create_pool(uint8_t pool_size) {
   sem_init(&pool->semaphore, 0, 0);
 
   for (uint8_t i = 0; i < pool_size; i++) {
+#ifndef UNIT_TESTS
     pthread_create(&pool->threads[i], NULL, thread_routine, pool);
+#endif  // UNIT_TESTS
     POOL_DAY_LOG("thread '%u' created\n", i);
   }
 
@@ -104,7 +106,9 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   POOL_DAY_LOG("joining all threads of the pool\n");
 
   for (uint8_t i = 0; i < (*pool)->size; i++) {
+#ifndef UNIT_TESTS
     pthread_join((*pool)->threads[i], NULL);
+#endif  // UNIT_TESTS
   }
 
   free((*pool)->threads);

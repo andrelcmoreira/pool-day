@@ -27,6 +27,7 @@ if(BUILD_COVERAGE)
 endif(BUILD_COVERAGE)
 
 if(BUILD_UNIT_TESTS)
+  add_definitions(-DUNIT_TESTS)
   add_subdirectory(test)
 endif(BUILD_UNIT_TESTS)
 
@@ -35,7 +36,7 @@ if(BUILD_DOCUMENTATION)
 endif(BUILD_DOCUMENTATION)
 
 if(ENABLE_LOGGING)
-  add_definitions(-DLIB_LOGGING)
+  add_definitions(-DLOGGING)
 endif(ENABLE_LOGGING)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
