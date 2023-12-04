@@ -1,7 +1,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 
-#include "queue.h"
+#include "core/queue.h"
 
 #define THREAD_SAFE_ZONE(mutex, code)  \
   pthread_mutex_lock(mutex); \

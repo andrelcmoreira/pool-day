@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "core/log.h"
+
 /**
  * @brief Main structure of the library, it defines a handle to the pool.
  */
@@ -40,11 +42,14 @@ static void *thread_routine(void *param) {
 
 pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   if (!pool) {
+    POOL_DAY_ERROR("null pool handle\n");
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
   enqueue(pool->tasks, task);
   sem_post(&pool->semaphore);
+
+  POOL_DAY_LOG("task enqueued with success\n");
 
   return POOL_DAY_SUCCESS;
 }
@@ -52,8 +57,11 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
 pool_day_t create_pool(uint8_t pool_size) {
   pool_day_t pool;
 
+  POOL_DAY_LOG("pool size: %u\n", pool_size);
+
   pool = malloc(sizeof(*pool));
   if (!pool) {
+    POOL_DAY_ERROR("fail to allocate memory for a new pool\n");
     return NULL;
   }
 
@@ -62,6 +70,7 @@ pool_day_t create_pool(uint8_t pool_size) {
   pool->threads = malloc(sizeof(pthread_t) * pool_size);
 
   if (!pool->threads) {
+    POOL_DAY_ERROR("fail to allocate memory for the pool threads\n");
     free(pool);
     return NULL;
   }
@@ -71,20 +80,28 @@ pool_day_t create_pool(uint8_t pool_size) {
 
   for (uint8_t i = 0; i < pool_size; i++) {
     pthread_create(&pool->threads[i], NULL, thread_routine, pool);
+    POOL_DAY_LOG("thread '%u' created\n", i);
   }
+
+  POOL_DAY_LOG("pool create with success\n");
 
   return pool;
 }
 
 pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   if (!pool || !(*pool)) {
+    POOL_DAY_ERROR("null pool handle\n");
     return POOL_DAY_ERROR_NULL_PARAM;
   }
+
+  POOL_DAY_LOG("waking up all sleeping threads\n");
 
   (*pool)->must_stop = true;
   for (uint8_t i = 0; i < (*pool)->size; i++) {
     sem_post(&(*pool)->semaphore);
   }
+
+  POOL_DAY_LOG("joining all threads of the pool\n");
 
   for (uint8_t i = 0; i < (*pool)->size; i++) {
     pthread_join((*pool)->threads[i], NULL);
@@ -97,6 +114,8 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   free(*pool);
   *pool = NULL;
 
+  POOL_DAY_LOG("pool destroyied with success\n");
+
   return POOL_DAY_SUCCESS;
 }
 
@@ -106,6 +125,7 @@ uint8_t idle_tasks(pool_day_t pool) {
 
 pool_day_retcode_t abort_tasks(pool_day_t pool) {
   if (!pool) {
+    POOL_DAY_ERROR("null pool handle\n");
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 

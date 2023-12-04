@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-#include "queue.h"
+#include "core/queue.h"
 }
 
 class QueueTest : public ::testing::Test {
