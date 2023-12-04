@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/log.h"
+#include "core/logger.h"
 
 /**
  * @brief Main structure of the library, it defines a handle to the pool.
@@ -26,16 +26,22 @@ static void __attribute__((unused)) *thread_routine(void *param) {
   while (!pool->must_stop) {
     sem_wait(&pool->semaphore);
 
+    POOL_DAY_LOG("thread '%lu' woke up", pthread_self());
+
     if (pool->must_stop) {
+      POOL_DAY_LOG("thread '%lu' aborting...", pthread_self());
       break;
     }
 
     task_t *entry = dequeue(pool->tasks);
     if (entry) {
+      POOL_DAY_LOG("thread '%lu' running task", pthread_self());
       entry->task(entry->param);
       free(entry);
     }
   }
+
+  POOL_DAY_LOG("thread '%lu' finishing...", pthread_self());
 
   return NULL;
 }
