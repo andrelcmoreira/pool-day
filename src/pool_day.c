@@ -48,14 +48,14 @@ static void __attribute__((unused)) *thread_routine(void *param) {
 
 pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   if (!pool) {
-    POOL_DAY_ERROR("null pool handle\n");
+    POOL_DAY_ERROR("null pool handle");
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
   enqueue(pool->tasks, task);
   sem_post(&pool->semaphore);
 
-  POOL_DAY_LOG("task enqueued with success\n");
+  POOL_DAY_LOG("task enqueued with success");
 
   return POOL_DAY_SUCCESS;
 }
@@ -63,11 +63,11 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
 pool_day_t create_pool(uint8_t pool_size) {
   pool_day_t pool;
 
-  POOL_DAY_LOG("pool size: %u\n", pool_size);
+  POOL_DAY_LOG("pool size: %u", pool_size);
 
   pool = malloc(sizeof(*pool));
   if (!pool) {
-    POOL_DAY_ERROR("fail to allocate memory for a new pool\n");
+    POOL_DAY_ERROR("fail to allocate memory for a new pool");
     return NULL;
   }
 
@@ -76,7 +76,7 @@ pool_day_t create_pool(uint8_t pool_size) {
   pool->threads = malloc(sizeof(pthread_t) * pool_size);
 
   if (!pool->threads) {
-    POOL_DAY_ERROR("fail to allocate memory for the pool threads\n");
+    POOL_DAY_ERROR("fail to allocate memory for the pool threads");
     free(pool);
     return NULL;
   }
@@ -88,28 +88,28 @@ pool_day_t create_pool(uint8_t pool_size) {
 #ifndef UNIT_TESTS
     pthread_create(&pool->threads[i], NULL, thread_routine, pool);
 #endif  // UNIT_TESTS
-    POOL_DAY_LOG("thread '%u' created\n", i);
+    POOL_DAY_LOG("thread '%u' created", i);
   }
 
-  POOL_DAY_LOG("pool create with success\n");
+  POOL_DAY_LOG("pool create with success");
 
   return pool;
 }
 
 pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   if (!pool || !(*pool)) {
-    POOL_DAY_ERROR("null pool handle\n");
+    POOL_DAY_ERROR("null pool handle");
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
-  POOL_DAY_LOG("waking up all sleeping threads\n");
+  POOL_DAY_LOG("waking up all sleeping threads");
 
   (*pool)->must_stop = true;
   for (uint8_t i = 0; i < (*pool)->size; i++) {
     sem_post(&(*pool)->semaphore);
   }
 
-  POOL_DAY_LOG("joining all threads of the pool\n");
+  POOL_DAY_LOG("joining all threads of the pool");
 
   for (uint8_t i = 0; i < (*pool)->size; i++) {
 #ifndef UNIT_TESTS
@@ -124,7 +124,7 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   free(*pool);
   *pool = NULL;
 
-  POOL_DAY_LOG("pool destroyed with success\n");
+  POOL_DAY_LOG("pool destroyed with success");
 
   return POOL_DAY_SUCCESS;
 }
@@ -135,7 +135,7 @@ uint8_t idle_tasks(pool_day_t pool) {
 
 pool_day_retcode_t abort_tasks(pool_day_t pool) {
   if (!pool) {
-    POOL_DAY_ERROR("null pool handle\n");
+    POOL_DAY_ERROR("null pool handle");
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 

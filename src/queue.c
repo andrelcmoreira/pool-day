@@ -2,11 +2,7 @@
 #include <stdlib.h>
 
 #include "core/queue.h"
-
-#define THREAD_SAFE_ZONE(mutex, code)  \
-  pthread_mutex_lock(mutex); \
-  code \
-  pthread_mutex_unlock(mutex);
+#include "core/thread_utils.h"
 
 /**
  * @brief Task queue definition.
