@@ -2,6 +2,7 @@
 
 extern "C" {
 #include "pool_day.h"
+#include "core/logger.h"
 }
 
 class PoolDayTest : public ::testing::Test {
