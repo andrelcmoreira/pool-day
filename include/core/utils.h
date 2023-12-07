@@ -1,14 +1,14 @@
 /**
  * @file
  *
- * @brief
+ * @brief Contains a set of utilities available for use by the library.
  */
-#ifndef THREAD_UTILS_H_
-#define THREAD_UTILS_H_
+#ifndef UTILS_H_
+#define UTILS_H_
 
 #define THREAD_SAFE_ZONE(mutex, code)  \
   pthread_mutex_lock(mutex); \
   code \
   pthread_mutex_unlock(mutex);
 
-#endif  // THREAD_UTILS_H_
+#endif  // UTILS_H_
