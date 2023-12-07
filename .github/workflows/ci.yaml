@@ -45,7 +45,7 @@ jobs:
           cmake --build build
 
       - name: Run unit tests
-        run: LD_PRELOAD=build/test/src/preload/libpreload.so \
+        run: LD_PRELOAD=build/test/src/libc/libpreload.so \
           build/test/pool-day-tests
 
   dynamic_analysis:
@@ -67,7 +67,7 @@ jobs:
           cmake --build build
 
       - name: Run dynamic analysis
-        run: LD_PRELOAD=build/test/src/preload/libpreload.so valgrind \
+        run: LD_PRELOAD=build/test/src/libc/libpreload.so valgrind \
           --leak-check=full build/test/pool-day-tests
 
   check_documentation:
