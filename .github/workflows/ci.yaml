@@ -8,6 +8,7 @@ on:
 env:
   COVERAGE_REPORT_DIR: build/coverage
   MINIMUM_COVERAGE: 80
+  LD_PRELOAD: LD_PRELOAD=build/test/src/libc/libpreload.so
 
 jobs:
   build:
@@ -45,8 +46,7 @@ jobs:
           cmake --build build
 
       - name: Run unit tests
-        run: LD_PRELOAD=build/test/src/libc/libpreload.so \
-          build/test/pool-day-tests
+        run: ${{ env.LD_PRELOAD }} build/test/pool-day-tests
 
   dynamic_analysis:
     runs-on: ubuntu-latest
@@ -67,8 +67,7 @@ jobs:
           cmake --build build
 
       - name: Run dynamic analysis
-        run: LD_PRELOAD=build/test/src/libc/libpreload.so valgrind \
-          --leak-check=full build/test/pool-day-tests
+        run: ${{ env.LD_PRELOAD }} valgrind --leak-check=full build/test/pool-day-tests
 
   check_documentation:
     runs-on: ubuntu-latest
@@ -107,7 +106,7 @@ jobs:
       - name: Generate coverage report
         run: |
           mkdir ${{ env.COVERAGE_REPORT_DIR }}
-          build/test/pool-day-tests
+          ${{ env.LD_PRELOAD }} build/test/pool-day-tests
           gcovr -r . -s --html --html-details \
             --fail-under-line ${{ env.MINIMUM_COVERAGE }} \
             -o ${{ env.COVERAGE_REPORT_DIR }}/pool-day.html
