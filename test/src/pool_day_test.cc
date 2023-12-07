@@ -2,7 +2,6 @@
 
 extern "C" {
 #include "pool_day.h"
-#include "core/logger.h"
 }
 
 class PoolDayTest : public ::testing::Test {
@@ -24,8 +23,7 @@ class PoolDayTest : public ::testing::Test {
 TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
   task_t *t = create_task(nullptr, nullptr);
 
-  enqueue_task(pool_, t);
-
+  EXPECT_EQ(enqueue_task(pool_, t), POOL_DAY_SUCCESS);
   EXPECT_EQ(idle_tasks(pool_), 1);
 }
 
@@ -40,11 +38,11 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
   task_t *t4 = create_task(nullptr, nullptr);
   task_t *t5 = create_task(nullptr, nullptr);
 
-  enqueue_task(pool_, t1);
-  enqueue_task(pool_, t2);
-  enqueue_task(pool_, t3);
-  enqueue_task(pool_, t4);
-  enqueue_task(pool_, t5);
+  EXPECT_EQ(enqueue_task(pool_, t1), POOL_DAY_SUCCESS);
+  EXPECT_EQ(enqueue_task(pool_, t2), POOL_DAY_SUCCESS);
+  EXPECT_EQ(enqueue_task(pool_, t3), POOL_DAY_SUCCESS);
+  EXPECT_EQ(enqueue_task(pool_, t4), POOL_DAY_SUCCESS);
+  EXPECT_EQ(enqueue_task(pool_, t5), POOL_DAY_SUCCESS);
 
   EXPECT_EQ(idle_tasks(pool_), 5);
 }
@@ -56,9 +54,19 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
 TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
   task_t *t = create_task(nullptr, nullptr);
 
-  auto ret = enqueue_task(nullptr, t);
-  EXPECT_EQ(ret, POOL_DAY_ERROR_NULL_PARAM);
+  EXPECT_EQ(enqueue_task(nullptr, t), POOL_DAY_ERROR_NULL_PARAM);
+  free(t);
+}
 
+/**
+ * @brief Given we have a valid pool, when we try to enqueue a null task to the
+ * pool handle, then nothing must happen and the suitable error code must be
+ * returned.
+ */
+TEST_F(PoolDayTest, EnqueueTaskWithNullTask) {
+  task_t *t = create_task(nullptr, nullptr);
+
+  EXPECT_EQ(enqueue_task(pool_, nullptr), POOL_DAY_ERROR_NULL_PARAM);
   free(t);
 }
 

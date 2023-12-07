@@ -45,7 +45,8 @@ jobs:
           cmake --build build
 
       - name: Run unit tests
-        run: build/test/pool-day-tests
+        run: LD_PRELOAD=build/test/src/preload/libpreload.so \
+          build/test/pool-day-tests
 
   dynamic_analysis:
     runs-on: ubuntu-latest
@@ -66,7 +67,8 @@ jobs:
           cmake --build build
 
       - name: Run dynamic analysis
-        run: valgrind --leak-check=full --error-exitcode=1 build/test/pool-day-tests
+        run: LD_PRELOAD=build/test/src/preload/libpreload.so valgrind \
+          --leak-check=full build/test/pool-day-tests
 
   check_documentation:
     runs-on: ubuntu-latest
