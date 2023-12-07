@@ -20,7 +20,7 @@ struct pool_day {
   task_queue_t *tasks; //!< Pool's tasks.
 };
 
-static void __attribute__((unused)) *thread_routine(void *param) {
+static void *thread_routine(void *param) {
   pool_day_t pool = (pool_day_t)param;
 
   while (!pool->must_stop) {
@@ -136,6 +136,8 @@ pool_day_retcode_t abort_tasks(pool_day_t pool) {
   }
 
   pool->must_stop = true;
+
+  POOL_DAY_LOG("stopping all threads\n");
 
   return POOL_DAY_SUCCESS;
 }
