@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#include "core/thread_utils.h"
+#include "core/utils.h"
 
 static pthread_mutex_t log_mutex;  //!< Mutex for log operations.
 

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "core/queue.h"
-#include "core/thread_utils.h"
+#include "core/utils.h"
 
 /**
  * @brief Task queue definition.
