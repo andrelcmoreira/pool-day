@@ -37,6 +37,7 @@ static void *thread_routine(void *param) {
     if (entry) {
       POOL_DAY_LOG("thread '0x%x' running task\n", pthread_self());
       entry->task(entry->param);
+      POOL_DAY_LOG("thread '0x%x' finished the task\n", pthread_self());
       free(entry);
     }
   }
