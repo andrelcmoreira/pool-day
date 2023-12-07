@@ -36,6 +36,8 @@ typedef enum {
 /**
  * @brief Log a message to the screen.
  *
+ * @note This function is thread safe.
+ *
  * @param sev Log severity.
  * @param fmt Message format to be logged.
  */
