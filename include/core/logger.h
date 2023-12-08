@@ -9,17 +9,16 @@
 #define _STR(x) #x
 #define STR(x) _STR(x)
 
-#define LOG_HEADER \
-  __FILE__ ":" STR(__LINE__) " | " STR(__func__)
+#define LOG_HEADER __FILE__ ":" STR(__LINE__)
 
 #define LOG_TAG_INFO  "INFO"
 #define LOG_TAG_ERROR "ERROR"
 
 #ifdef LIB_LOGGING
 #define POOL_DAY_LOG(...) \
-  log_msg(LOG_HEADER " | " LOG_TAG_INFO ": " __VA_ARGS__)
+  log_msg(LOG_HEADER "\t| " LOG_TAG_INFO ": " __VA_ARGS__)
 #define POOL_DAY_ERROR(...) \
-  log_msg(LOG_HEADER " | " LOG_TAG_ERROR ": " __VA_ARGS__)
+  log_msg(LOG_HEADER "\t| " LOG_TAG_ERROR ": " __VA_ARGS__)
 #else
 #define POOL_DAY_LOG(...)
 #define POOL_DAY_ERROR(...)
