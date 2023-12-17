@@ -8,7 +8,7 @@
 
 static pthread_mutex_t log_mutex;  //!< Mutex for log operations.
 
-void __attribute__((unused)) log_msg(const char *fmt, ...) {
+void log_msg(const char *fmt, ...) {
   va_list args;
 
   THREAD_SAFE_ZONE(&log_mutex, {
