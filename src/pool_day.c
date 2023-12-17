@@ -90,7 +90,7 @@ pool_day_t create_pool(uint8_t pool_size) {
     POOL_DAY_LOG("thread '%u' created\n", i);
   }
 
-  POOL_DAY_LOG("pool create with success\n");
+  POOL_DAY_LOG("pool created with success\n");
 
   return pool;
 }
