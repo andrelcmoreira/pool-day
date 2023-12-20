@@ -1,6 +1,6 @@
 from pool_day import _pd_handle, pool_day_callback
 
-from ctypes import byref, c_void_p, c_uint8
+from ctypes import byref
 
 
 @pool_day_callback
@@ -9,7 +9,7 @@ def thread_cb(param):
 
 
 def create_pool(size):
-    return _pd_handle.create_pool(c_uint8(size))
+    return _pd_handle.create_pool(size)
 
 
 def destroy_pool(pool):
