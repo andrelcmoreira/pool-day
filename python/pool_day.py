@@ -1,11 +1,14 @@
 from pool_day import _pd_handle, pool_day_callback
 
 from ctypes import byref
+from time import sleep
 
 
 @pool_day_callback
 def thread_cb(param):
-    print('hello from python callback!!!')
+    for i in range(1, 10):
+        print('thread %d: hello from python callback, i: %d' % (param, i))
+        sleep(param)
 
 
 def create_pool(size):
@@ -35,9 +38,9 @@ def idle_tasks(pool):
 def main():
     pool = create_pool(2)
 
-    t1 = create_task(thread_cb, 'hello 1')
-    t2 = create_task(thread_cb, 'hello 2')
-    t3 = create_task(thread_cb, 'hello 3')
+    t1 = create_task(thread_cb, 1)
+    t2 = create_task(thread_cb, 2)
+    t3 = create_task(thread_cb, 3)
 
     print('enqueue_task ret =', enqueue_task(pool, t1))
     print('enqueue_task ret =', enqueue_task(pool, t2))
