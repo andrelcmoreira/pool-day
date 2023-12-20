@@ -6,19 +6,24 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
-#define _STR(x) #x
-#define STR(x) _STR(x)
+#include <stdio.h>
+#include <string.h>
 
-#define LOG_HEADER __FILE__ ":" STR(__LINE__)
-
-#define LOG_TAG_INFO  "INFO"
-#define LOG_TAG_ERROR "ERROR"
+/**
+ * @brief Log severity.
+ */
+typedef enum {
+  POOL_DAY_LOG_INFO,
+  POOL_DAY_LOG_ERROR
+} pool_day_log_severity_t;
 
 #ifdef LIB_LOGGING
+#define FILENAME strrchr(__FILE__, '/') + 1
+
 #define POOL_DAY_LOG(...) \
-  log_msg(LOG_HEADER "\t| " LOG_TAG_INFO ": " __VA_ARGS__)
+  __log_msg(POOL_DAY_LOG_INFO, FILENAME, __func__, __LINE__, __VA_ARGS__)
 #define POOL_DAY_ERROR(...) \
-  log_msg(LOG_HEADER "\t| " LOG_TAG_ERROR ": " __VA_ARGS__)
+  __log_msg(POOL_DAY_LOG_ERROR, FILENAME, __func__, __LINE__, __VA_ARGS__)
 #else
 #define POOL_DAY_LOG(...)
 #define POOL_DAY_ERROR(...)
@@ -29,8 +34,13 @@
  *
  * @note This function is thread safe.
  *
+ * @param sev Severity of log message.
+ * @param file_name File name where the log function is being called.
+ * @param func_name Function name where the log function is being called.
+ * @param line_no Line number where the log function is being caled.
  * @param fmt Message format to be logged.
  */
-void log_msg(const char *fmt, ...);
+void __log_msg(pool_day_log_severity_t sev, char *file_name,
+               const char *func_name, int line_no, const char *fmt, ...);
 
 #endif  // LOGGER_H_
