@@ -1,5 +1,4 @@
 from ctypes import CDLL as cdll
-from ctypes import CFUNCTYPE as c_func_type
 from ctypes import POINTER as c_pointer
 from ctypes import (
     Structure,
@@ -16,8 +15,6 @@ class PoolDay(Structure):
 class Task(Structure):
     pass
 
-
-lib_cb = c_func_type(c_void_p, c_void_p)
 
 _lib_handle = cdll('../build/libpool-day.so')
 

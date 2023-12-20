@@ -1,10 +1,11 @@
-from pool_day import _lib_handle, lib_cb
+from pool_day import _lib_handle
 
-from ctypes import byref, c_uint8
+from ctypes import byref, c_void_p, c_uint8
+from ctypes import CFUNCTYPE as c_func_type
 
-
+@c_func_type(c_void_p, c_void_p)
 def thread_cb(param):
-    print(param)
+    print('hello from python callback!!!')
 
 
 def create_pool(size):
@@ -20,7 +21,7 @@ def enqueue_task(pool, task):
 
 
 def create_task(cb, param):
-    return _lib_handle.create_task(lib_cb(cb), param)
+    return _lib_handle.create_task(cb, param)
 
 
 def abort_tasks(pool):
@@ -32,17 +33,18 @@ def idle_tasks(pool):
 
 
 def main():
-    pool = create_pool(1)
+    pool = create_pool(2)
 
-    try:
-        t1 = create_task(thread_cb, 'hello 1')
+    t1 = create_task(thread_cb, 'hello 1')
+    t2 = create_task(thread_cb, 'hello 1')
+    t3 = create_task(thread_cb, 'hello 1')
 
-        print('enqueue_task ret =', enqueue_task(pool, t1))
-        print('idle_tasks ret =', idle_tasks(pool))
-
-        input('')
-    except KeyboardInterrupt:
-        print('destroy_pool ret =', destroy_pool(pool))
+    print('enqueue_task ret =', enqueue_task(pool, t1))
+    print('enqueue_task ret =', enqueue_task(pool, t2))
+    print('enqueue_task ret =', enqueue_task(pool, t3))
+    print('idle_tasks ret =', idle_tasks(pool))
+    input('')
+    print('destroy_pool ret =', destroy_pool(pool))
 
 
 if __name__ == "__main__":
