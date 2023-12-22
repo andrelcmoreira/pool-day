@@ -6,9 +6,6 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
-#include <stdio.h>
-#include <string.h>
-
 /**
  * @brief Log severity.
  */
