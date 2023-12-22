@@ -6,11 +6,11 @@ extern "C" {
 
 class QueueTest : public ::testing::Test {
   public:
-   QueueTest() {
+   void SetUp() override {
      init_queue(&queue_);
    }
 
-   ~QueueTest() {
+   void TearDown() override {
      destroy_queue(queue_);
    }
 
@@ -19,29 +19,31 @@ class QueueTest : public ::testing::Test {
 };
 
 /**
- * @brief Given we have a queue, when we try to get its size, then 0 must be
- * returned.
+ * @brief Given we have an empty queue, when we try to get its size, then 0 must
+ * be returned.
  */
 TEST_F(QueueTest, GetQueueSizeWithEmptyQueue) {
   EXPECT_EQ(queue_size(queue_), 0);
 }
 
 /**
- * @brief Given we have a queue, when we add several elements to it and get its
- * size, then a non zero value must be returned.
+ * @brief Given we have a queue with several elements, when we get its size,
+ * then a non zero value must be returned.
  */
 TEST_F(QueueTest, GetQueueSizeWithNotEmptyQueue) {
-  task_t *t1 = create_task(nullptr, nullptr);
-  task_t *t2 = create_task(nullptr, nullptr);
-  task_t *t3 = create_task(nullptr, nullptr);
-  task_t *t4 = create_task(nullptr, nullptr);
-  task_t *t5 = create_task(nullptr, nullptr);
+  {
+    auto t1 = create_task(nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr);
+    auto t3 = create_task(nullptr, nullptr);
+    auto t4 = create_task(nullptr, nullptr);
+    auto t5 = create_task(nullptr, nullptr);
 
-  enqueue(queue_, t1);
-  enqueue(queue_, t2);
-  enqueue(queue_, t3);
-  enqueue(queue_, t4);
-  enqueue(queue_, t5);
+    enqueue(queue_, t1);
+    enqueue(queue_, t2);
+    enqueue(queue_, t3);
+    enqueue(queue_, t4);
+    enqueue(queue_, t5);
+  }
 
   EXPECT_EQ(queue_size(queue_), 5);
 }
@@ -55,27 +57,13 @@ TEST_F(QueueTest, GetQueueSizeWithNullQueue) {
 }
 
 /**
- * @brief Given we have an empty queue, when we add several elements into it,
- * then its size must be greater than 0.
- */
-TEST_F(QueueTest, EnqueueElementWithEmptyQueue) {
-  task_t *t1 = create_task(nullptr, nullptr);
-  task_t *t2 = create_task(nullptr, nullptr);
-
-  enqueue(queue_, t1);
-  enqueue(queue_, t2);
-
-  EXPECT_EQ(queue_size(queue_), 2);
-}
-
-/**
  * @brief Given we have a not empty queue, when we add several elements into it,
- * then its size must be greater than 0.
+ * then its size must be increased.
  */
 TEST_F(QueueTest, EnqueueElementWithNotEmptyQueue) {
   {
-    task_t *t1 = create_task(nullptr, nullptr);
-    task_t *t2 = create_task(nullptr, nullptr);
+    auto t1 = create_task(nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -83,7 +71,7 @@ TEST_F(QueueTest, EnqueueElementWithNotEmptyQueue) {
     EXPECT_EQ(queue_size(queue_), 2);
   }
 
-  task_t *t3 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
 
   enqueue(queue_, t3);
 
@@ -101,13 +89,13 @@ TEST_F(QueueTest, EnqueueNullElementWithEmptyQueue) {
 }
 
 /**
- * @brief Given we have a non empty queue, when we try to add a null element
- * into it, then its size must remain 0.
+ * @brief Given we have a not empty queue, when we try to add a null element
+ * into it, then its size must remain the same.
  */
 TEST_F(QueueTest, EnqueueNullElementWithNotEmptyQueue) {
   {
-    task_t *t1 = create_task(nullptr, nullptr);
-    task_t *t2 = create_task(nullptr, nullptr);
+    auto t1 = create_task(nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -119,11 +107,11 @@ TEST_F(QueueTest, EnqueueNullElementWithNotEmptyQueue) {
 }
 
 /**
- * @brief Given we have a null queue, when we try to add a element into it,
+ * @brief Given we have a null queue, when we try to add an element to it,
  * then nothing must happen.
  */
 TEST_F(QueueTest, EnqueueElementWithNullQueue) {
-  task_t *t1 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr);
 
   enqueue(nullptr, t1);
   free(t1);
@@ -139,8 +127,8 @@ TEST_F(QueueTest, DequeueElementWithEmptyQueue) {
 
   auto ret = dequeue(queue_);
 
-  EXPECT_EQ(queue_size(queue_), 0);
   EXPECT_EQ(ret, nullptr);
+  EXPECT_EQ(queue_size(queue_), 0);
 }
 
 /**
@@ -149,9 +137,9 @@ TEST_F(QueueTest, DequeueElementWithEmptyQueue) {
  * size of the queue must be decreased by 1.
  */
 TEST_F(QueueTest, DequeueSingleElementWithNotEmptyQueue) {
-  task_t *t1 = create_task(nullptr, nullptr);
-  task_t *t2 = create_task(nullptr, nullptr);
-  task_t *t3 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
 
   enqueue(queue_, t1);
   enqueue(queue_, t2);
@@ -169,14 +157,15 @@ TEST_F(QueueTest, DequeueSingleElementWithNotEmptyQueue) {
 
 /**
  * @brief Given we have a not empty queue, when we try to dequeue multiple
- * elements from it, then the correct elements of the queue must be returned and
- * the size of the queue must be decreased according to the operations.
+ * elements from it, then the correct elements of the queue must be returned in
+ * the correct sequence and the size of the queue must be decreased according to
+ * the operations.
  */
 TEST_F(QueueTest, DequeueMultipleElementsWithNotEmptyQueue) {
-  task_t *t1 = create_task(nullptr, nullptr);
-  task_t *t2 = create_task(nullptr, nullptr);
-  task_t *t3 = create_task(nullptr, nullptr);
-  task_t *t4 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
+  auto t4 = create_task(nullptr, nullptr);
   task_t *ret;
 
   enqueue(queue_, t1);
@@ -220,6 +209,13 @@ TEST_F(QueueTest, DequeueMultipleElementsWithNotEmptyQueue) {
     EXPECT_EQ(queue_size(queue_), 0);
 
     free(ret);
+  }
+
+  {
+    ret = dequeue(queue_);
+
+    EXPECT_EQ(ret, nullptr);
+    EXPECT_EQ(queue_size(queue_), 0);
   }
 }
 

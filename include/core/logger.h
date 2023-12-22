@@ -17,9 +17,9 @@ typedef enum {
   POOL_DAY_LOG_ERROR
 } pool_day_log_severity_t;
 
-#ifdef LIB_LOGGING
 #define FILENAME strrchr(__FILE__, '/') + 1
 
+#ifdef LIB_LOGGING
 #define POOL_DAY_LOG(...) \
   __log_msg(POOL_DAY_LOG_INFO, FILENAME, __func__, __LINE__, __VA_ARGS__)
 #define POOL_DAY_ERROR(...) \
