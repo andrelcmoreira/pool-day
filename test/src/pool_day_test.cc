@@ -21,8 +21,9 @@ class PoolDayTest : public ::testing::Test {
  * it, then it must be added to the pool's task queue.
  */
 TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
-  task_t *t = create_task(nullptr, nullptr);
+  auto t = create_task(nullptr, nullptr);
 
+  EXPECT_EQ(idle_tasks(pool_), 0);
   EXPECT_EQ(enqueue_task(pool_, t), POOL_DAY_SUCCESS);
   EXPECT_EQ(idle_tasks(pool_), 1);
 }
@@ -32,11 +33,13 @@ TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
  * it, then they must be added to the pool's task queue.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
-  task_t *t1 = create_task(nullptr, nullptr);
-  task_t *t2 = create_task(nullptr, nullptr);
-  task_t *t3 = create_task(nullptr, nullptr);
-  task_t *t4 = create_task(nullptr, nullptr);
-  task_t *t5 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
+  auto t4 = create_task(nullptr, nullptr);
+  auto t5 = create_task(nullptr, nullptr);
+
+  EXPECT_EQ(idle_tasks(pool_), 0);
 
   EXPECT_EQ(enqueue_task(pool_, t1), POOL_DAY_SUCCESS);
   EXPECT_EQ(enqueue_task(pool_, t2), POOL_DAY_SUCCESS);
@@ -52,27 +55,26 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
  * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
-  task_t *t = create_task(nullptr, nullptr);
+  auto t = create_task(nullptr, nullptr);
 
   EXPECT_EQ(enqueue_task(nullptr, t), POOL_DAY_ERROR_NULL_PARAM);
   free(t);
 }
 
 /**
- * @brief Given we have a valid pool, when we try to enqueue a null task to the
- * pool handle, then nothing must happen and the suitable error code must be
- * returned.
+ * @brief Given we have a valid pool, when we try to enqueue a null task to it,
+ * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullTask) {
-  task_t *t = create_task(nullptr, nullptr);
+  auto t = create_task(nullptr, nullptr);
 
   EXPECT_EQ(enqueue_task(pool_, nullptr), POOL_DAY_ERROR_NULL_PARAM);
   free(t);
 }
 
 /**
- * @brief Given we have a pool with no enqueued tasks, when we try to get the
- * number of idle tasks in the pool, then 0 must be returned.
+ * @brief Given we have a pool with no tasks, when we try to get the number of
+ * idle tasks of the pool, then 0 must be returned.
  */
 TEST_F(PoolDayTest, GetIdleTasksCountWithNoTasks) {
   EXPECT_EQ(idle_tasks(pool_), 0);
@@ -84,7 +86,7 @@ TEST_F(PoolDayTest, GetIdleTasksCountWithNoTasks) {
  */
 TEST_F(PoolDayTest, GetIdleTasksCountWithSingleTask) {
   {
-    task_t *t = create_task(nullptr, nullptr);
+    auto t = create_task(nullptr, nullptr);
 
     enqueue_task(pool_, t);
   }
@@ -99,11 +101,11 @@ TEST_F(PoolDayTest, GetIdleTasksCountWithSingleTask) {
  */
 TEST_F(PoolDayTest, GetIdleTasksCountWithSeveralTasks) {
   {
-    task_t *t1 = create_task(nullptr, nullptr);
-    task_t *t2 = create_task(nullptr, nullptr);
-    task_t *t3 = create_task(nullptr, nullptr);
-    task_t *t4 = create_task(nullptr, nullptr);
-    task_t *t5 = create_task(nullptr, nullptr);
+    auto t1 = create_task(nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr);
+    auto t3 = create_task(nullptr, nullptr);
+    auto t4 = create_task(nullptr, nullptr);
+    auto t5 = create_task(nullptr, nullptr);
 
     enqueue_task(pool_, t1);
     enqueue_task(pool_, t2);
