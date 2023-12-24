@@ -1,10 +1,18 @@
 #include <gtest/gtest.h>
 
+#include "mock/callback_mock.h"
+
 extern "C" {
 #include "pool_day.h"
+
+extern void *thread_func(void *param);
 }
 
-class PoolDayTest : public ::testing::Test {
+using testing::_;
+using testing::InvokeWithoutArgs;
+using testing::Test;
+
+class PoolDayTest : public Test {
  public:
   PoolDayTest() : pool_{create_pool(1)} {}
 
@@ -133,4 +141,62 @@ TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
   auto ret = destroy_pool(nullptr);
 
   EXPECT_EQ(ret, POOL_DAY_ERROR_NULL_PARAM);
+}
+
+/**
+ * @brief Given the pool has one task with null parameter, when it is scheduled
+ * for execution, then the task's callback must be called.
+ */
+TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
+  auto task = create_task(CbWrapper::TaskCb, nullptr);
+
+  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
+    .Times(1)
+    .WillOnce(
+      InvokeWithoutArgs([&]() {
+        abort_tasks(pool_);
+      }
+    ));
+
+  auto ret = thread_func(pool_);
+  EXPECT_EQ(ret, nullptr);
+}
+
+/**
+ * @brief Given the pool has one task with a parameter, when it is scheduled for
+ * execution, then the task's callback must be called with the parameter.
+ */
+TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
+  char param[]{ "hi" };
+  auto task = create_task(CbWrapper::TaskCb, param);
+
+  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(param))
+    .Times(1)
+    .WillOnce(
+      InvokeWithoutArgs([&]() {
+        abort_tasks(pool_);
+      }
+    ));
+
+  auto ret = thread_func(pool_);
+  EXPECT_EQ(ret, nullptr);
+}
+
+/**
+ * @brief Given the pool has one task and the 'must_stop' flag is true, when it
+ * is scheduled for execution, then the task's callback must not be called.
+ */
+TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
+  auto task = create_task(CbWrapper::TaskCb, nullptr);
+
+  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(_))
+    .Times(0);
+
+  abort_tasks(pool_);
+
+  auto ret = thread_func(pool_);
+  EXPECT_EQ(ret, nullptr);
 }

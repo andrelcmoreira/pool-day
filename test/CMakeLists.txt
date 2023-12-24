@@ -20,6 +20,7 @@ set(
   SOURCES
   ${SOURCES_DIR}/src/queue_test.cc
   ${SOURCES_DIR}/src/pool_day_test.cc
+  ${SOURCES_DIR}/src/mock/callback_mock.cc
   ${TEST_MAIN_SOURCE}
 )
 

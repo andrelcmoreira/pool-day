@@ -27,6 +27,7 @@ if(BUILD_COVERAGE)
 endif(BUILD_COVERAGE)
 
 if(BUILD_UNIT_TESTS)
+  add_definitions(-DUNIT_TESTS)
   add_subdirectory(test)
   add_subdirectory(test/src/libc)
 endif(BUILD_UNIT_TESTS)

@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "core/logger.h"
+#include "core/utils.h"
 
 /**
  * @brief Main structure of the library, it defines a handle to the pool.
@@ -20,7 +21,7 @@ struct pool_day {
   task_queue_t *tasks; //!< Pool's tasks.
 };
 
-static void *thread_func(void *param) {
+STATIC void *thread_func(void *param) {
   pool_day_t pool = (pool_day_t)param;
 
   while (!pool->must_stop) {
