@@ -12,9 +12,9 @@
   pthread_mutex_unlock(mutex);
 
 #ifndef UNIT_TESTS
-#define STATIC static
+#define __static static
 #else
-#define STATIC
+#define __static
 #endif  // UNIT_TESTS
 
 #endif  // UTILS_H_

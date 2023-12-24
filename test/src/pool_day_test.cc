@@ -16,12 +16,22 @@ class PoolDayTest : public Test {
  public:
   PoolDayTest() : pool_{create_pool(1)} {}
 
+  void SetUp(void) override {
+    ON_CALL(CbWrapper::mock(), TaskCb(_))
+      .WillByDefault(
+        InvokeWithoutArgs([&]() {
+          abort_tasks(pool_);  // to break the thread loop
+        }
+      ));
+  }
+
   ~PoolDayTest() {
     destroy_pool(&pool_);
   }
 
  protected:
   pool_day_t pool_; //!< Library instance.
+  CbWrapper wrapper_;
 };
 
 /**
@@ -144,56 +154,51 @@ TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
 }
 
 /**
- * @brief Given the pool has one task with null parameter, when it is scheduled
- * for execution, then the task's callback must be called.
+ * @brief Given the pool has one task with null parameter, when the task is
+ * scheduled for execution, then the task's callback must be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
-  auto task = create_task(CbWrapper::TaskCb, nullptr);
+  {
+    auto task = create_task(CbWrapper::TaskCb, nullptr);
+    enqueue_task(pool_, task);
+  }
 
-  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_CALL(CbWrapper::cb_mock(), TaskCb(nullptr))
-    .Times(1)
-    .WillOnce(
-      InvokeWithoutArgs([&]() {
-        abort_tasks(pool_);
-      }
-    ));
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr)).Times(1);
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
 }
 
 /**
- * @brief Given the pool has one task with a parameter, when it is scheduled for
- * execution, then the task's callback must be called with the parameter.
+ * @brief Given the pool has one task with a parameter, when the task is
+ * scheduled for execution, then the task's callback must be called with the
+ * parameter.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
-  char param[]{ "hi" };
-  auto task = create_task(CbWrapper::TaskCb, param);
+  char param[]{ "param" };
 
-  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_CALL(CbWrapper::cb_mock(), TaskCb(param))
-    .Times(1)
-    .WillOnce(
-      InvokeWithoutArgs([&]() {
-        abort_tasks(pool_);
-      }
-    ));
+  {
+    auto task = create_task(CbWrapper::TaskCb, param);
+    enqueue_task(pool_, task);
+  }
+
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(param)).Times(1);
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
 }
 
 /**
- * @brief Given the pool has one task and the 'must_stop' flag is true, when it
- * is scheduled for execution, then the task's callback must not be called.
+ * @brief Given the pool has one task and the 'must_stop' flag is true, when the
+ * task is scheduled for execution, then the task's callback must not be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
-  auto task = create_task(CbWrapper::TaskCb, nullptr);
+  {
+    auto task = create_task(CbWrapper::TaskCb, nullptr);
+    enqueue_task(pool_, task);
+  }
 
-  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_CALL(CbWrapper::cb_mock(), TaskCb(_))
-    .Times(0);
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(_)).Times(0);
 
   abort_tasks(pool_);
 

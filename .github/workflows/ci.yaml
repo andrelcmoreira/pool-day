@@ -7,7 +7,7 @@ on:
 
 env:
   COVERAGE_REPORT_DIR: build/coverage
-  MINIMUM_COVERAGE: 75
+  MINIMUM_COVERAGE: 80
   LD_PRELOAD: LD_PRELOAD=build/test/src/libc/libpreload.so
 
 jobs:

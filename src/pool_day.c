@@ -21,7 +21,7 @@ struct pool_day {
   task_queue_t *tasks; //!< Pool's tasks.
 };
 
-STATIC void *thread_func(void *param) {
+__static void *thread_func(void *param) {
   pool_day_t pool = (pool_day_t)param;
 
   while (!pool->must_stop) {

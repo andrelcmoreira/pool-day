@@ -1,19 +1,23 @@
-#ifndef TASK_MOCK_H_
-#define TASK_MOCK_H_
+#ifndef CALLBACK_MOCK_H_
+#define CALLBACK_MOCK_H_
 
 #include <gmock/gmock.h>
 
 class TaskMock {
  public:
-   MOCK_METHOD(void, TaskCb, (void *));
+  MOCK_METHOD(void, TaskCb, (void *));
 };
 
 class CbWrapper {
-  public:
-   static void TaskCb(void *param);
-   static TaskMock &cb_mock();
+ public:
+  CbWrapper();
+  ~CbWrapper();
 
-   static TaskMock cb_mock_;
+  static void TaskCb(void *param);
+  static TaskMock &mock();
+
+ private:
+  static TaskMock *mock_;
 };
 
-#endif  // TASK_MOCK_H_
+#endif  // CALLBACK_MOCK_H_
