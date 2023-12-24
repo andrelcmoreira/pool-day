@@ -1,11 +1,11 @@
 #include "callback_mock.h"
 
-TaskMock CbWrapper::mock_;
+TaskMock CbWrapper::cb_mock_;
 
 void CbWrapper::TaskCb(void *param) {
-  mock_.TaskCb(param);
+  cb_mock_.TaskCb(param);
 }
 
-TaskMock &CbWrapper::mock() {
-  return CbWrapper::mock_;
+TaskMock &CbWrapper::cb_mock() {
+  return CbWrapper::cb_mock_;
 }

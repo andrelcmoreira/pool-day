@@ -29,10 +29,10 @@ class PoolDayTest : public Test {
  * it, then it must be added to the pool's task queue.
  */
 TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
-  auto t = create_task(nullptr, nullptr);
+  auto task = create_task(nullptr, nullptr);
 
   EXPECT_EQ(idle_tasks(pool_), 0);
-  EXPECT_EQ(enqueue_task(pool_, t), POOL_DAY_SUCCESS);
+  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
   EXPECT_EQ(idle_tasks(pool_), 1);
 }
 
@@ -63,10 +63,10 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
  * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
-  auto t = create_task(nullptr, nullptr);
+  auto task = create_task(nullptr, nullptr);
 
-  EXPECT_EQ(enqueue_task(nullptr, t), POOL_DAY_ERROR_NULL_PARAM);
-  free(t);
+  EXPECT_EQ(enqueue_task(nullptr, task), POOL_DAY_ERROR_NULL_PARAM);
+  free(task);
 }
 
 /**
@@ -74,10 +74,10 @@ TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
  * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullTask) {
-  auto t = create_task(nullptr, nullptr);
+  auto task = create_task(nullptr, nullptr);
 
   EXPECT_EQ(enqueue_task(pool_, nullptr), POOL_DAY_ERROR_NULL_PARAM);
-  free(t);
+  free(task);
 }
 
 /**
@@ -94,9 +94,9 @@ TEST_F(PoolDayTest, GetIdleTasksCountWithNoTasks) {
  */
 TEST_F(PoolDayTest, GetIdleTasksCountWithSingleTask) {
   {
-    auto t = create_task(nullptr, nullptr);
+    auto task = create_task(nullptr, nullptr);
 
-    enqueue_task(pool_, t);
+    enqueue_task(pool_, task);
   }
 
   EXPECT_EQ(idle_tasks(pool_), 1);
@@ -151,7 +151,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
   auto task = create_task(CbWrapper::TaskCb, nullptr);
 
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
+  EXPECT_CALL(CbWrapper::cb_mock(), TaskCb(nullptr))
     .Times(1)
     .WillOnce(
       InvokeWithoutArgs([&]() {
@@ -172,7 +172,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   auto task = create_task(CbWrapper::TaskCb, param);
 
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_CALL(CbWrapper::mock(), TaskCb(param))
+  EXPECT_CALL(CbWrapper::cb_mock(), TaskCb(param))
     .Times(1)
     .WillOnce(
       InvokeWithoutArgs([&]() {
@@ -192,7 +192,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
   auto task = create_task(CbWrapper::TaskCb, nullptr);
 
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_CALL(CbWrapper::mock(), TaskCb(_))
+  EXPECT_CALL(CbWrapper::cb_mock(), TaskCb(_))
     .Times(0);
 
   abort_tasks(pool_);

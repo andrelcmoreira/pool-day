@@ -11,9 +11,9 @@ class TaskMock {
 class CbWrapper {
   public:
    static void TaskCb(void *param);
-   static TaskMock &mock();
+   static TaskMock &cb_mock();
 
-   static TaskMock mock_;
+   static TaskMock cb_mock_;
 };
 
 #endif  // TASK_MOCK_H_
