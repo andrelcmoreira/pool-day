@@ -30,8 +30,8 @@ class PoolDayTest : public Test {
   }
 
  protected:
-  pool_day_t pool_; //!< Library instance.
-  CbWrapper wrapper_;
+  pool_day_t pool_;   //!< Library instance.
+  CbWrapper wrapper_; //!< Callback instance.
 };
 
 /**
