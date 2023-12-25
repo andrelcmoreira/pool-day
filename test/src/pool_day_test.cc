@@ -205,3 +205,11 @@ TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
 }
+
+/**
+ * @brief When we try to abort the pool tasks with a null handle, then the
+ * suitable error code must be returned.
+ */
+TEST_F(PoolDayTest, AbortTasksWithNullPoolHandle) {
+  EXPECT_EQ(abort_tasks(nullptr), POOL_DAY_ERROR_NULL_PARAM);
+}
