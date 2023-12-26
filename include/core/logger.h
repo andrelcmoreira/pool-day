@@ -29,11 +29,11 @@ typedef enum {
  *
  * @note This function is thread safe.
  *
- * @param sev Severity of log message.
- * @param file_name File name where the log function is being called.
- * @param func_name Function name where the log function is being called.
- * @param line_no Line number where the log function is being caled.
- * @param fmt Message format to be logged.
+ * @param[in] sev Severity of log message.
+ * @param[in] file_name File name where the log function is being called.
+ * @param[in] func_name Function name where the log function is being called.
+ * @param[in] line_no Line number where the log function is being caled.
+ * @param[in] fmt Message format to be logged.
  */
 void __log_msg(pool_day_log_severity_t sev, const char *file_name,
                const char *func_name, int line_no, const char *fmt, ...);

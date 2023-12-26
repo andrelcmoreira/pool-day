@@ -45,7 +45,7 @@ typedef struct task_queue task_queue_t; //!< Structure representing the queue
 /**
  * @brief Get the queue size.
  *
- * @param queue Pointer to the queue.
+ * @param[in] queue Pointer to the queue.
  *
  * @return The size of the queue.
  */
@@ -54,8 +54,8 @@ uint8_t queue_size(task_queue_t *queue);
 /**
  * @brief Create a new task.
  *
- * @param task Task callback.
- * @param param Task parameter.
+ * @param[in] task Task callback.
+ * @param[in] param Task parameter.
  *
  * @return Pointer to the new task.
  */
@@ -64,15 +64,15 @@ task_t *create_task(void (*task)(void *), void *param);
 /**
  * @brief Enqueue a new task into the queue.
  *
- * @param queue Pointer to the queue.
- * @param task Pointer to the task to be enqueued.
+ * @param[in,out] queue Pointer to the queue.
+ * @param[in]     task Pointer to the task to be enqueued.
  */
 void enqueue(task_queue_t *queue, task_t *task);
 
 /**
  * @brief Dequeue a task from the queue.
  *
- * @param queue Pointer to the queue.
+ * @param[in,out] queue Pointer to the queue.
  *
  * @return The head task.
  */
@@ -81,14 +81,14 @@ task_t *dequeue(task_queue_t *queue);
 /**
  * @brief Initialize the queue.
  *
- * @param queue Pointer to the queue.
+ * @param[out] queue Pointer to the queue.
  */
 void init_queue(task_queue_t **queue);
 
 /**
  * @brief Destroy the queue.
  *
- * @param queue Pointer to the queue.
+ * @param[in,out] queue Pointer to the queue.
  */
 void destroy_queue(task_queue_t *queue);
 
