@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 
 project(pool-day)
 
-option(BUILD_SAMPLE "build the sample application" OFF)
+option(BUILD_SAMPLES "build the sample applications" OFF)
 option(BUILD_UNIT_TESTS "build the unit tests of the library" OFF)
 option(BUILD_DOCUMENTATION "build the documentation of the library" OFF)
 option(BUILD_COVERAGE "build the coverage data" OFF)
@@ -18,9 +18,9 @@ include(doc)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-if(BUILD_SAMPLE)
-  add_subdirectory(sample)
-endif(BUILD_SAMPLE)
+if(BUILD_SAMPLES)
+  add_subdirectory(samples)
+endif(BUILD_SAMPLES)
 
 if(BUILD_COVERAGE)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
