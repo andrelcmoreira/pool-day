@@ -111,13 +111,16 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
 
   (*pool)->must_stop = true;
   for (uint8_t i = 0; i < (*pool)->size; i++) {
+    POOL_DAY_INFO("waking up thread '%u'", i);
     sem_post(&(*pool)->semaphore);
   }
 
   POOL_DAY_INFO("joining all threads of the pool");
 
   for (uint8_t i = 0; i < (*pool)->size; i++) {
+    POOL_DAY_INFO("finishing thread '%u'", i);
     pthread_join((*pool)->threads[i], NULL);
+    POOL_DAY_INFO("thread '%u' finished", i);
   }
 
   free((*pool)->threads);
