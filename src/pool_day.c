@@ -67,6 +67,11 @@ pool_day_t create_pool(uint8_t pool_size) {
 
   POOL_DAY_INFO("pool size: %u", pool_size);
 
+  if (!pool_size) {
+    POOL_DAY_ERROR("bad pool size");
+    return NULL;
+  }
+
   pool = malloc(sizeof(*pool));
   if (!pool) {
     POOL_DAY_ERROR("fail to allocate memory for a new pool");

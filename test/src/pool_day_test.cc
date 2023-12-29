@@ -35,6 +35,13 @@ class PoolDayTest : public Test {
 };
 
 /**
+ * @brief When we try to create a pool with size 0, then null must be returned.
+ */
+TEST_F(PoolDayTest, CreatePollWithInvalidSize) {
+  EXPECT_EQ(create_pool(0), nullptr);
+}
+
+/**
  * @brief Given we have a valid pool handle, when we enqueue a single task into
  * it, then it must be added to the pool's task queue.
  */
