@@ -27,6 +27,22 @@ jobs:
           cmake -S . -B build
           cmake --build build
 
+  build_samples:
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v1
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build samples
+        run: |
+          cmake -DBUILD_SAMPLES=ON -S . -B build
+          cmake --build build
+
   unit_tests:
     runs-on: ubuntu-latest
     needs: build
