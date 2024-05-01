@@ -23,11 +23,11 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  task_t *t1 = create_task(func, (void *)"foo");
-  task_t *t2 = create_task(func, (void *)"bar");
-  task_t *t3 = create_task(func, (void *)"baz");
-  task_t *t4 = create_task(func, (void *)"qux");
-  task_t *t5 = create_task(func, (void *)"blah");
+  task_t *t1 = create_task(func, (void *)"foo", 0);
+  task_t *t2 = create_task(func, (void *)"bar", 1);
+  task_t *t3 = create_task(func, (void *)"baz", 2);
+  task_t *t4 = create_task(func, (void *)"qux", 3);
+  task_t *t5 = create_task(func, (void *)"blah", 4);
 
   assert(enqueue_task(pool, t1) == POOL_DAY_SUCCESS);
   assert(enqueue_task(pool, t2) == POOL_DAY_SUCCESS);
