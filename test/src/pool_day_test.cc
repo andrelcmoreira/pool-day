@@ -46,7 +46,7 @@ TEST_F(PoolDayTest, CreatePollWithInvalidSize) {
  * it, then it must be added to the pool's task queue.
  */
 TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
-  auto task = create_task(nullptr, nullptr);
+  auto task = create_task(nullptr, nullptr, 0);
 
   EXPECT_EQ(idle_tasks(pool_), 0);
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
@@ -58,11 +58,11 @@ TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
  * it, then they must be added to the pool's task queue.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
-  auto t1 = create_task(nullptr, nullptr);
-  auto t2 = create_task(nullptr, nullptr);
-  auto t3 = create_task(nullptr, nullptr);
-  auto t4 = create_task(nullptr, nullptr);
-  auto t5 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr, 0);
+  auto t2 = create_task(nullptr, nullptr, 0);
+  auto t3 = create_task(nullptr, nullptr, 0);
+  auto t4 = create_task(nullptr, nullptr, 0);
+  auto t5 = create_task(nullptr, nullptr, 0);
 
   EXPECT_EQ(idle_tasks(pool_), 0);
 
@@ -80,7 +80,7 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
  * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
-  auto task = create_task(nullptr, nullptr);
+  auto task = create_task(nullptr, nullptr, 0);
 
   EXPECT_EQ(enqueue_task(nullptr, task), POOL_DAY_ERROR_NULL_PARAM);
   free(task);
@@ -91,7 +91,7 @@ TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
  * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullTask) {
-  auto task = create_task(nullptr, nullptr);
+  auto task = create_task(nullptr, nullptr, 0);
 
   EXPECT_EQ(enqueue_task(pool_, nullptr), POOL_DAY_ERROR_NULL_PARAM);
   free(task);
@@ -111,7 +111,7 @@ TEST_F(PoolDayTest, GetIdleTasksCountWithNoTasks) {
  */
 TEST_F(PoolDayTest, GetIdleTasksCountWithSingleTask) {
   {
-    auto task = create_task(nullptr, nullptr);
+    auto task = create_task(nullptr, nullptr, 0);
 
     enqueue_task(pool_, task);
   }
@@ -126,11 +126,11 @@ TEST_F(PoolDayTest, GetIdleTasksCountWithSingleTask) {
  */
 TEST_F(PoolDayTest, GetIdleTasksCountWithSeveralTasks) {
   {
-    auto t1 = create_task(nullptr, nullptr);
-    auto t2 = create_task(nullptr, nullptr);
-    auto t3 = create_task(nullptr, nullptr);
-    auto t4 = create_task(nullptr, nullptr);
-    auto t5 = create_task(nullptr, nullptr);
+    auto t1 = create_task(nullptr, nullptr, 0);
+    auto t2 = create_task(nullptr, nullptr, 0);
+    auto t3 = create_task(nullptr, nullptr, 0);
+    auto t4 = create_task(nullptr, nullptr, 0);
+    auto t5 = create_task(nullptr, nullptr, 0);
 
     enqueue_task(pool_, t1);
     enqueue_task(pool_, t2);
@@ -166,7 +166,7 @@ TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
  */
 TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
   {
-    auto task = create_task(CbWrapper::TaskCb, nullptr);
+    auto task = create_task(CbWrapper::TaskCb, nullptr, 0);
     enqueue_task(pool_, task);
   }
 
@@ -185,7 +185,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   char param[]{ "param" };
 
   {
-    auto task = create_task(CbWrapper::TaskCb, param);
+    auto task = create_task(CbWrapper::TaskCb, param, 0);
     enqueue_task(pool_, task);
   }
 
@@ -201,7 +201,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
  */
 TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
   {
-    auto task = create_task(CbWrapper::TaskCb, nullptr);
+    auto task = create_task(CbWrapper::TaskCb, nullptr, 0);
     enqueue_task(pool_, task);
   }
 

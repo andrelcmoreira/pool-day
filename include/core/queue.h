@@ -35,6 +35,7 @@ struct task {
   struct task *prev;    //!< Previous element of the current instance.
   void (*task)(void *); //!< Task callback.
   void *param;          //!< Parameter of the task callback.
+  uint8_t id;           //!< Task identifier.
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task
@@ -56,10 +57,11 @@ uint8_t queue_size(task_queue_t *queue);
  *
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
+ * @param[in] id Task identifier.
  *
  * @return Pointer to the new task.
  */
-task_t *create_task(void (*task)(void *), void *param);
+task_t *create_task(void (*task)(void *), void *param, uint8_t id);
 
 /**
  * @brief Enqueue a new task into the queue.
