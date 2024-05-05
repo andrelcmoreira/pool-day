@@ -38,9 +38,10 @@ __static void *thread_func(void *param) {
     task_t *entry = dequeue(pool->queued_tasks);
     if (entry) {
       POOL_DAY_INFO("thread '0x%x' running the task", pthread_self());
-      entry->task(entry->param);
+      void *ret = entry->task(entry->param);
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
 
+      entry->ret_val = ret;
       enqueue(pool->finished_tasks, entry);
     }
   }
@@ -160,17 +161,14 @@ pool_day_retcode_t abort_tasks(pool_day_t pool) {
   return POOL_DAY_SUCCESS;
 }
 
-bool is_task_running(pool_day_t pool, task_t *task) {
-  // TODO
-  (void)pool;
-  (void)task;
-  return false;
-}
-
 void *wait_task_finish(pool_day_t pool, task_t *task) {
-  // TODO
-  (void)pool;
-  (void)task;
+  if (!pool || !task) {
+    return NULL;
+  }
 
-  return NULL;
+  // TODO: we must to check if the task was enqueued is been executed on the
+  // given pool.
+  while (!has_task(pool->finished_tasks, task));
+
+  return task->ret_val;
 }

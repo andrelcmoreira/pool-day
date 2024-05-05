@@ -12,8 +12,8 @@ CbWrapper::~CbWrapper() {
   delete CbWrapper::mock_;
 }
 
-void CbWrapper::TaskCb(void *param) {
-  mock_->TaskCb(param);
+void *CbWrapper::TaskCb(void *param) {
+  return mock_->TaskCb(param);
 }
 
 TaskMock &CbWrapper::mock() {

@@ -21,6 +21,7 @@ class PoolDayTest : public Test {
       .WillByDefault(
         InvokeWithoutArgs([&]() {
           abort_tasks(pool_);  // to break the thread loop
+          return nullptr;
         }
       ));
   }

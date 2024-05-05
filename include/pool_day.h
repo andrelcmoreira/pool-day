@@ -78,16 +78,6 @@ uint32_t queued_tasks(pool_day_t pool);
 uint32_t finished_tasks(pool_day_t pool);
 
 /**
- * @brief Check if a given task is running.
- *
- * @param[in] pool Handle to the thread pool.
- * @param[in] task Task handler.
- *
- * @return True if the task is running; otherwise false.
- */
-bool is_task_running(pool_day_t pool, task_t *task);
-
-/**
  * @brief Wait for the finish of a given task.
  *
  * @note This function blocks the current thread.

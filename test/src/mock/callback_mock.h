@@ -5,7 +5,7 @@
 
 class TaskMock {
  public:
-  MOCK_METHOD(void, TaskCb, (void *));
+  MOCK_METHOD(void *, TaskCb, (void *));
 };
 
 class CbWrapper {
@@ -13,7 +13,7 @@ class CbWrapper {
   CbWrapper();
   ~CbWrapper();
 
-  static void TaskCb(void *param);
+  static void *TaskCb(void *param);
   static TaskMock &mock();
 
  private:

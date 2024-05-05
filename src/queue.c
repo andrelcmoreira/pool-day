@@ -27,7 +27,7 @@ uint8_t queue_size(task_queue_t *queue) {
   return size;
 }
 
-task_t *create_task(void (*task)(void *), void *param) {
+task_t *create_task(void *(*task)(void *), void *param) {
   task_t *node;
 
   node = (task_t *)malloc(sizeof(task_t));
@@ -35,6 +35,7 @@ task_t *create_task(void (*task)(void *), void *param) {
     node->next = node->prev = NULL;
     node->task = task;
     node->param = param;
+    node->ret_val = NULL;
   }
 
   return node;

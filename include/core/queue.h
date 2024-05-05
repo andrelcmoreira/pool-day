@@ -32,10 +32,11 @@
  * @brief Pool task definition.
  */
 struct task {
-  struct task *next;    //!< Next element of the current instance.
-  struct task *prev;    //!< Previous element of the current instance.
-  void (*task)(void *); //!< Task callback.
-  void *param;          //!< Parameter of the task callback.
+  struct task *next;     //!< Next element of the current instance.
+  struct task *prev;     //!< Previous element of the current instance.
+  void *(*task)(void *); //!< Task callback.
+  void *param;           //!< Parameter of the task callback.
+  void *ret_val;         //!< Task return value.
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task
@@ -63,7 +64,7 @@ uint8_t queue_size(task_queue_t *queue);
  *
  * @return Pointer to the new task.
  */
-task_t *create_task(void (*task)(void *), void *param);
+task_t *create_task(void *(*task)(void *), void *param);
 
 /**
  * @brief Destroy a given task.
