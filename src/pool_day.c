@@ -40,7 +40,8 @@ __static void *thread_func(void *param) {
       POOL_DAY_INFO("thread '0x%x' running the task", pthread_self());
       entry->task(entry->param);
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
-      free(entry);
+
+      enqueue(pool->finished_tasks, entry);
     }
   }
 
@@ -166,8 +167,10 @@ bool is_task_running(pool_day_t pool, task_t *task) {
   return false;
 }
 
-void wait_task_finish(pool_day_t pool, task_t *task) {
+void *wait_task_finish(pool_day_t pool, task_t *task) {
   // TODO
   (void)pool;
   (void)task;
+
+  return NULL;
 }

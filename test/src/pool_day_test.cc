@@ -246,3 +246,31 @@ TEST_F(PoolDayTest, GetFinishedTasksCountWithSingleFinishedTask) {
 
   EXPECT_EQ(finished_tasks(pool_), 1);
 }
+
+/**
+ * @brief Given we have a pool with multiple finished tasks, when we try to get
+ * the number of finished tasks of the pool, then the correct number must be
+ * returned.
+ */
+TEST_F(PoolDayTest, DISABLED_GetFinishedTasksCountWithMultipleFinishedTasks) {
+  {
+    auto t1 = create_task(CbWrapper::TaskCb, nullptr);
+    auto t2 = create_task(CbWrapper::TaskCb, nullptr);
+    auto t3 = create_task(CbWrapper::TaskCb, nullptr);
+    auto t4 = create_task(CbWrapper::TaskCb, nullptr);
+
+    enqueue_task(pool_, t1);
+    enqueue_task(pool_, t2);
+    enqueue_task(pool_, t3);
+    enqueue_task(pool_, t4);
+
+    EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr)).Times(4);
+
+    thread_func(pool_);
+    thread_func(pool_);
+    thread_func(pool_);
+    thread_func(pool_);
+  }
+
+  EXPECT_EQ(finished_tasks(pool_), 4);
+}

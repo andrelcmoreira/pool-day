@@ -94,8 +94,10 @@ bool is_task_running(pool_day_t pool, task_t *task);
  *
  * @param[in] pool Handle to the thread pool.
  * @param[in] task Task handler.
+ *
+ * @return The return of the task.
  */
-void wait_task_finish(pool_day_t pool, task_t *task);
+void *wait_task_finish(pool_day_t pool, task_t *task);
 
 /**
  * @brief Abort the execution of incoming tasks.

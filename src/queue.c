@@ -40,6 +40,12 @@ task_t *create_task(void (*task)(void *), void *param) {
   return node;
 }
 
+void destroy_task(task_t *task) {
+  if (task) {
+    free(task);
+  }
+}
+
 void enqueue(task_queue_t *queue, task_t *elem) {
   if (queue && elem) {
     THREAD_SAFE_ZONE(&queue->mutex, {

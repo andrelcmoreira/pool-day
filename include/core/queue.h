@@ -55,12 +55,22 @@ uint8_t queue_size(task_queue_t *queue);
 /**
  * @brief Create a new task.
  *
+ * @note The created task doesn't require a manual release once it's bound to a
+ * pool. Otherwise it can be released using the function destroy_task.
+ *
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
  *
  * @return Pointer to the new task.
  */
 task_t *create_task(void (*task)(void *), void *param);
+
+/**
+ * @brief Destroy a given task.
+ *
+ * @param[in] task Task to be destroyed.
+ */
+void destroy_task(task_t *task);
 
 /**
  * @brief Enqueue a new task into the queue.

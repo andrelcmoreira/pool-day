@@ -8,7 +8,7 @@ CbWrapper::CbWrapper() {
 
 CbWrapper::~CbWrapper() {
   // FIXME: for some reason, the destructor of TaskMock is not being called when
-  // we run the tests on CI container
+  // we run the tests within the CI container
   delete CbWrapper::mock_;
 }
 
