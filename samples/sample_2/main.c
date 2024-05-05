@@ -5,13 +5,15 @@
 
 #include "pool_day.h"
 
-void func(void *param) {
+void *func(void *param) {
   char *str = (char *)param;
 
   for (int i = 0; i < 10; i++) {
     printf("%s %d\n", str, i);
     usleep(1000000);
   }
+
+  return NULL;
 }
 
 int main(void) {
