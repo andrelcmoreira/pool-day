@@ -81,11 +81,12 @@ uint32_t finished_tasks(pool_day_t pool);
  * @brief Wait for the finish of a given task.
  *
  * @note This function blocks the current thread.
+ * @note The task is released after the execution of this function.
  *
  * @param[in] pool Handle to the thread pool.
  * @param[in] task Task handler.
  *
- * @return The return of the task.
+ * @return The return value of the task.
  */
 void *wait_task_finish(pool_day_t pool, task_t *task);
 

@@ -165,15 +165,18 @@ void *wait_task_finish(pool_day_t pool, task_t *task) {
   void *ret;
 
   if (!pool || !task) {
+    POOL_DAY_ERROR("null pool handle or task");
     return NULL;
   }
 
-  // TODO: we must to check if the task was enqueued is been executed on the
+  // TODO: we must to check if the task was enqueued and is been executed on the
   // given pool.
+  POOL_DAY_INFO("waiting for the finish of the task");
   while (!has_task(pool->finished_tasks, task));
+  POOL_DAY_INFO("task finished");
 
   ret = task->ret_val;
-  dequeue(pool->finished_tasks);
+  remove_task(pool->finished_tasks, task);
   free(task);
 
   return ret;

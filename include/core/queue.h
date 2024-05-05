@@ -67,11 +67,12 @@ uint8_t queue_size(task_queue_t *queue);
 task_t *create_task(void *(*task)(void *), void *param);
 
 /**
- * @brief Destroy a given task.
+ * @brief Remove a task from the queue.
  *
- * @param[in] task Task to be destroyed.
+ * @param[in] queue Pointer to the queue.
+ * @param[in] task Pointer to the task to be removed.
  */
-void destroy_task(task_t *task);
+void remove_task(task_queue_t *queue, task_t *task);
 
 /**
  * @brief Enqueue a new task into the queue.
