@@ -20,7 +20,7 @@ int main(void) {
   pool_day_t pool;
 
   pool = create_pool(1);
-  if (pool) {
+  if (!pool) {
     // handle error
     exit(EXIT_FAILURE);
   }

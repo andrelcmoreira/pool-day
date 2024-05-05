@@ -162,6 +162,8 @@ pool_day_retcode_t abort_tasks(pool_day_t pool) {
 }
 
 void *wait_task_finish(pool_day_t pool, task_t *task) {
+  void *ret;
+
   if (!pool || !task) {
     return NULL;
   }
@@ -170,5 +172,9 @@ void *wait_task_finish(pool_day_t pool, task_t *task) {
   // given pool.
   while (!has_task(pool->finished_tasks, task));
 
-  return task->ret_val;
+  ret = task->ret_val;
+  dequeue(pool->finished_tasks);
+  free(task);
+
+  return ret;
 }
