@@ -32,11 +32,11 @@ TEST_F(QueueTest, GetQueueSizeWithEmptyQueue) {
  */
 TEST_F(QueueTest, GetQueueSizeWithNotEmptyQueue) {
   {
-    auto t1 = create_task(nullptr, nullptr, 0);
-    auto t2 = create_task(nullptr, nullptr, 0);
-    auto t3 = create_task(nullptr, nullptr, 0);
-    auto t4 = create_task(nullptr, nullptr, 0);
-    auto t5 = create_task(nullptr, nullptr, 0);
+    auto t1 = create_task(nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr);
+    auto t3 = create_task(nullptr, nullptr);
+    auto t4 = create_task(nullptr, nullptr);
+    auto t5 = create_task(nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -62,8 +62,8 @@ TEST_F(QueueTest, GetQueueSizeWithNullQueue) {
  */
 TEST_F(QueueTest, EnqueueElementWithNotEmptyQueue) {
   {
-    auto t1 = create_task(nullptr, nullptr, 0);
-    auto t2 = create_task(nullptr, nullptr, 0);
+    auto t1 = create_task(nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -71,7 +71,7 @@ TEST_F(QueueTest, EnqueueElementWithNotEmptyQueue) {
     EXPECT_EQ(queue_size(queue_), 2);
   }
 
-  auto t3 = create_task(nullptr, nullptr, 0);
+  auto t3 = create_task(nullptr, nullptr);
 
   enqueue(queue_, t3);
 
@@ -94,8 +94,8 @@ TEST_F(QueueTest, EnqueueNullElementWithEmptyQueue) {
  */
 TEST_F(QueueTest, EnqueueNullElementWithNotEmptyQueue) {
   {
-    auto t1 = create_task(nullptr, nullptr, 0);
-    auto t2 = create_task(nullptr, nullptr, 0);
+    auto t1 = create_task(nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -111,7 +111,7 @@ TEST_F(QueueTest, EnqueueNullElementWithNotEmptyQueue) {
  * then nothing must happen.
  */
 TEST_F(QueueTest, EnqueueElementWithNullQueue) {
-  auto t1 = create_task(nullptr, nullptr, 0);
+  auto t1 = create_task(nullptr, nullptr);
 
   enqueue(nullptr, t1);
   free(t1);
@@ -137,9 +137,9 @@ TEST_F(QueueTest, DequeueElementWithEmptyQueue) {
  * size of the queue must be decreased by 1.
  */
 TEST_F(QueueTest, DequeueSingleElementWithNotEmptyQueue) {
-  auto t1 = create_task(nullptr, nullptr, 0);
-  auto t2 = create_task(nullptr, nullptr, 0);
-  auto t3 = create_task(nullptr, nullptr, 0);
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
 
   enqueue(queue_, t1);
   enqueue(queue_, t2);
@@ -162,10 +162,10 @@ TEST_F(QueueTest, DequeueSingleElementWithNotEmptyQueue) {
  * the operations.
  */
 TEST_F(QueueTest, DequeueMultipleElementsWithNotEmptyQueue) {
-  auto t1 = create_task(nullptr, nullptr, 0);
-  auto t2 = create_task(nullptr, nullptr, 0);
-  auto t3 = create_task(nullptr, nullptr, 0);
-  auto t4 = create_task(nullptr, nullptr, 0);
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
+  auto t4 = create_task(nullptr, nullptr);
   task_t *ret;
 
   enqueue(queue_, t1);
@@ -227,4 +227,96 @@ TEST_F(QueueTest, DequeueElementWithNullQueue) {
   auto ret = dequeue(nullptr);
 
   EXPECT_EQ(ret, nullptr);
+}
+
+/**
+ * @brief Given we have a null queue, when we try to check if a given task
+ * exists, then false must be returned.
+ */
+TEST_F(QueueTest, HasTaskWithNullQueue) {
+  auto t = create_task(nullptr, nullptr);
+
+  EXPECT_FALSE(has_task(nullptr, t));
+}
+
+/**
+ * @brief Given we have a queue and a null task, when we try to check if the
+ * task exists on the queue, then false must be returned.
+ */
+TEST_F(QueueTest, HasTaskWithNullTask) {
+  EXPECT_FALSE(has_task(queue_, nullptr));
+}
+
+/**
+ * @brief Given we have a queue and a not enqueued task, when we try to check if
+ * the task exists on the queue, then false must be returned.
+ */
+TEST_F(QueueTest, HasTaskWithNotEnqueuedTask) {
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+
+  enqueue(queue_, t1);
+
+  EXPECT_FALSE(has_task(queue_, t2));
+
+  // cleanup
+  free(t2);
+}
+
+/**
+ * @brief Given we have a queue and a queued task, when we try to check if the
+ * task exists on the queue, then true must be returned.
+ */
+TEST_F(QueueTest, HasTaskWithEnqueuedTask) {
+  auto t1 = create_task(nullptr, nullptr);
+
+  enqueue(queue_, t1);
+
+  EXPECT_TRUE(has_task(queue_, t1));
+}
+
+/**
+ * @brief Given we have a queue and multiple queued tasks, when we try to check
+ * if these tasks exists on the queue, then true must be returned.
+ */
+TEST_F(QueueTest, HasTaskWithMultipleEnqueuedTasks) {
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
+
+  enqueue(queue_, t1);
+  enqueue(queue_, t2);
+  enqueue(queue_, t3);
+
+  EXPECT_TRUE(has_task(queue_, t1));
+  EXPECT_TRUE(has_task(queue_, t2));
+  EXPECT_TRUE(has_task(queue_, t3));
+}
+
+/**
+ * @brief Given we have a queue, multiple queued tasks and multiple not queued
+ * tasks, when we try to check if the queued and not queued tasks exists on the
+ * queue, then true must be returned for the first group and false must be
+ * returned for the second one.
+ */
+TEST_F(QueueTest, HasTaskWithMultipleNotEnqueuedTasks) {
+  auto t1 = create_task(nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr);
+  auto t4 = create_task(nullptr, nullptr);
+  auto t5 = create_task(nullptr, nullptr);
+
+  enqueue(queue_, t1);
+  enqueue(queue_, t2);
+  enqueue(queue_, t3);
+
+  EXPECT_TRUE(has_task(queue_, t1));
+  EXPECT_TRUE(has_task(queue_, t2));
+  EXPECT_TRUE(has_task(queue_, t3));
+  EXPECT_FALSE(has_task(queue_, t4));
+  EXPECT_FALSE(has_task(queue_, t5));
+
+  // cleanup
+  free(t4);
+  free(t5);
 }

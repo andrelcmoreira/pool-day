@@ -6,6 +6,7 @@
 #ifndef POOL_DAY_H_
 #define POOL_DAY_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -66,6 +67,26 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool);
  * @return The number of tasks in the queue.
  */
 uint8_t idle_tasks(pool_day_t pool);
+
+/**
+ * @brief Check if a given task is running.
+ *
+ * @param[in] pool Handle to the thread pool.
+ * @param[in] task Task handler.
+ *
+ * @return True if the task is running; otherwise false.
+ */
+bool is_task_running(pool_day_t pool, task_t *task);
+
+/**
+ * @brief Wait for the finish of a given task.
+ *
+ * @note This function blocks the current thread.
+ *
+ * @param[in] pool Handle to the thread pool.
+ * @param[in] task Task handler.
+ */
+void wait_task_finish(pool_day_t pool, task_t *task);
 
 /**
  * @brief Abort the execution of incoming tasks.

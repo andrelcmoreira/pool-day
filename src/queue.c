@@ -27,7 +27,7 @@ uint8_t queue_size(task_queue_t *queue) {
   return size;
 }
 
-task_t *create_task(void (*task)(void *), void *param, uint8_t id) {
+task_t *create_task(void (*task)(void *), void *param) {
   task_t *node;
 
   node = (task_t *)malloc(sizeof(task_t));
@@ -35,7 +35,6 @@ task_t *create_task(void (*task)(void *), void *param, uint8_t id) {
     node->next = node->prev = NULL;
     node->task = task;
     node->param = param;
-    node->id = id;
   }
 
   return node;
@@ -78,6 +77,18 @@ task_t *dequeue(task_queue_t *queue) {
   }
 
   return to_del;
+}
+
+bool has_task(task_queue_t *queue, task_t *task) {
+  if (queue && task) {
+    for_each_task(curr, queue) {
+      if (task == curr) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 void init_queue(task_queue_t **queue) {

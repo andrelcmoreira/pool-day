@@ -6,6 +6,7 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /**
@@ -35,7 +36,6 @@ struct task {
   struct task *prev;    //!< Previous element of the current instance.
   void (*task)(void *); //!< Task callback.
   void *param;          //!< Parameter of the task callback.
-  uint8_t id;           //!< Task identifier.
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task
@@ -57,11 +57,10 @@ uint8_t queue_size(task_queue_t *queue);
  *
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
- * @param[in] id Task identifier.
  *
  * @return Pointer to the new task.
  */
-task_t *create_task(void (*task)(void *), void *param, uint8_t id);
+task_t *create_task(void (*task)(void *), void *param);
 
 /**
  * @brief Enqueue a new task into the queue.
@@ -70,6 +69,16 @@ task_t *create_task(void (*task)(void *), void *param, uint8_t id);
  * @param[in]     task Pointer to the task to be enqueued.
  */
 void enqueue(task_queue_t *queue, task_t *task);
+
+/**
+ * @brief Check if a given task is present on the queue.
+ *
+ * @param[in] queue Pointer to the queue.
+ * @param[in] task Pointer to the task to be checked.
+ *
+ * @return True if the queue has the given task; otherwise False.
+ */
+bool has_task(task_queue_t *queue, task_t *task);
 
 /**
  * @brief Dequeue a task from the queue.

@@ -13,12 +13,12 @@
  * @brief Main structure of the library, it defines a handle to the pool.
  */
 struct pool_day {
-  uint8_t size;        //!< Size of the pool.
-  bool must_stop;      //!< Flag indicating wheter all threads must stop its
-                       //   execution.
-  sem_t semaphore;     //!< Pool's semaphore.
-  pthread_t *threads;  //!< Threads whose makes part of the pool.
-  task_queue_t *tasks; //!< Pool's tasks.
+  uint8_t size;                //!< Size of the pool.
+  bool must_stop;              //!< Flag indicating wheter all threads must
+                               //   stop its execution.
+  sem_t semaphore;             //!< Pool's semaphore.
+  pthread_t *threads;          //!< Threads whose makes part of the pool.
+  task_queue_t *tasks;         //!< Pool's tasks.
 };
 
 __static void *thread_func(void *param) {
@@ -36,7 +36,7 @@ __static void *thread_func(void *param) {
 
     task_t *entry = dequeue(pool->tasks);
     if (entry) {
-      POOL_DAY_INFO("thread '0x%x' running task", pthread_self());
+      POOL_DAY_INFO("thread '0x%x' running the task", pthread_self());
       entry->task(entry->param);
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
       free(entry);
@@ -150,4 +150,17 @@ pool_day_retcode_t abort_tasks(pool_day_t pool) {
   POOL_DAY_INFO("stopping all threads");
 
   return POOL_DAY_SUCCESS;
+}
+
+bool is_task_running(pool_day_t pool, task_t *task) {
+  // TODO
+  (void)pool;
+  (void)task;
+  return false;
+}
+
+void wait_task_finish(pool_day_t pool, task_t *task) {
+  // TODO
+  (void)pool;
+  (void)task;
 }
