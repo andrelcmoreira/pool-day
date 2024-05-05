@@ -13,12 +13,13 @@
  * @brief Main structure of the library, it defines a handle to the pool.
  */
 struct pool_day {
-  uint8_t size;                //!< Size of the pool.
-  bool must_stop;              //!< Flag indicating wheter all threads must
-                               //   stop its execution.
-  sem_t semaphore;             //!< Pool's semaphore.
-  pthread_t *threads;          //!< Threads whose makes part of the pool.
-  task_queue_t *tasks;         //!< Pool's tasks.
+  uint32_t size;                 //!< Size of the pool.
+  bool must_stop;               //!< Flag indicating wheter all threads must
+                                //   stop its execution.
+  sem_t semaphore;              //!< Pool's semaphore.
+  pthread_t *threads;           //!< Threads whose makes part of the pool.
+  task_queue_t *queued_tasks;   //!< Pool's queued tasks.
+  task_queue_t *finished_tasks; //!< Pool's finished tasks.
 };
 
 __static void *thread_func(void *param) {
@@ -34,7 +35,7 @@ __static void *thread_func(void *param) {
       break;
     }
 
-    task_t *entry = dequeue(pool->tasks);
+    task_t *entry = dequeue(pool->queued_tasks);
     if (entry) {
       POOL_DAY_INFO("thread '0x%x' running the task", pthread_self());
       entry->task(entry->param);
@@ -54,7 +55,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
-  enqueue(pool->tasks, task);
+  enqueue(pool->queued_tasks, task);
   sem_post(&pool->semaphore);
 
   POOL_DAY_INFO("task enqueued with success");
@@ -62,7 +63,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   return POOL_DAY_SUCCESS;
 }
 
-pool_day_t create_pool(uint8_t pool_size) {
+pool_day_t create_pool(uint32_t pool_size) {
   pool_day_t pool;
 
   POOL_DAY_INFO("pool size: %u", pool_size);
@@ -88,10 +89,11 @@ pool_day_t create_pool(uint8_t pool_size) {
     return NULL;
   }
 
-  init_queue(&pool->tasks);
+  init_queue(&pool->finished_tasks);
+  init_queue(&pool->queued_tasks);
   sem_init(&pool->semaphore, 0, 0);
 
-  for (uint8_t i = 0; i < pool_size; i++) {
+  for (uint32_t i = 0; i < pool_size; i++) {
     pthread_create(&pool->threads[i], NULL, thread_func, pool);
     POOL_DAY_INFO("thread '%u' created", i);
   }
@@ -110,14 +112,14 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   POOL_DAY_INFO("waking up all sleeping threads");
 
   (*pool)->must_stop = true;
-  for (uint8_t i = 0; i < (*pool)->size; i++) {
+  for (uint32_t i = 0; i < (*pool)->size; i++) {
     POOL_DAY_INFO("waking up thread '%u'", i);
     sem_post(&(*pool)->semaphore);
   }
 
   POOL_DAY_INFO("joining all threads of the pool");
 
-  for (uint8_t i = 0; i < (*pool)->size; i++) {
+  for (uint32_t i = 0; i < (*pool)->size; i++) {
     POOL_DAY_INFO("finishing thread '%u'", i);
     pthread_join((*pool)->threads[i], NULL);
     POOL_DAY_INFO("thread '%u' finished", i);
@@ -125,7 +127,8 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
 
   free((*pool)->threads);
   sem_destroy(&(*pool)->semaphore);
-  destroy_queue((*pool)->tasks);
+  destroy_queue((*pool)->finished_tasks);
+  destroy_queue((*pool)->queued_tasks);
 
   free(*pool);
   *pool = NULL;
@@ -135,8 +138,12 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   return POOL_DAY_SUCCESS;
 }
 
-uint8_t idle_tasks(pool_day_t pool) {
-  return pool ? queue_size(pool->tasks) : 0;
+uint32_t queued_tasks(pool_day_t pool) {
+  return pool ? queue_size(pool->queued_tasks) : 0;
+}
+
+uint32_t finished_tasks(pool_day_t pool) {
+  return pool ? queue_size(pool->finished_tasks) : 0;
 }
 
 pool_day_retcode_t abort_tasks(pool_day_t pool) {

@@ -48,9 +48,9 @@ TEST_F(PoolDayTest, CreatePollWithInvalidSize) {
 TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
   auto task = create_task(nullptr, nullptr);
 
-  EXPECT_EQ(idle_tasks(pool_), 0);
+  EXPECT_EQ(queued_tasks(pool_), 0);
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_EQ(idle_tasks(pool_), 1);
+  EXPECT_EQ(queued_tasks(pool_), 1);
 }
 
 /**
@@ -64,7 +64,7 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
   auto t4 = create_task(nullptr, nullptr);
   auto t5 = create_task(nullptr, nullptr);
 
-  EXPECT_EQ(idle_tasks(pool_), 0);
+  EXPECT_EQ(queued_tasks(pool_), 0);
 
   EXPECT_EQ(enqueue_task(pool_, t1), POOL_DAY_SUCCESS);
   EXPECT_EQ(enqueue_task(pool_, t2), POOL_DAY_SUCCESS);
@@ -72,7 +72,7 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
   EXPECT_EQ(enqueue_task(pool_, t4), POOL_DAY_SUCCESS);
   EXPECT_EQ(enqueue_task(pool_, t5), POOL_DAY_SUCCESS);
 
-  EXPECT_EQ(idle_tasks(pool_), 5);
+  EXPECT_EQ(queued_tasks(pool_), 5);
 }
 
 /**
@@ -99,32 +99,32 @@ TEST_F(PoolDayTest, EnqueueTaskWithNullTask) {
 
 /**
  * @brief Given we have a pool with no tasks, when we try to get the number of
- * idle tasks of the pool, then 0 must be returned.
+ * queued tasks of the pool, then 0 must be returned.
  */
-TEST_F(PoolDayTest, GetIdleTasksCountWithNoTasks) {
-  EXPECT_EQ(idle_tasks(pool_), 0);
+TEST_F(PoolDayTest, GetQueuedTasksCountWithNoTasks) {
+  EXPECT_EQ(queued_tasks(pool_), 0);
 }
 
 /**
  * @brief Given we have a pool with a single enqueued task, when we try to get
- * the number of idle tasks in the pool, then 1 must be returned.
+ * the number of queued tasks in the pool, then 1 must be returned.
  */
-TEST_F(PoolDayTest, GetIdleTasksCountWithSingleTask) {
+TEST_F(PoolDayTest, GetQueuedTasksCountWithSingleTask) {
   {
     auto task = create_task(nullptr, nullptr);
 
     enqueue_task(pool_, task);
   }
 
-  EXPECT_EQ(idle_tasks(pool_), 1);
+  EXPECT_EQ(queued_tasks(pool_), 1);
 }
 
 /**
  * @brief Given we have a pool with several enqueued tasks, when we try to get
- * the number of idle tasks in the pool, then the correct task number must be
+ * the number of queued tasks in the pool, then the correct task number must be
  * returned.
  */
-TEST_F(PoolDayTest, GetIdleTasksCountWithSeveralTasks) {
+TEST_F(PoolDayTest, GetQueuedTasksCountWithSeveralTasks) {
   {
     auto t1 = create_task(nullptr, nullptr);
     auto t2 = create_task(nullptr, nullptr);
@@ -139,15 +139,15 @@ TEST_F(PoolDayTest, GetIdleTasksCountWithSeveralTasks) {
     enqueue_task(pool_, t5);
   }
 
-  EXPECT_EQ(idle_tasks(pool_), 5);
+  EXPECT_EQ(queued_tasks(pool_), 5);
 }
 
 /**
  * @brief Given we have a null pool handle, when we try to get the number of
- * idle tasks from it, then 0 must be returned.
+ * queued tasks from it, then 0 must be returned.
  */
-TEST_F(PoolDayTest, GetIdleTasksWithNullHandle) {
-  EXPECT_EQ(idle_tasks(nullptr), 0);
+TEST_F(PoolDayTest, GetQueuedTasksWithNullHandle) {
+  EXPECT_EQ(queued_tasks(nullptr), 0);
 }
 
 /**
@@ -219,4 +219,30 @@ TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
  */
 TEST_F(PoolDayTest, AbortTasksWithNullPoolHandle) {
   EXPECT_EQ(abort_tasks(nullptr), POOL_DAY_ERROR_NULL_PARAM);
+}
+
+/**
+ * @brief Given we have a pool with no finished tasks, when we try to get the
+ * number of finished tasks of the pool, then 0 must be returned.
+ */
+TEST_F(PoolDayTest, GetFinishedTasksCountWithNoTasks) {
+  EXPECT_EQ(finished_tasks(pool_), 0);
+}
+
+/**
+ * @brief Given we have a pool with a single finished task, when we try to get
+ * the number of finished tasks of the pool, then 1 must be returned.
+ */
+TEST_F(PoolDayTest, GetFinishedTasksCountWithSingleFinishedTask) {
+  {
+    auto task = create_task(CbWrapper::TaskCb, nullptr);
+    enqueue_task(pool_, task);
+
+    EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr)).Times(1);
+
+    auto ret = thread_func(pool_);
+    EXPECT_EQ(ret, nullptr);
+  }
+
+  EXPECT_EQ(finished_tasks(pool_), 1);
 }

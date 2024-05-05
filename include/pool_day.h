@@ -48,7 +48,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task);
  *
  * @return A handle to the created pool.
  */
-pool_day_t create_pool(uint8_t pool_size);
+pool_day_t create_pool(uint32_t pool_size);
 
 /**
  * @brief Destroy the pool.
@@ -60,13 +60,22 @@ pool_day_t create_pool(uint8_t pool_size);
 pool_day_retcode_t destroy_pool(pool_day_t *pool);
 
 /**
- * @brief Get the number of idle tasks, waiting for execution, in the queue.
+ * @brief Get the number of queued tasks, waiting for execution, in the queue.
  *
  * @param[in] pool Handle to the thread pool.
  *
  * @return The number of tasks in the queue.
  */
-uint8_t idle_tasks(pool_day_t pool);
+uint32_t queued_tasks(pool_day_t pool);
+
+/**
+ * @brief Get the number of finished tasks.
+ *
+ * @param[in] pool Handle to the thread pool.
+ *
+ * @return The number of finished tasks.
+ */
+uint32_t finished_tasks(pool_day_t pool);
 
 /**
  * @brief Check if a given task is running.
