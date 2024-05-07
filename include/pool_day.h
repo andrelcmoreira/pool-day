@@ -21,21 +21,6 @@ typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
 /**
  * @brief Enqueue a new task into the pool.
  *
- * Sample:
- * @code{.c}
- * pool_day_t pool;
- *
- * pool = create_pool(size);
- * if (pool) {
- *   task_t *t = create_task(callback, (void *)param);
- *
- *   enqueue_task(pool, t);
- *
- *   void *ret = wait_task_finish(pool, t);
- *   destroy_pool(&pool);
- * }
- * @endcode
- *
  * @param[in,out] pool Handle to the thread pool.
  * @param[in]     task The task to be enqueued.
  *
@@ -81,6 +66,21 @@ uint32_t finished_tasks(pool_day_t pool);
 
 /**
  * @brief Wait for the finish of a given task.
+ *
+ * Sample:
+ * @code{.c}
+ * pool_day_t pool;
+ *
+ * pool = create_pool(size);
+ * if (pool) {
+ *   task_t *t = create_task(callback, (void *)param);
+ *
+ *   enqueue_task(pool, t);
+ *
+ *   void *ret = wait_task_finish(pool, t);
+ *   destroy_pool(&pool);
+ * }
+ * @endcode
  *
  * @note This function blocks the current thread.
  * @note The task is released after the execution of this function.
