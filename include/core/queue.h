@@ -51,7 +51,7 @@ typedef struct task_queue task_queue_t; //!< Structure representing the queue
  *
  * @return The size of the queue.
  */
-uint8_t queue_size(task_queue_t *queue);
+uint32_t queue_size(task_queue_t *queue);
 
 /**
  * @brief Create a new task.

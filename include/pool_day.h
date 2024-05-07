@@ -30,6 +30,8 @@ typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
  *   task_t *t = create_task(callback, (void *)param);
  *
  *   enqueue_task(pool, t);
+ *
+ *   void *ret = wait_task_finish(pool, t);
  *   destroy_pool(&pool);
  * }
  * @endcode

@@ -13,8 +13,8 @@ struct task_queue {
   pthread_mutex_t mutex;  //!< Mutex of the queue.
 };
 
-uint8_t queue_size(task_queue_t *queue) {
-  uint8_t size = 0;
+uint32_t queue_size(task_queue_t *queue) {
+  uint32_t size = 0;
 
   if (queue) {
     THREAD_SAFE_ZONE(&queue->mutex, {

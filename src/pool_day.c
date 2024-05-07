@@ -13,7 +13,7 @@
  * @brief Main structure of the library, it defines a handle to the pool.
  */
 struct pool_day {
-  uint32_t size;                 //!< Size of the pool.
+  uint32_t size;                //!< Size of the pool.
   bool must_stop;               //!< Flag indicating wheter all threads must
                                 //   stop its execution.
   sem_t semaphore;              //!< Pool's semaphore.
@@ -169,8 +169,6 @@ void *wait_task_finish(pool_day_t pool, task_t *task) {
     return NULL;
   }
 
-  // TODO: we must to check if the task was enqueued and is been executed on the
-  // given pool.
   POOL_DAY_INFO("waiting for the finish of the task");
   while (!has_task(pool->finished_tasks, task));
   POOL_DAY_INFO("task finished");
