@@ -81,15 +81,20 @@ task_t *dequeue(task_queue_t *queue) {
 }
 
 bool has_task(task_queue_t *queue, task_t *task) {
+  bool ret = false;
+
   if (queue && task) {
-    for_each_task(curr, queue) {
-      if (task == curr) {
-        return true;
+    THREAD_SAFE_ZONE(&queue->mutex, {
+      for_each_task(curr, queue) {
+        if (task == curr) {
+          ret = true;
+          break;
+        }
       }
-    }
+    })
   }
 
-  return false;
+  return ret;
 }
 
 void init_queue(task_queue_t **queue) {
@@ -103,6 +108,7 @@ void init_queue(task_queue_t **queue) {
 
 void destroy_queue(task_queue_t *queue) {
   if (queue) {
+    // TODO: thread safety
     for_each_task_safe(curr, queue) {
       task_t *node = dequeue(queue);
 
@@ -116,6 +122,7 @@ void destroy_queue(task_queue_t *queue) {
 
 void remove_task(task_queue_t *queue, task_t *task) {
   if (queue && task) {
+    // TODO: thread safety
     for_each_task_safe(curr, queue) {
       if (curr == task) {
         dequeue(queue);
