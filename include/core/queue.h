@@ -47,6 +47,8 @@ typedef struct task_queue task_queue_t; //!< Structure representing the queue
 /**
  * @brief Get the queue size.
  *
+ * @note This function is thread-safe.
+ *
  * @param[in] queue Pointer to the queue.
  *
  * @return The size of the queue.
@@ -69,6 +71,8 @@ task_t *create_task(void *(*task)(void *), void *param);
 /**
  * @brief Remove a task from the queue.
  *
+ * @note This function is thread-safe.
+ *
  * @param[in] queue Pointer to the queue.
  * @param[in] task Pointer to the task to be removed.
  */
@@ -77,6 +81,8 @@ void remove_task(task_queue_t *queue, task_t *task);
 /**
  * @brief Enqueue a new task into the queue.
  *
+ * @note This function is thread-safe.
+ *
  * @param[in,out] queue Pointer to the queue.
  * @param[in]     task Pointer to the task to be enqueued.
  */
@@ -84,6 +90,8 @@ void enqueue(task_queue_t *queue, task_t *task);
 
 /**
  * @brief Check if a given task is present on the queue.
+ *
+ * @note This function is thread-safe.
  *
  * @param[in] queue Pointer to the queue.
  * @param[in] task Pointer to the task to be checked.
@@ -95,7 +103,9 @@ bool has_task(task_queue_t *queue, task_t *task);
 /**
  * @brief Dequeue a task from the queue.
  *
- * @param[in,out] queue Pointer to the queue.
+ * @note This function is thread-safe.
+ *
+ * @param[in] queue Pointer to the queue.
  *
  * @return The head task.
  */
@@ -110,6 +120,8 @@ void init_queue(task_queue_t **queue);
 
 /**
  * @brief Destroy the queue.
+ *
+ * @note This function is thread-safe.
  *
  * @param[in,out] queue Pointer to the queue.
  */

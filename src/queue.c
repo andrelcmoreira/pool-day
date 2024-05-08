@@ -56,24 +56,30 @@ void enqueue(task_queue_t *queue, task_t *elem) {
   }
 }
 
+static task_t *__dequeue(task_queue_t *queue) {
+  task_t *to_del = queue->head;
+
+  // if the list is not empty
+  if (to_del) {
+    queue->head = to_del->prev;
+    // if the queue has more than one element
+    if (to_del->prev) {
+      to_del->prev->next = NULL;
+      to_del->prev = NULL;
+    } else {
+      queue->head = queue->tail = NULL;
+    }
+  }
+
+  return to_del;
+}
+
 task_t *dequeue(task_queue_t *queue) {
   task_t *to_del = NULL;
 
   if (queue) {
     THREAD_SAFE_ZONE(&queue->mutex, {
-      to_del = queue->head;
-
-      // if the list is not empty
-      if (to_del) {
-        queue->head = to_del->prev;
-        // if the queue has more than one element
-        if (to_del->prev) {
-          to_del->prev->next = NULL;
-          to_del->prev = NULL;
-        } else {
-          queue->head = queue->tail = NULL;
-        }
-      }
+      to_del = __dequeue(queue);
     })
   }
 
@@ -108,12 +114,13 @@ void init_queue(task_queue_t **queue) {
 
 void destroy_queue(task_queue_t *queue) {
   if (queue) {
-    // TODO: thread safety
-    for_each_task_safe(curr, queue) {
-      task_t *node = dequeue(queue);
+    THREAD_SAFE_ZONE(&queue->mutex, {
+      for_each_task_safe(curr, queue) {
+        task_t *node = __dequeue(queue);
 
-      free(node);
-    }
+        free(node);
+      }
+    })
 
     pthread_mutex_destroy(&queue->mutex);
     free(queue);
@@ -122,11 +129,12 @@ void destroy_queue(task_queue_t *queue) {
 
 void remove_task(task_queue_t *queue, task_t *task) {
   if (queue && task) {
-    // TODO: thread safety
-    for_each_task_safe(curr, queue) {
-      if (curr == task) {
-        dequeue(queue);
+    THREAD_SAFE_ZONE(&queue->mutex, {
+      for_each_task_safe(curr, queue) {
+        if (curr == task) {
+          __dequeue(queue);
+        }
       }
-    }
+    })
   }
 }
