@@ -144,10 +144,6 @@ uint32_t queued_tasks(pool_day_t pool) {
   return pool ? queue_size(pool->queued_tasks) : 0;
 }
 
-uint32_t finished_tasks(pool_day_t pool) {
-  return pool ? queue_size(pool->finished_tasks) : 0;
-}
-
 pool_day_retcode_t abort_tasks(pool_day_t pool) {
   if (!pool) {
     POOL_DAY_ERROR("null pool handle");

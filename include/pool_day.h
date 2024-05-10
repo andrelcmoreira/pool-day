@@ -56,15 +56,6 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool);
 uint32_t queued_tasks(pool_day_t pool);
 
 /**
- * @brief Get the number of finished tasks.
- *
- * @param[in] pool Handle to the thread pool.
- *
- * @return The number of finished tasks.
- */
-uint32_t finished_tasks(pool_day_t pool);
-
-/**
  * @brief Wait for the finish of a given task.
  *
  * Sample:
