@@ -237,6 +237,9 @@ TEST_F(QueueTest, HasTaskWithNullQueue) {
   auto t = create_task(nullptr, nullptr);
 
   EXPECT_FALSE(has_task(nullptr, t));
+
+  // cleanup
+  free(t);
 }
 
 /**
