@@ -92,7 +92,7 @@ bool has_task(task_queue_t *queue, task_t *task) {
   if (queue && task) {
     THREAD_SAFE_ZONE(&queue->mutex, {
       for_each_task(curr, queue) {
-        if (task == curr) {
+        if (curr == task) {
           ret = true;
           break;
         }
