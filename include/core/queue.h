@@ -36,18 +36,6 @@ uint32_t queue_size(task_queue_t *queue);
 void enqueue(task_queue_t *queue, task_t *task);
 
 /**
- * @brief Check if a given task is present on the queue.
- *
- * @note This function is thread-safe.
- *
- * @param[in] queue Pointer to the queue.
- * @param[in] task Pointer to the task to be checked.
- *
- * @return True if the queue has the given task; otherwise False.
- */
-bool has_task(task_queue_t *queue, task_t *task);
-
-/**
  * @brief Dequeue a task from the queue.
  *
  * @note This function is thread-safe.

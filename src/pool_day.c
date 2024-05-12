@@ -7,19 +7,21 @@
 #include <string.h>
 
 #include "core/logger.h"
+#include "core/list.h"
+#include "core/queue.h"
 #include "core/utils.h"
 
 /**
  * @brief Main structure of the library, it defines a handle to the pool.
  */
 struct pool_day {
-  uint32_t size;                //!< Size of the pool.
-  bool must_stop;               //!< Flag indicating wheter all threads must
-                                //   stop its execution.
-  sem_t semaphore;              //!< Pool's semaphore.
-  pthread_t *threads;           //!< Threads whose makes part of the pool.
-  task_queue_t *queued_tasks;   //!< Pool's queued tasks.
-  task_queue_t *finished_tasks; //!< Pool's finished tasks. SHOULD BE A task_list_t
+  uint32_t size;               //!< Size of the pool.
+  bool must_stop;              //!< Flag indicating wheter all threads must
+                               //   stop its execution.
+  sem_t semaphore;             //!< Pool's semaphore.
+  pthread_t *threads;          //!< Threads whose makes part of the pool.
+  task_queue_t *queued_tasks;  //!< Pool's queued tasks.
+  task_list_t *finished_tasks; //!< Pool's finished tasks.
 };
 
 __static void *thread_func(void *param) {
@@ -42,7 +44,7 @@ __static void *thread_func(void *param) {
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
 
       entry->ret_val = ret;
-      enqueue(pool->finished_tasks, entry);
+      insert_task(pool->finished_tasks, entry);
     }
   }
 
@@ -91,7 +93,7 @@ pool_day_t create_pool(uint32_t pool_size) {
     return NULL;
   }
 
-  init_queue(&pool->finished_tasks);
+  init_list(&pool->finished_tasks);
   init_queue(&pool->queued_tasks);
   sem_init(&pool->semaphore, 0, 0);
 
@@ -129,7 +131,7 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
 
   free((*pool)->threads);
   sem_destroy(&(*pool)->semaphore);
-  destroy_queue((*pool)->finished_tasks);
+  destroy_list((*pool)->finished_tasks);
   destroy_queue((*pool)->queued_tasks);
 
   free(*pool);
@@ -170,8 +172,8 @@ void *wait_task_finish(pool_day_t pool, task_t *task) {
   POOL_DAY_INFO("task finished");
 
   ret = task->ret_val;
-  //remove_task(pool->finished_tasks, task);
-  //free(task);
+  remove_task(pool->finished_tasks, task);
+  free(task);
 
   return ret;
 }
