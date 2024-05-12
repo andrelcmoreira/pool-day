@@ -30,13 +30,46 @@ uint32_t list_size(task_list_t *list) {
 }
 
 void remove_task(task_list_t *list, task_t *task) {
-  (void)list;
-  (void)task;
+  if (list && task) {
+    THREAD_SAFE_ZONE(&list->mutex, {
+      for_each_task(curr, list) {
+        if (curr == task) {
+          if (list->head == task) {
+            list->head = list->head->prev;
+            // if the the new head points to a valid list element
+            if (list->head) {
+              list->head->next = NULL;
+            }
+            task->next = task->prev = NULL;
+          } else if (list->tail == task) {
+            list->tail = task->next;
+            list->tail->prev = NULL;
+            task->next = task->prev = NULL;
+          } else {
+            task->prev->next = task->next;
+            task->next->prev = task->prev;
+            task->next = task->prev = NULL;
+          }
+          break;
+        }
+      }
+    })
+  }
 }
 
-void insert_task(task_list_t *list, task_t *task) {
-  (void)list;
-  (void)task;
+void insert(task_list_t *list, task_t *task) {
+  if (list && task) {
+    THREAD_SAFE_ZONE(&list->mutex, {
+      // if the list is empty
+      if (!list->head && !list->tail) {
+        list->tail = list->head = task;
+      } else {
+        list->tail->prev = task;
+        task->next = list->tail;
+        list->tail = task;
+      }
+    })
+  }
 }
 
 bool has_task(task_list_t *list, task_t *task) {
@@ -69,9 +102,8 @@ void destroy_list(task_list_t *list) {
   if (list) {
     THREAD_SAFE_ZONE(&list->mutex, {
       for_each_task_safe(curr, list) {
-        remove_task(list, curr);
-
-        free(curr);
+        //remove_task(list, curr);
+        //free(curr);
       }
     })
 

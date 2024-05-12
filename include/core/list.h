@@ -43,7 +43,7 @@ void remove_task(task_list_t *list, task_t *task);
  * @param[in,out] list Pointer to the list.
  * @param[in]     task Pointer to the task to be enlistd.
  */
-void insert_task(task_list_t *list, task_t *task);
+void insert(task_list_t *list, task_t *task);
 
 /**
  * @brief Check if a given task is present on the list.

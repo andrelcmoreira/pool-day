@@ -44,7 +44,7 @@ __static void *thread_func(void *param) {
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
 
       entry->ret_val = ret;
-      insert_task(pool->finished_tasks, entry);
+      insert(pool->finished_tasks, entry);
     }
   }
 
