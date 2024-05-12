@@ -19,7 +19,7 @@ struct pool_day {
   sem_t semaphore;              //!< Pool's semaphore.
   pthread_t *threads;           //!< Threads whose makes part of the pool.
   task_queue_t *queued_tasks;   //!< Pool's queued tasks.
-  task_queue_t *finished_tasks; //!< Pool's finished tasks.
+  task_queue_t *finished_tasks; //!< Pool's finished tasks. SHOULD BE A task_list_t
 };
 
 __static void *thread_func(void *param) {
@@ -75,7 +75,7 @@ pool_day_t create_pool(uint32_t pool_size) {
     return NULL;
   }
 
-  pool = malloc(sizeof(*pool));
+  pool = calloc(1, sizeof(*pool));
   if (!pool) {
     POOL_DAY_ERROR("fail to allocate memory for a new pool");
     return NULL;
@@ -83,7 +83,7 @@ pool_day_t create_pool(uint32_t pool_size) {
 
   pool->size = pool_size;
   pool->must_stop = false;
-  pool->threads = malloc(sizeof(pthread_t) * pool_size);
+  pool->threads = calloc(pool_size, sizeof(pthread_t));
 
   if (!pool->threads) {
     POOL_DAY_ERROR("fail to allocate memory for the pool threads");
@@ -170,8 +170,8 @@ void *wait_task_finish(pool_day_t pool, task_t *task) {
   POOL_DAY_INFO("task finished");
 
   ret = task->ret_val;
-  remove_task(pool->finished_tasks, task);
-  free(task);
+  //remove_task(pool->finished_tasks, task);
+  //free(task);
 
   return ret;
 }

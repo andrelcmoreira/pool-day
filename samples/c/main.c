@@ -8,7 +8,7 @@
 
 void *func(void *param) {
   char *str = (char *)param;
-  char *ret = (char *)malloc(sizeof(char) * 10);
+  char *ret = (char *)calloc(10, sizeof(char));
 
   for (int i = 0; i < 10; i++) {
     printf("%s %d\n", str, i);

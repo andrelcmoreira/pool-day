@@ -14,6 +14,7 @@ extern "C" {
 #endif  // __cplusplus
 
 #include "core/errors.h"
+#include "core/task.h"
 #include "core/queue.h"
 
 typedef struct pool_day *pool_day_t;  //!< Handle to the pool.

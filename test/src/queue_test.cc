@@ -2,6 +2,7 @@
 
 extern "C" {
 #include "core/queue.h"
+#include "core/task.h"
 }
 
 class QueueTest : public ::testing::Test {
@@ -323,3 +324,88 @@ TEST_F(QueueTest, HasTaskWithMultipleNotEnqueuedTasks) {
   free(t4);
   free(t5);
 }
+
+//TEST_F(QueueTest, RemoveTaskWithNullTask) {
+//  EXPECT_EQ(queue_size(queue_), 0);
+//  remove_task(queue_, nullptr);
+//  EXPECT_EQ(queue_size(queue_), 0);
+//}
+//
+//TEST_F(QueueTest, RemoveTaskWithSingleElement) {
+//  auto t = create_task(nullptr, nullptr);
+//
+//  enqueue(queue_, t);
+//
+//  EXPECT_TRUE(has_task(queue_, t));
+//  remove_task(queue_, t);
+//  EXPECT_FALSE(has_task(queue_, t));
+//}
+//
+///**
+// * @brief
+// */
+//TEST_F(QueueTest, RemoveTaskAtMiddleWithMultipleElements) {
+//  auto t1 = create_task(nullptr, nullptr);
+//  auto t2 = create_task(nullptr, nullptr);
+//  auto t3 = create_task(nullptr, nullptr);
+//
+//  enqueue(queue_, t1);
+//  enqueue(queue_, t2);
+//  enqueue(queue_, t3);
+//
+//  EXPECT_TRUE(has_task(queue_, t1));
+//  EXPECT_TRUE(has_task(queue_, t2));
+//  EXPECT_TRUE(has_task(queue_, t3));
+//
+//  remove_task(queue_, t2);
+//
+//  EXPECT_TRUE(has_task(queue_, t1));
+//  EXPECT_FALSE(has_task(queue_, t2));
+//  EXPECT_TRUE(has_task(queue_, t3));
+//}
+//
+///**
+// * @brief
+// */
+//TEST_F(QueueTest, RemoveTaskAtStartWithMultipleElements) {
+//  auto t1 = create_task(nullptr, nullptr);
+//  auto t2 = create_task(nullptr, nullptr);
+//  auto t3 = create_task(nullptr, nullptr);
+//
+//  enqueue(queue_, t1);
+//  enqueue(queue_, t2);
+//  enqueue(queue_, t3);
+//
+//  EXPECT_TRUE(has_task(queue_, t1));
+//  EXPECT_TRUE(has_task(queue_, t2));
+//  EXPECT_TRUE(has_task(queue_, t3));
+//
+//  remove_task(queue_, t1);
+//
+//  EXPECT_FALSE(has_task(queue_, t1));
+//  EXPECT_TRUE(has_task(queue_, t2));
+//  EXPECT_TRUE(has_task(queue_, t3));
+//}
+//
+///**
+// * @brief
+// */
+//TEST_F(QueueTest, RemoveTaskAtEndWithMultipleElements) {
+//  auto t1 = create_task(nullptr, nullptr);
+//  auto t2 = create_task(nullptr, nullptr);
+//  auto t3 = create_task(nullptr, nullptr);
+//
+//  enqueue(queue_, t1);
+//  enqueue(queue_, t2);
+//  enqueue(queue_, t3);
+//
+//  EXPECT_TRUE(has_task(queue_, t1));
+//  EXPECT_TRUE(has_task(queue_, t2));
+//  EXPECT_TRUE(has_task(queue_, t3));
+//
+//  remove_task(queue_, t3);
+//
+//  EXPECT_TRUE(has_task(queue_, t1));
+//  EXPECT_TRUE(has_task(queue_, t2));
+//  EXPECT_FALSE(has_task(queue_, t3));
+//}

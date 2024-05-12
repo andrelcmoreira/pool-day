@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "core/queue.h"
+#include "core/task.h"
 #include "core/utils.h"
 
 /**
@@ -27,20 +28,6 @@ uint32_t queue_size(task_queue_t *queue) {
   return size;
 }
 
-task_t *create_task(void *(*task)(void *), void *param) {
-  task_t *node;
-
-  node = (task_t *)malloc(sizeof(task_t));
-  if (node) {
-    node->next = node->prev = NULL;
-    node->task = task;
-    node->param = param;
-    node->ret_val = NULL;
-  }
-
-  return node;
-}
-
 void enqueue(task_queue_t *queue, task_t *elem) {
   if (queue && elem) {
     THREAD_SAFE_ZONE(&queue->mutex, {
@@ -64,8 +51,8 @@ static task_t *__dequeue(task_queue_t *queue) {
     queue->head = to_del->prev;
     // if the queue has more than one element
     if (to_del->prev) {
-      to_del->prev->next = NULL;
       to_del->prev = NULL;
+      queue->head->next = NULL;
     } else {
       queue->head = queue->tail = NULL;
     }
@@ -104,9 +91,9 @@ bool has_task(task_queue_t *queue, task_t *task) {
 }
 
 void init_queue(task_queue_t **queue) {
-  *queue = malloc(sizeof(task_queue_t));
-  if (*queue) {
-    (*queue)->head = (*queue)->tail = NULL;
+  *queue = calloc(1, sizeof(task_queue_t));
+  if (!(*queue)) {
+    return;
   }
 
   pthread_mutex_init(&(*queue)->mutex, NULL);
@@ -124,17 +111,5 @@ void destroy_queue(task_queue_t *queue) {
 
     pthread_mutex_destroy(&queue->mutex);
     free(queue);
-  }
-}
-
-void remove_task(task_queue_t *queue, task_t *task) {
-  if (queue && task) {
-    THREAD_SAFE_ZONE(&queue->mutex, {
-      for_each_task_safe(curr, queue) {
-        if (curr == task) {
-          __dequeue(queue);
-        }
-      }
-    })
   }
 }
