@@ -87,7 +87,7 @@ jobs:
           cmake --build build
 
       - name: Run valgrind
-        run: ${{ env.LD_PRELOAD }} valgrind --leak-check=full build/test/pool-day-tests
+        run: ${{ env.LD_PRELOAD }} valgrind --leak-check=full --error-exitcode=1 build/test/pool-day-tests
 
   check_documentation:
     name: Check documentation
