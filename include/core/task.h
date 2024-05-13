@@ -7,6 +7,8 @@
 #ifndef TASK_H_
 #define TASK_H_
 
+#include <semaphore.h>
+
 /**
  * @brief For-each macro implementation.
  *
@@ -35,6 +37,7 @@ struct task {
   void *(*task)(void *); //!< Task callback.
   void *param;           //!< Parameter of the task callback.
   void *ret_val;         //!< Task return value.
+  sem_t ready;           //!< Task's semaphore.
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task

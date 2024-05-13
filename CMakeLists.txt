@@ -9,7 +9,7 @@ option(BUILD_COVERAGE "build the coverage data" OFF)
 option(ENABLE_LOGGING "enable library logs" OFF)
 
 set(PROJECT_NAME "pool-day")
-set(SOURCES src/list.c src/task.c src/queue.c src/pool_day.c)
+set(SOURCES src/task.c src/queue.c src/pool_day.c)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wpedantic -g3")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake")

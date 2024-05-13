@@ -11,6 +11,7 @@ task_t *create_task(void *(*task)(void *), void *param) {
     node->task = task;
     node->param = param;
     node->ret_val = NULL;
+    sem_init(&node->ready, 0, 0);
   }
 
   return node;

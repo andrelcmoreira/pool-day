@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "core/logger.h"
-#include "core/list.h"
 #include "core/queue.h"
 #include "core/utils.h"
 
@@ -21,7 +20,6 @@ struct pool_day {
   sem_t semaphore;             //!< Pool's semaphore.
   pthread_t *threads;          //!< Threads whose makes part of the pool.
   task_queue_t *queued_tasks;  //!< Pool's queued tasks.
-  task_list_t *finished_tasks; //!< Pool's finished tasks.
 };
 
 __static void *thread_func(void *param) {
@@ -44,7 +42,7 @@ __static void *thread_func(void *param) {
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
 
       entry->ret_val = ret;
-      insert(pool->finished_tasks, entry);
+      sem_post(&entry->ready);
     }
   }
 
@@ -93,7 +91,6 @@ pool_day_t create_pool(uint32_t pool_size) {
     return NULL;
   }
 
-  init_list(&pool->finished_tasks);
   init_queue(&pool->queued_tasks);
   sem_init(&pool->semaphore, 0, 0);
 
@@ -131,7 +128,6 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
 
   free((*pool)->threads);
   sem_destroy(&(*pool)->semaphore);
-  destroy_list((*pool)->finished_tasks);
   destroy_queue((*pool)->queued_tasks);
 
   free(*pool);
@@ -168,11 +164,10 @@ void *wait_task_finish(pool_day_t pool, task_t *task) {
   }
 
   POOL_DAY_INFO("waiting for the finish of the task");
-  while (!has_task(pool->finished_tasks, task));
+  sem_wait(&task->ready);
   POOL_DAY_INFO("task finished");
 
   ret = task->ret_val;
-  remove_task(pool->finished_tasks, task);
   free(task);
 
   return ret;
