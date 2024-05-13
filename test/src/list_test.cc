@@ -276,7 +276,8 @@ TEST_F(ListTest, HasTaskWithMultipleNotInsertdTasks) {
 }
 
 /**
- * @brief
+ * @brief Given we have an empty list, when we try to remove a null task, then
+ * the list size must remain the same.
  */
 TEST_F(ListTest, RemoveTaskWithNullTask) {
   EXPECT_EQ(list_size(list_), 0);
@@ -302,7 +303,8 @@ TEST_F(ListTest, RemoveTaskWithSingleElement) {
 }
 
 /**
- * @brief
+ * @brief Given we have a list with multiple elements, when we try to remove the
+ * midle task, then the task must be removed from list.
  */
 TEST_F(ListTest, RemoveTaskAtMiddleWithMultipleElements) {
   auto t1 = create_task(nullptr, nullptr);
@@ -328,7 +330,8 @@ TEST_F(ListTest, RemoveTaskAtMiddleWithMultipleElements) {
 }
 
 /**
- * @brief
+ * @brief Given we have a list with multiple elements, when we try to remove the
+ * first task, then the task must be removed from list.
  */
 TEST_F(ListTest, RemoveTaskAtStartWithMultipleElements) {
   auto t1 = create_task(nullptr, nullptr);
@@ -354,7 +357,8 @@ TEST_F(ListTest, RemoveTaskAtStartWithMultipleElements) {
 }
 
 /**
- * @brief
+ * @brief Given we have a list with multiple elements, when we try to remove the
+ * last task, then the task must be removed from list.
  */
 TEST_F(ListTest, RemoveTaskAtEndWithMultipleElements) {
   auto t1 = create_task(nullptr, nullptr);
