@@ -296,6 +296,9 @@ TEST_F(ListTest, RemoveTaskWithSingleElement) {
   EXPECT_TRUE(has_task(list_, t));
   remove_task(list_, t);
   EXPECT_FALSE(has_task(list_, t));
+
+  // cleanup
+  free(t);
 }
 
 /**

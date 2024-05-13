@@ -102,8 +102,9 @@ void destroy_list(task_list_t *list) {
   if (list) {
     THREAD_SAFE_ZONE(&list->mutex, {
       for_each_task_safe(curr, list) {
-        //remove_task(list, curr);
-        //free(curr);
+        curr->next = NULL;
+        curr->prev = NULL;
+        free(curr);
       }
     })
 
