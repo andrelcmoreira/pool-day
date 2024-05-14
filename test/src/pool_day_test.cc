@@ -166,10 +166,9 @@ TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
  * scheduled for execution, then the task's callback must be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
-  {
-    auto task = create_task(CbWrapper::TaskCb, nullptr);
-    enqueue_task(pool_, task);
-  }
+  auto task = create_task(CbWrapper::TaskCb, nullptr);
+  
+  enqueue_task(pool_, task);
 
   EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr)).Times(1);
 
@@ -187,11 +186,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
  */
 TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   char param[]{ "param" };
-
-  {
-    auto task = create_task(CbWrapper::TaskCb, param);
-    enqueue_task(pool_, task);
-  }
+  auto task = create_task(CbWrapper::TaskCb, param);
+  
+  enqueue_task(pool_, task);
 
   EXPECT_CALL(CbWrapper::mock(), TaskCb(param)).Times(1);
 
