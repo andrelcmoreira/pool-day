@@ -175,6 +175,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
+
+  // cleanup
+  free(task);
 }
 
 /**
@@ -194,6 +197,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
+
+  // cleanup
+  free(task);
 }
 
 /**
