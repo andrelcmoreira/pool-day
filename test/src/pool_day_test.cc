@@ -168,7 +168,7 @@ TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
  */
 TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
   auto task = create_task(CbWrapper::TaskCb, nullptr);
-  
+
   enqueue_task(pool_, task);
 
   EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr)).Times(1);
@@ -188,7 +188,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
 TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   char param[]{ "param" };
   auto task = create_task(CbWrapper::TaskCb, param);
-  
+
   enqueue_task(pool_, task);
 
   EXPECT_CALL(CbWrapper::mock(), TaskCb(param)).Times(1);
@@ -262,6 +262,9 @@ TEST_F(PoolDayTest, WaitTaskFinishWithNullPoolHandle) {
   auto task = create_task(nullptr, nullptr);
 
   EXPECT_EQ(wait_task_finish(nullptr, task), nullptr);
+
+  // cleanup
+  free(task);
 }
 
 /**
