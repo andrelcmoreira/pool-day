@@ -9,6 +9,7 @@ extern void *thread_func(void *param);
 }
 
 using testing::_;
+using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Test;
 
@@ -223,4 +224,50 @@ TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
  */
 TEST_F(PoolDayTest, AbortTasksWithNullPoolHandle) {
   EXPECT_EQ(abort_tasks(nullptr), POOL_DAY_ERROR_NULL_PARAM);
+}
+
+/**
+ * @brief Given we have an enqueued task, when we wait for the finish of the
+ * task, then the correct return value must be returned with success.
+ */
+TEST_F(PoolDayTest, WaitTaskFinish) {
+  int ret_val{1234};
+  char param[]{ "param" };
+  auto task = create_task(CbWrapper::TaskCb, param);
+
+  {
+    enqueue_task(pool_, task);
+
+    EXPECT_CALL(CbWrapper::mock(), TaskCb(param))
+      .Times(1)
+      .WillOnce(
+        Invoke([&]() {
+          abort_tasks(pool_);
+          return &ret_val;
+        })
+      );
+
+    thread_func(pool_);
+  }
+
+  auto ret = reinterpret_cast<int *>(wait_task_finish(pool_, task));
+  EXPECT_EQ(*ret, ret_val);
+}
+
+/**
+ * @brief Given we have a task and a null pool handle, when we wait for
+ * the finish of the task, then null must be returned.
+ */
+TEST_F(PoolDayTest, WaitTaskFinishWithNullPoolHandle) {
+  auto task = create_task(nullptr, nullptr);
+
+  EXPECT_EQ(wait_task_finish(nullptr, task), nullptr);
+}
+
+/**
+ * @brief Given we have a null task and a valid pool handle, when we wait for
+ * the finish of the task, then null must be returned.
+ */
+TEST_F(PoolDayTest, WaitTaskFinishWithNullPoolTask) {
+  EXPECT_EQ(wait_task_finish(pool_, nullptr), nullptr);
 }

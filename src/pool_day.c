@@ -14,12 +14,12 @@
  * @brief Main structure of the library, it defines a handle to the pool.
  */
 struct pool_day {
-  uint32_t size;               //!< Size of the pool.
-  bool must_stop;              //!< Flag indicating wheter all threads must
-                               //   stop its execution.
-  sem_t semaphore;             //!< Pool's semaphore.
-  pthread_t *threads;          //!< Threads whose makes part of the pool.
-  task_queue_t *queued_tasks;  //!< Pool's queued tasks.
+  uint32_t size;        //!< Size of the pool.
+  bool must_stop;       //!< Flag indicating wheter all threads must
+                        //   stop its execution.
+  sem_t semaphore;      //!< Pool's semaphore.
+  pthread_t *threads;   //!< Threads whose makes part of the pool.
+  task_queue_t *tasks;  //!< Pool's queued tasks.
 };
 
 __static void *thread_func(void *param) {
@@ -35,7 +35,7 @@ __static void *thread_func(void *param) {
       break;
     }
 
-    task_t *entry = dequeue(pool->queued_tasks);
+    task_t *entry = dequeue(pool->tasks);
     if (entry) {
       POOL_DAY_INFO("thread '0x%x' running the task", pthread_self());
       void *ret = entry->task(entry->param);
@@ -57,7 +57,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
-  enqueue(pool->queued_tasks, task);
+  enqueue(pool->tasks, task);
   sem_post(&pool->semaphore);
 
   POOL_DAY_INFO("task enqueued with success");
@@ -91,7 +91,7 @@ pool_day_t create_pool(uint32_t pool_size) {
     return NULL;
   }
 
-  init_queue(&pool->queued_tasks);
+  init_queue(&pool->tasks);
   sem_init(&pool->semaphore, 0, 0);
 
   for (uint32_t i = 0; i < pool_size; i++) {
@@ -128,7 +128,7 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
 
   free((*pool)->threads);
   sem_destroy(&(*pool)->semaphore);
-  destroy_queue((*pool)->queued_tasks);
+  destroy_queue((*pool)->tasks);
 
   free(*pool);
   *pool = NULL;
@@ -138,8 +138,8 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   return POOL_DAY_SUCCESS;
 }
 
-uint32_t queued_tasks(pool_day_t pool) {
-  return pool ? queue_size(pool->queued_tasks) : 0;
+uint32_t tasks(pool_day_t pool) {
+  return pool ? queue_size(pool->tasks) : 0;
 }
 
 pool_day_retcode_t abort_tasks(pool_day_t pool) {
@@ -153,6 +153,10 @@ pool_day_retcode_t abort_tasks(pool_day_t pool) {
   POOL_DAY_INFO("stopping all threads");
 
   return POOL_DAY_SUCCESS;
+}
+
+uint32_t queued_tasks(pool_day_t pool) {
+  return pool ? queue_size(pool->tasks) : 0;
 }
 
 void *wait_task_finish(pool_day_t pool, task_t *task) {
