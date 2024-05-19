@@ -8,10 +8,10 @@ class Foo {
     Foo()
       : pool_{create_pool(2)},
         t1_{create_task(Foo::Cb1, (void *)"hello")},
-        t2_{create_task(Foo::Cb1, (void *)"hi")} {
+        t2_{create_task(Foo::Cb2, (void *)"hi")} {
     }
 
-    void InitTasks(void) {
+    void RunTasks(void) {
       enqueue_task(pool_, t1_);
       enqueue_task(pool_, t2_);
 
@@ -56,6 +56,6 @@ class Foo {
 int main(void) {
   Foo d;
 
-  d.InitTasks();
+  d.RunTasks();
   return 0;
 }
