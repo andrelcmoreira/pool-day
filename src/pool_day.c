@@ -138,10 +138,6 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   return POOL_DAY_SUCCESS;
 }
 
-uint32_t tasks(pool_day_t pool) {
-  return pool ? queue_size(pool->tasks) : 0;
-}
-
 pool_day_retcode_t abort_tasks(pool_day_t pool) {
   if (!pool) {
     POOL_DAY_ERROR("null pool handle");
