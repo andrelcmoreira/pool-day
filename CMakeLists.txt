@@ -11,7 +11,10 @@ option(ENABLE_LOGGING "enable library logs" OFF)
 set(PROJECT_NAME "pool-day")
 set(SOURCES src/task.c src/queue.c src/pool_day.c)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wpedantic -g3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wpedantic")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g3")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O3 -s")
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake")
 
 include(doc)
