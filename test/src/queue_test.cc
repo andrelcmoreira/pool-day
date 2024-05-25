@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 extern "C" {
-#include "core/queue.h"
-#include "core/task.h"
+#include "internal/queue.h"
+#include "internal/task.h"
 }
 
 class QueueTest : public ::testing::Test {

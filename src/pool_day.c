@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/logger.h"
-#include "core/queue.h"
-#include "core/utils.h"
+#include "internal/logger.h"
+#include "internal/queue.h"
+#include "internal/utils.h"
 
 /**
  * @brief Main structure of the library, it defines a handle to the pool.

@@ -1,11 +1,11 @@
-#include "core/logger.h"
+#include "internal/logger.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
 
-#include "core/utils.h"
+#include "internal/utils.h"
 
 #define GET_LOG_FILE(sev)    (sev == POOL_DAY_INFO_INFO) ? stdout : stderr
 #define GET_LOG_TAG(sev)     (sev == POOL_DAY_INFO_INFO) ? "INFO" : "ERROR"

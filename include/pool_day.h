@@ -13,8 +13,8 @@
 extern "C" {
 #endif  // __cplusplus
 
-#include "core/errors.h"
-#include "core/task.h"
+#include "internal/errors.h"
+#include "internal/task.h"
 
 typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
 

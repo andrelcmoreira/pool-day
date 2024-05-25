@@ -1,9 +1,9 @@
 #include <pthread.h>
 #include <stdlib.h>
 
-#include "core/queue.h"
-#include "core/task.h"
-#include "core/utils.h"
+#include "internal/queue.h"
+#include "internal/task.h"
+#include "internal/utils.h"
 
 /**
  * @brief Task queue definition.

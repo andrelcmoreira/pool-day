@@ -49,5 +49,5 @@ target_link_libraries(${PROJECT_NAME} pthread)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION /usr/lib)
 install(FILES include/pool_day.h DESTINATION /usr/include/pool_day)
-install(FILES include/core/errors.h DESTINATION /usr/include/pool_day/core)
-install(FILES include/core/task.h DESTINATION /usr/include/pool_day/core)
+install(FILES include/internal/errors.h DESTINATION /usr/include/pool_day/internal)
+install(FILES include/internal/task.h DESTINATION /usr/include/pool_day/internal)
