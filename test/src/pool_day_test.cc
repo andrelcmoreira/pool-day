@@ -168,13 +168,22 @@ TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
  */
 TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
   auto task = create_task(CbWrapper::TaskCb, nullptr);
+  char ret_val[]{ "hello, i'm the return of the task" };
 
   enqueue_task(pool_, task);
 
-  EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr)).Times(1);
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
+    .Times(1)
+    .WillOnce(
+      InvokeWithoutArgs([&]() {
+        abort_tasks(pool_);  // to break the thread loop
+        return ret_val;
+      })
+    );
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
+  EXPECT_EQ(task->ret_val, ret_val);
 
   // cleanup
   free(task);
@@ -187,14 +196,23 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
  */
 TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   char param[]{ "param" };
+  char ret_val[]{ "hello, i'm the return of the task" };
   auto task = create_task(CbWrapper::TaskCb, param);
 
   enqueue_task(pool_, task);
 
-  EXPECT_CALL(CbWrapper::mock(), TaskCb(param)).Times(1);
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(param))
+    .Times(1)
+    .WillOnce(
+      InvokeWithoutArgs([&]() {
+        abort_tasks(pool_);  // to break the thread loop
+        return ret_val;
+      })
+    );
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
+  EXPECT_EQ(task->ret_val, ret_val);
 
   // cleanup
   free(task);
