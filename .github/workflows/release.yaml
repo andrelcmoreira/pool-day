@@ -1,0 +1,143 @@
+name: Generate release
+
+on:
+  release:
+    types: published
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build library
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v1
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build library
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release -S . -B build
+          cmake --build build
+
+  build_samples:
+    name: Build samples
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v1
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build samples
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SAMPLES=ON -S . -B build
+          cmake --build build
+
+  unit_tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: andrelcmoreira/pool-day:v1
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build tests
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_UNIT_TESTS=ON -S . -B build
+          cmake --build build
+
+      - name: Run unit tests
+        run: ${{ env.LD_PRELOAD }} build/test/pool-day-tests
+
+  dynamic_analysis:
+    name: Run dynamic analysis
+    runs-on: ubuntu-latest
+    needs: unit_tests
+    container:
+      image: andrelcmoreira/pool-day:v1
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build tests
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_UNIT_TESTS=ON -S . -B build
+          cmake --build build
+
+      - name: Run valgrind
+        run: ${{ env.LD_PRELOAD }} valgrind --leak-check=full --error-exitcode=1 build/test/pool-day-tests
+
+  check_coverage:
+    name: Check test coverage
+    runs-on: ubuntu-latest
+    needs: unit_tests
+    container:
+      image: andrelcmoreira/pool-day:v1
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build tests
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_UNIT_TESTS=ON -DBUILD_COVERAGE=ON -S . -B build
+          cmake --build build
+
+      - name: Generate coverage report
+        run: |
+          mkdir ${{ env.COVERAGE_REPORT_DIR }}
+          ${{ env.LD_PRELOAD }} build/test/pool-day-tests
+          gcovr -r . -s --html --html-details \
+            --fail-under-line ${{ env.MINIMUM_COVERAGE }} \
+            -o ${{ env.COVERAGE_REPORT_DIR }}/pool-day.html
+
+  generate_documentation:
+    name: Generate documentation
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v1
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build library documentation
+        run: |
+          cmake -DBUILD_DOCUMENTATION=ON -S . -B build
+          cmake --build build
+
+      - name: Create documentation tarball
+        run: tar -czf pool-day-${{ github.ref }}.tar.gz build/html/
+
+      - name: Upload documentation to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: pool-day-${{ github.ref }}.tar.gz
+          asset_name: pool-day-${{ github.ref }}.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
