@@ -3,9 +3,13 @@ name: Generate release
 on:
   release:
     types: published
-  push:
-    branches:
-      - main
+
+env:
+  COVERAGE_REPORT_DIR: build/coverage
+  DOC_HTML_DIR: build/html
+  MINIMUM_COVERAGE: 85
+  LD_PRELOAD: LD_PRELOAD=build/test/src/libc/libpreload.so
+  DOC_ARTIFACT: pool-day-doc
 
 jobs:
   build:
@@ -131,13 +135,13 @@ jobs:
           cmake --build build
 
       - name: Create documentation tarball
-        run: tar -czf pool-day-${{ github.ref }}.tar.gz build/html/
+        run: tar -C ${{ env.DOC_HTML_DIR }} -czf ${{ env.DOC_ARTIFACT }}.tar.gz .
 
       - name: Upload documentation to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: pool-day-${{ github.ref }}.tar.gz
-          asset_name: pool-day-${{ github.ref }}.tar.gz
-          tag: ${{ github.ref }}
+          file: ${{ env.DOC_ARTIFACT }}.tar.gz
+          asset_name: ${{ env.DOC_ARTIFACT }}-${{ github.ref_name }}.tar.gz
+          tag: ${{ github.ref_name }}
           overwrite: true
