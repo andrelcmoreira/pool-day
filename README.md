@@ -1,5 +1,9 @@
 ## pool-day
 
+#### Overview
+
+`pool-day` is a thread pool library for C/C++ applications.
+
 #### Build
 
 ```cmake
