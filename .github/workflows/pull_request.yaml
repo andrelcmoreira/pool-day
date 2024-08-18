@@ -5,6 +5,9 @@ on:
     push:
       branches:
         - develop
+  push:
+    branches:
+      - main
 
 env:
   COVERAGE_REPORT_DIR: build/coverage
