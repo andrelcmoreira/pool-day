@@ -19,7 +19,7 @@ jobs:
     name: Build library
     runs-on: ubuntu-latest
     container:
-      image: andrelcmoreira/pool-day:v1
+      image: andrelcmoreira/pool-day:v2
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -36,7 +36,7 @@ jobs:
     name: Build samples
     runs-on: ubuntu-latest
     container:
-      image: andrelcmoreira/pool-day:v1
+      image: andrelcmoreira/pool-day:v2
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     container:
-      image: andrelcmoreira/pool-day:v1
+      image: andrelcmoreira/pool-day:v2
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit_tests
     container:
-      image: andrelcmoreira/pool-day:v1
+      image: andrelcmoreira/pool-day:v2
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -97,7 +97,7 @@ jobs:
     name: Check documentation
     runs-on: ubuntu-latest
     container:
-      image: andrelcmoreira/pool-day:v1
+      image: andrelcmoreira/pool-day:v2
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
@@ -115,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: unit_tests
     container:
-      image: andrelcmoreira/pool-day:v1
+      image: andrelcmoreira/pool-day:v2
       volumes:
         - ${{ github.workspace }}:/pool-day
       credentials:
