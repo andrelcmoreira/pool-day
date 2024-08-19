@@ -9,6 +9,23 @@ env:
   DOC_ARTIFACT: pool-day-doc
 
 jobs:
+  build:
+    name: Build library
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v2
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build library
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=Release -S . -B build
+          cmake --build build --target install
+
   generate_doc:
     name: Generate documentation
     runs-on: ubuntu-latest
