@@ -18,6 +18,6 @@ Optional build flags:
 |    BUILD_SAMPLES    | Build the library samples              |
 |   ENABLE_LOGGING    | Enable library logs                    |
 
-#### Library support
+#### Support
 
 - linux
