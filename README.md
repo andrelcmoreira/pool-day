@@ -5,16 +5,20 @@
 
 #### Overview
 
-`pool-day` is a simple thread pool library for C/C++ applications.
+`pool-day` is a simple thread pool library for C/C++ applications and yes, the
+name was chosen as a homage to my favorite counter-strike's map: `fy_pool_day`.
 
-#### Build
+#### Building
+
+The library relies on `cmake` tool to be built:
 
 ```cmake
 $ cmake -S . -B build
 $ cmake --build build
 ```
 
-Optional build flags:
+Additional flags can be supplied as parameter to cmake according to the table
+below:
 
 |        Flag         |                 Description            |
 |---------------------|----------------------------------------|
