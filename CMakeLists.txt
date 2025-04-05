@@ -11,6 +11,7 @@ option(ENABLE_LOGGING "enable library logs" OFF)
 set(PROJECT_NAME "pool-day")
 set(SOURCES src/task.c src/queue.c src/pool_day.c)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wpedantic")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O3 -s")
