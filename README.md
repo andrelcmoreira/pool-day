@@ -5,8 +5,8 @@
 
 #### Overview
 
-`pool-day` is a simple thread pool library for C/C++ applications and yes, the
-name was chosen as a homage to my favorite counter-strike's map: `fy_pool_day`.
+`pool-day` is a simple thread pool library for C/C++ applications built around POSIX threads. And yes, the
+name of the library was chosen as a homage to my favorite counter-strike's map: `fy_pool_day`.
 
 #### Building
 
