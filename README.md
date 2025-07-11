@@ -22,8 +22,8 @@ below:
 
 |        Flag         |                 Description            |
 |---------------------|----------------------------------------|
-|    BUILD_SAMPLES    | Build the library samples              |
-|   ENABLE_LOGGING    | Enable the library logging feature     |
+|    BUILD_SAMPLES    | Build the library's samples              |
+|   ENABLE_LOGGING    | Enable the library's logging feature     |
 
 #### Support
 
