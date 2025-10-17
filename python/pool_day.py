@@ -1,7 +1,8 @@
-from pool_day import _pd_handle, pool_day_callback
-
+from contextlib import contextmanager
 from ctypes import byref
 from time import sleep
+
+from pool_day import _pd_handle, pool_day_callback
 
 
 @pool_day_callback
@@ -11,8 +12,11 @@ def thread_cb(param):
         sleep(param)
 
 
+@contextmanager
 def create_pool(size):
-    return _pd_handle.create_pool(size)
+    pool = _pd_handle.create_pool(size)
+    yield pool
+    _pd_handle.destroy_pool(byref(pool))
 
 
 def destroy_pool(pool):
