@@ -26,7 +26,7 @@ def pool_day_callback(cb):
     return _cb
 
 
-_pd_handle = cdll('../build/libpool-day.so')
+_pd_handle = cdll('/usr/lib/libpool-day.so')
 
 # create_pool
 _pd_handle.create_pool.argtypes = [c_uint8]
