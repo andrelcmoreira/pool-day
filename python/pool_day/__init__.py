@@ -1,53 +1,12 @@
-from ctypes import CDLL as cdll
-from ctypes import POINTER as c_pointer
-from ctypes import CFUNCTYPE as c_func_type
-from ctypes import (
-    Structure,
-    c_int,
-    c_uint8,
-    c_void_p,
+from .pool_day import (
+    create_pool,
+    enqueue_task,
+    create_task,
+    abort_tasks,
+    queued_tasks,
 )
+from pool_day.c_defs import pool_day_callback
 
 
-class PoolDay(Structure):
-    pass
-
-
-class Task(Structure):
-    pass
-
-
-def pool_day_callback(cb):
-
-    @c_func_type(c_void_p, c_void_p)
-    def _cb(param):
-        cb(param)
-
-    return _cb
-
-
-_pd_handle = cdll('/usr/lib/libpool-day.so')
-
-# create_pool
-_pd_handle.create_pool.argtypes = [c_uint8]
-_pd_handle.create_pool.restype = c_pointer(PoolDay)
-
-# destroy_pool
-_pd_handle.destroy_pool.argtypes = [c_void_p]
-_pd_handle.destroy_pool.restype = c_int
-
-# abort_tasks
-_pd_handle.abort_tasks.argtypes = [c_pointer(PoolDay)]
-_pd_handle.abort_tasks.restype = c_int
-
-# enqueue_task
-_pd_handle.enqueue_task.argtypes = [c_pointer(PoolDay), c_pointer(Task)]
-_pd_handle.enqueue_task.restype = c_int
-
-# queued_tasks
-_pd_handle.queued_tasks.argtypes = [c_pointer(PoolDay)]
-_pd_handle.queued_tasks.restype = c_uint8
-
-# create_task
-_pd_handle.create_task.argtypes = [c_void_p, c_void_p]
-_pd_handle.create_task.restype = c_pointer(Task)
+__all__ = ['create_pool', 'enqueue_task', 'create_task',
+           'abort_tasks', 'queued_tasks', 'pool_day_callback']
