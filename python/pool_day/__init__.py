@@ -44,9 +44,9 @@ _pd_handle.abort_tasks.restype = c_int
 _pd_handle.enqueue_task.argtypes = [c_pointer(PoolDay), c_pointer(Task)]
 _pd_handle.enqueue_task.restype = c_int
 
-# idle_tasks
-_pd_handle.idle_tasks.argtypes = [c_pointer(PoolDay)]
-_pd_handle.idle_tasks.restype = c_uint8
+# queued_tasks
+_pd_handle.queued_tasks.argtypes = [c_pointer(PoolDay)]
+_pd_handle.queued_tasks.restype = c_uint8
 
 # create_task
 _pd_handle.create_task.argtypes = [c_void_p, c_void_p]

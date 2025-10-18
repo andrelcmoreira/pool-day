@@ -35,8 +35,8 @@ def abort_tasks(pool):
     return _pd_handle.abort_tasks(pool)
 
 
-def idle_tasks(pool):
-    return _pd_handle.idle_tasks(pool)
+def queued_tasks(pool):
+    return _pd_handle.queued_tasks(pool)
 
 
 def main():
@@ -48,7 +48,7 @@ def main():
         print('enqueue_task ret =', enqueue_task(pool, t1))
         print('enqueue_task ret =', enqueue_task(pool, t2))
         print('enqueue_task ret =', enqueue_task(pool, t3))
-        print('idle_tasks ret =', idle_tasks(pool))
+        print('queued_tasks ret =', queued_tasks(pool))
         input('')
 
 
