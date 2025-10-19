@@ -10,6 +10,7 @@ env:
   COVERAGE_REPORT_DIR: build/coverage
   MINIMUM_COVERAGE: 85
   LD_PRELOAD: LD_PRELOAD=build/test/src/libc/libpreload.so
+  PYLINT_MINIMUM_RATE: 9
 
 jobs:
   build:
@@ -178,3 +179,19 @@ jobs:
         run: |
           cd python
           pip install .
+
+  lint:
+    name: Lint the Python bindings
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v2
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run pylint
+        run: pylint python/pool_day --fail-under ${{ env.PYLINT_MINIMUM_RATE }}
