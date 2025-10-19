@@ -17,11 +17,6 @@ class PoolDay:
         """
         return _pd_handle.enqueue_task(self._pool, task)
 
-    def create_task(self, cb, param) -> _Task:
-        """
-        """
-        return _pd_handle.create_task(cb, param)
-
     def abort_tasks(self):
         """
         """
@@ -36,6 +31,12 @@ class PoolDay:
         """
         """
         return _pd_handle.wait_task_finish(self._pool, task)
+
+
+def create_task(cb, param) -> _Task:
+    """
+    """
+    return _pd_handle.create_task(cb, param)
 
 
 @contextmanager
