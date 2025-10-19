@@ -13,9 +13,14 @@ class PoolDay:
     """
 
     def __init__(self, pool: _PoolDay):
+        """
+        Initialize the PoolDay instance.
+
+        :pool: The pool structure instance.
+        """
         self._pool = pool
 
-    def enqueue_task(self, task: _Task):
+    def enqueue_task(self, task: _Task) -> int:
         """
         Enqueue a task to the pool.
 
@@ -24,7 +29,7 @@ class PoolDay:
         """
         return _pd_handle.enqueue_task(self._pool, task)
 
-    def abort_tasks(self):
+    def abort_tasks(self) -> int:
         """
         Abort all pending tasks in the pool.
 
