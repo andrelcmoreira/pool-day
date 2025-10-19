@@ -21,7 +21,7 @@ def pool_day_callback(cb):
 
     @c_func_type(c_void_p, c_void_p)
     def _cb(param):
-        cb(param)
+        cb(param) # TODO: return the task result properly
 
     return _cb
 
@@ -51,3 +51,7 @@ _pd_handle.queued_tasks.restype = c_uint8
 # create_task
 _pd_handle.create_task.argtypes = [c_void_p, c_void_p]
 _pd_handle.create_task.restype = c_pointer(Task)
+
+# wait_task_finish
+_pd_handle.wait_task_finish.argtypes = [c_pointer(PoolDay), c_pointer(Task)]
+_pd_handle.wait_task_finish.restype = c_void_p

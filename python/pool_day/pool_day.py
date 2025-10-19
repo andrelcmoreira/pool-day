@@ -41,3 +41,9 @@ def queued_tasks(pool: PoolDay) -> int:
     """
     """
     return _pd_handle.queued_tasks(pool)
+
+
+def wait_task_finish(pool: PoolDay, task: Task):
+    """
+    """
+    return _pd_handle.wait_task_finish(pool, task)

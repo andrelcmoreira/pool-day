@@ -5,7 +5,8 @@ from pool_day import (
     create_task,
     enqueue_task,
     pool_day_callback,
-    queued_tasks
+    queued_tasks,
+    wait_task_finish
 )
 
 
@@ -14,6 +15,8 @@ def thread_cb(param):
     for i in range(1, 10):
         print('thread %d: hello from python callback, i: %d' % (param, i))
         sleep(param)
+
+    return f'task {param} done'
 
 
 def main():
@@ -26,7 +29,9 @@ def main():
         print('enqueue_task ret =', enqueue_task(pool, t2))
         print('enqueue_task ret =', enqueue_task(pool, t3))
         print('queued_tasks ret =', queued_tasks(pool))
-        input('')
+
+        ret = wait_task_finish(pool, t3)
+        print(ret)
 
 
 if __name__ == "__main__":
