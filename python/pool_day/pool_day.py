@@ -1,7 +1,41 @@
 from contextlib import contextmanager
 from ctypes import byref
 
-from pool_day.c_defs import _pd_handle, PoolDay, Task
+from pool_day.c_defs import _pd_handle, _Task, _PoolDay
+
+
+class PoolDay:
+
+    """
+    """
+
+    def __init__(self, pool: _PoolDay):
+        self._pool = pool
+
+    def enqueue_task(self, task: _Task):
+        """
+        """
+        return _pd_handle.enqueue_task(self._pool, task)
+
+    def create_task(self, cb, param) -> _Task:
+        """
+        """
+        return _pd_handle.create_task(cb, param)
+
+    def abort_tasks(self):
+        """
+        """
+        return _pd_handle.abort_tasks(self._pool)
+
+    def queued_tasks(self) -> int:
+        """
+        """
+        return _pd_handle.queued_tasks(self._pool)
+
+    def wait_task_finish(self, task: _Task):
+        """
+        """
+        return _pd_handle.wait_task_finish(self._pool, task)
 
 
 @contextmanager
@@ -9,41 +43,5 @@ def create_pool(size: int):
     """
     """
     pool = _pd_handle.create_pool(size)
-    yield pool
+    yield PoolDay(pool)
     _pd_handle.destroy_pool(byref(pool))
-
-
-def destroy_pool(pool: PoolDay):
-    """
-    """
-    return _pd_handle.destroy_pool(byref(pool))
-
-
-def enqueue_task(pool: PoolDay, task: Task):
-    """
-    """
-    return _pd_handle.enqueue_task(pool, task)
-
-
-def create_task(cb, param):
-    """
-    """
-    return _pd_handle.create_task(cb, param)
-
-
-def abort_tasks(pool: PoolDay):
-    """
-    """
-    return _pd_handle.abort_tasks(pool)
-
-
-def queued_tasks(pool: PoolDay) -> int:
-    """
-    """
-    return _pd_handle.queued_tasks(pool)
-
-
-def wait_task_finish(pool: PoolDay, task: Task):
-    """
-    """
-    return _pd_handle.wait_task_finish(pool, task)

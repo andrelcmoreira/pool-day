@@ -1,19 +1,12 @@
 from time import sleep
 
-from pool_day import (
-    create_pool,
-    create_task,
-    enqueue_task,
-    pool_day_callback,
-    queued_tasks,
-    wait_task_finish
-)
+from pool_day import create_pool, pool_day_callback
 
 
 @pool_day_callback
 def thread_cb(param):
     for i in range(1, 10):
-        print('thread %d: hello from python callback, i: %d' % (param, i))
+        print(f'thread {param}: hello from python callback, i: {i}')
         sleep(param)
 
     return f'task {param} done'
@@ -21,16 +14,16 @@ def thread_cb(param):
 
 def main():
     with create_pool(2) as pool:
-        t1 = create_task(thread_cb, 1)
-        t2 = create_task(thread_cb, 2)
-        t3 = create_task(thread_cb, 3)
+        t1 = pool.create_task(thread_cb, 1)
+        t2 = pool.create_task(thread_cb, 2)
+        t3 = pool.create_task(thread_cb, 3)
 
-        print('enqueue_task ret =', enqueue_task(pool, t1))
-        print('enqueue_task ret =', enqueue_task(pool, t2))
-        print('enqueue_task ret =', enqueue_task(pool, t3))
-        print('queued_tasks ret =', queued_tasks(pool))
+        print('enqueue_task ret =', pool.enqueue_task(t1))
+        print('enqueue_task ret =', pool.enqueue_task(t2))
+        print('enqueue_task ret =', pool.enqueue_task(t3))
+        print('queued_tasks ret =', pool.queued_tasks())
 
-        ret = wait_task_finish(pool, t3)
+        ret = pool.wait_task_finish(t3)
         print(ret)
 
 
