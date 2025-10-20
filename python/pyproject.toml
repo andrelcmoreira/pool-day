@@ -14,3 +14,5 @@ readme = { file = "../README.md", content-type = "text/markdown" }
 
 [project.urls]
 Repository = "https://github.com/andrelcmoreira/pool-day.git"
+
+# TODO: check dependencies for libpoolday.so

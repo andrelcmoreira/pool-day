@@ -18,10 +18,10 @@ def main():
         t2 = create_task(thread_cb, 2)
         t3 = create_task(thread_cb, 3)
 
-        print('enqueue_task ret =', pool.enqueue_task(t1))
-        print('enqueue_task ret =', pool.enqueue_task(t2))
-        print('enqueue_task ret =', pool.enqueue_task(t3))
-        print('queued_tasks ret =', pool.queued_tasks())
+        print('task 1 enqueued, ret =', pool.enqueue_task(t1))
+        print('task 2 enqueued, ret =', pool.enqueue_task(t2))
+        print('task 3 enqueued, ret =', pool.enqueue_task(t3))
+        print('number of queued tasks =', pool.queued_tasks())
 
         ret = pool.wait_task_finish(t3)
         print(ret)

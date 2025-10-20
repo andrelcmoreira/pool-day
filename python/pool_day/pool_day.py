@@ -1,7 +1,11 @@
 from contextlib import contextmanager
 from ctypes import byref
 
-from pool_day.c_defs import _pd_handle, _Task, _PoolDay
+from pool_day.c_defs import _pd_handle, CTask, CPoolDay
+
+
+# TODO: task return
+# TODO: when the first task finishes, the pool should be destroyed
 
 
 class PoolDay:
@@ -12,7 +16,7 @@ class PoolDay:
     Implements a wrapper around the pool-day C library.
     """
 
-    def __init__(self, pool: _PoolDay):
+    def __init__(self, pool: CPoolDay):
         """
         Initialize the PoolDay instance.
 
@@ -20,7 +24,7 @@ class PoolDay:
         """
         self._pool = pool
 
-    def enqueue_task(self, task: _Task) -> int:
+    def enqueue_task(self, task: CTask) -> int:
         """
         Enqueue a task to the pool.
 
@@ -45,7 +49,7 @@ class PoolDay:
         """
         return _pd_handle.queued_tasks(self._pool)
 
-    def wait_task_finish(self, task: _Task):
+    def wait_task_finish(self, task: CTask):
         """
         Wait for a task to finish.
 
@@ -55,9 +59,9 @@ class PoolDay:
         return _pd_handle.wait_task_finish(self._pool, task)
 
 
-def create_task(cb, param) -> _Task:
+def create_task(cb, param) -> CTask:
     """
-    Create a new pool's task instance.
+    Create a new task instance.
 
     :cb: The callback function.
     :param: The parameter passed to the callback function.
