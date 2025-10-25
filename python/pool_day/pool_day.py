@@ -1,11 +1,10 @@
 from contextlib import contextmanager
 from ctypes import byref
 
-from pool_day.c_defs import _pd_handle, CTask, CPoolDay
+from pool_day.c_defs import _pd_handle, CTask, CPoolDay, TaskResult, to_result
 
 
 # TODO: task return
-# TODO: when the first task finishes, the pool should be destroyed
 
 
 class PoolDay:
@@ -49,14 +48,18 @@ class PoolDay:
         """
         return _pd_handle.queued_tasks(self._pool)
 
-    def wait_task_finish(self, task: CTask):
+    def wait_task_finish(self, task: CTask) -> TaskResult:
         """
         Wait for a task to finish.
 
         :task: The task instance.
         :return: The return value of the task's callback function.
         """
-        return _pd_handle.wait_task_finish(self._pool, task)
+        ret = _pd_handle.wait_task_finish(self._pool, task)
+
+        print(f'wait_task_finish ret: {ret}')
+
+        return to_result(ret)
 
 
 def create_task(cb, param) -> CTask:

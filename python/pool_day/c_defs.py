@@ -1,12 +1,17 @@
 from ctypes import CDLL as cdll
 from ctypes import POINTER as c_pointer
 from ctypes import CFUNCTYPE as c_func_type
+from ctypes import cast
+from ctypes import byref
 from ctypes import (
     Structure,
     c_int,
     c_uint8,
-    c_void_p
+    c_void_p,
+    c_int
 )
+from dataclasses import dataclass
+from typing import Any
 
 
 class CPoolDay(Structure):
@@ -17,15 +22,29 @@ class CTask(Structure):
     pass
 
 
+@dataclass
+class TaskResult:
+    result: Any
+
+
 def pool_day_callback(cb):
 
     @c_func_type(c_void_p, c_void_p)
     def _cb(param):
         ret = cb(param)
 
+        print('pool_day_callback ret:', ret)
+        print('pool_day_callback ret type:', type(ret))
+        print('pool_day_callback param value:', param)
+        print('pool_day_callback param type:', type(param))
+
         return ret
 
     return _cb
+
+
+def to_result(ptr: c_void_p) -> TaskResult:
+    return TaskResult(result=ptr)
 
 
 _pd_handle = cdll('/usr/lib/libpool-day.so')

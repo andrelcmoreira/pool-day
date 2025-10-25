@@ -9,7 +9,8 @@ def thread_cb(param):
         print(f'thread {param}: hello from python callback, i: {i}')
         sleep(param)
 
-    return f'task {param} done'
+    #return f'task {param} done'
+    return param
 
 
 def main():
@@ -24,7 +25,8 @@ def main():
         print('number of queued tasks =', pool.queued_tasks())
 
         ret = pool.wait_task_finish(t3)
-        print(ret)
+        print(type(ret))
+        #print(ret)
 
 
 if __name__ == "__main__":
