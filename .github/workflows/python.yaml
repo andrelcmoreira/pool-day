@@ -1,0 +1,45 @@
+name: Python bindings
+
+on:
+  pull_request:
+    push:
+      branches:
+        - develop
+
+env:
+  PYLINT_MINIMUM_RATE: 9
+
+jobs:
+  build:
+    name: Build python package
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v3
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build package
+        run: |
+          cd python
+          pip install . --break-system-packages
+
+  lint:
+    name: Lint the python bindings
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v3
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run pylint
+        run: pylint --rcfile python/pylintrc python/pool_day --fail-under ${{ env.PYLINT_MINIMUM_RATE }}
