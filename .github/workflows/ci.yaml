@@ -85,7 +85,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run cppcheck
-        run: cppcheck --enable=all -Iinclude --error-exitcode=1 --suppress=missingIncludeSystem src/*
+        run: cppcheck --enable=all --inline-suppr -Iinclude --error-exitcode=1 --suppress=missingIncludeSystem src/*
 
   dynamic_analysis:
     name: Run dynamic analysis
