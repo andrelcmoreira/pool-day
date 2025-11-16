@@ -71,6 +71,22 @@ jobs:
       - name: Run unit tests
         run: ${{ env.LD_PRELOAD }} build/test/pool-day-tests
 
+  static_analysis:
+    name: Run static analysis
+    runs-on: ubuntu-latest
+    container:
+      image: andrelcmoreira/pool-day:v2
+      volumes:
+        - ${{ github.workspace }}:/pool-day
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_PASS }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run cppcheck
+        run: cppcheck --enable=all -Iinclude --error-exitcode=1 --suppress=missingIncludeSystem src/*
+
   dynamic_analysis:
     name: Run dynamic analysis
     runs-on: ubuntu-latest
