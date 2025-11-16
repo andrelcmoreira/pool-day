@@ -51,6 +51,7 @@ __static void *thread_func(void *param) {
   return NULL;
 }
 
+// cppcheck-suppress unusedFunction
 pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   if (!pool || !task) {
     POOL_DAY_ERROR("null parameter");
@@ -65,6 +66,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   return POOL_DAY_SUCCESS;
 }
 
+// cppcheck-suppress unusedFunction
 pool_day_t create_pool(uint32_t pool_size) {
   pool_day_t pool;
 
@@ -104,6 +106,7 @@ pool_day_t create_pool(uint32_t pool_size) {
   return pool;
 }
 
+// cppcheck-suppress unusedFunction
 pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   if (!pool || !(*pool)) {
     POOL_DAY_ERROR("null pool handle");
@@ -138,6 +141,7 @@ pool_day_retcode_t destroy_pool(pool_day_t *pool) {
   return POOL_DAY_SUCCESS;
 }
 
+// cppcheck-suppress unusedFunction
 pool_day_retcode_t abort_tasks(pool_day_t pool) {
   if (!pool) {
     POOL_DAY_ERROR("null pool handle");
@@ -151,17 +155,21 @@ pool_day_retcode_t abort_tasks(pool_day_t pool) {
   return POOL_DAY_SUCCESS;
 }
 
+// cppcheck-suppress unusedFunction
 uint32_t queued_tasks(pool_day_t pool) {
   return pool ? queue_size(pool->tasks) : 0;
 }
 
-void *wait_task_finish(pool_day_t pool, task_t *task) {
+// cppcheck-suppress unusedFunction
+void *wait_task_finish(const pool_day_t pool, task_t *task) {
   void *ret;
 
   if (!pool || !task) {
     POOL_DAY_ERROR("null pool handle or task");
     return NULL;
   }
+
+  // TODO: should we check if the task belongs to the pool?
 
   POOL_DAY_INFO("waiting for the finish of the task");
   sem_wait(&task->ready);

@@ -18,10 +18,10 @@ static pthread_mutex_t log_mutex;  //!< Mutex for log operations.
 
 void __log_msg(pool_day_log_severity_t sev, const char *file_name,
                const char *func_name, int line_no, const char *fmt, ...) {
-  char log_buffer[LOG_BUFFER_SIZE] = {0};
-  va_list args;
-
   THREAD_SAFE_ZONE(&log_mutex, {
+    char log_buffer[LOG_BUFFER_SIZE] = {0};
+    va_list args;
+
     va_start(args, fmt);
 
     vsnprintf(log_buffer, LOG_BUFFER_SIZE, fmt, args);

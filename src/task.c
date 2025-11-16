@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 
+// cppcheck-suppress unusedFunction
 task_t *create_task(void *(*task)(void *), void *param) {
   task_t *node;
 
@@ -9,7 +10,7 @@ task_t *create_task(void *(*task)(void *), void *param) {
   if (node) {
     node->next = node->prev = NULL;
     node->task = task;
-    node->param = param;
+    node->param = param; // TODO: should we deep copy the param?
     node->ret_val = NULL;
 
     sem_init(&node->ready, 0, 0);
