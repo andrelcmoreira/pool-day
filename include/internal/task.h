@@ -72,13 +72,14 @@ typedef struct task task_t; //!< Structure representing an item on the task
  * @param[in] id Task identifier.
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
+ * @param[in] param_size Size of the task parameter.
  * @param[in] start_cb Callback executed when the task starts.
  * @param[in] end_cb Callback executed when the task ends.
  *
  * @return Pointer to the new task.
  */
 task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
-                    void (*start_cb)(uint32_t),
+                    size_t param_size, void (*start_cb)(uint32_t),
                     void (*end_cb)(uint32_t, void *));
 
 #endif  // TASK_H_

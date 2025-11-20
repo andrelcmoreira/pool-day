@@ -184,6 +184,10 @@ void *wait_task_finish(const pool_day_t pool, task_t *task) {
   POOL_DAY_INFO("task finished");
 
   ret = task->ret_val;
+
+  if (task->param) {
+    free(task->param);
+  }
   free(task);
 
   return ret;
