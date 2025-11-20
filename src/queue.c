@@ -89,6 +89,9 @@ void destroy_queue(task_queue_t *queue) {
         task_t *node = __dequeue(queue);
 
         sem_destroy(&node->ready);
+        if (node->param) {
+          free(node->param);
+        }
         free(node);
       }
     })

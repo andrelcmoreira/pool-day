@@ -1,10 +1,11 @@
 #include "internal/task.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 // cppcheck-suppress unusedFunction
 task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
-                    void (*start_cb)(uint32_t),
+                    size_t param_size, void (*start_cb)(uint32_t),
                     void (*end_cb)(uint32_t, void *)) {
   task_t *node;
 
@@ -12,9 +13,13 @@ task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
   if (node) {
     node->id = id;
     node->task = task;
-    node->param = param; // TODO: should we deep copy the param?
     node->on_task_start = start_cb;
     node->on_task_end = end_cb;
+
+    if (param) {
+      node->param = malloc(param_size);
+      memcpy(node->param, param, param_size);
+    }
 
     sem_init(&node->ready, 0, 0);
   }

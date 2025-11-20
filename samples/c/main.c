@@ -30,7 +30,6 @@ void *func(void *param) {
 
 int main(void) {
   pool_day_t pool;
-  task_t *task;
 
   pool = create_pool(1);
   if (!pool) {
@@ -38,8 +37,9 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  task = create_task(123, func, (void *)"foo", task_start_callback,
-                     task_end_callback);
+  char str[] = "foo";
+  task_t *task = create_task(func, (void *)str, sizeof(char) * strlen(str) + 1,
+                             task_start_callback, task_end_callback);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
   char *ret = (char *)wait_task_finish(pool, task);
