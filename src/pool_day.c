@@ -66,6 +66,14 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
+  if (task->bound_pool) {
+    POOL_DAY_ERROR("task is already bounded to an existing pool");
+    return POOL_DAY_ERROR_TASK_ALREADY_BOUND;
+  }
+
+  task->bound_pool = (void *)pool;
+  task->ret_val = NULL;
+
   enqueue(pool->tasks, task);
   sem_post(&pool->lock);
 
@@ -169,27 +177,22 @@ uint32_t queued_tasks(pool_day_t pool) {
 }
 
 // cppcheck-suppress unusedFunction
-void *wait_task_finish(const pool_day_t pool, task_t *task) {
-  void *ret;
-
+void *get_task_result(const pool_day_t pool, task_t *task) {
   if (!pool || !task) {
     POOL_DAY_ERROR("null pool handle or task");
     return NULL;
   }
 
-  // TODO: should we check if the task belongs to the pool?
+  if (task->bound_pool != pool) {
+    POOL_DAY_ERROR("task is not bounded to the pool");
+    return NULL;
+  }
 
   POOL_DAY_INFO("waiting for the finish of the task");
   sem_wait(&task->ready);
   POOL_DAY_INFO("task finished");
 
-  ret = task->ret_val;
+  task->bound_pool = NULL;
 
-  sem_destroy(&task->ready);
-  if (task->param) {
-    free(task->param);
-  }
-  free(task);
-
-  return ret;
+  return task->ret_val;
 }

@@ -45,11 +45,12 @@ int main(void) {
                              task_start_callback, task_end_callback);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
-  char *ret = (char *)wait_task_finish(pool, task);
-
-  destroy_pool(&pool);
+  char *ret = (char *)get_task_result(pool, task);
 
   printf("result = %s\n", ret);
+
+  destroy_pool(&pool);
+  destroy_task(task);
   free(ret);
 
   exit(EXIT_SUCCESS);

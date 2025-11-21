@@ -60,6 +60,7 @@ TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
   EXPECT_EQ(queued_tasks(pool_), 0);
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
   EXPECT_EQ(queued_tasks(pool_), 1);
+  EXPECT_EQ(task->bound_pool, (void *)pool_);
 }
 
 /**
@@ -82,6 +83,12 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
   EXPECT_EQ(enqueue_task(pool_, t5), POOL_DAY_SUCCESS);
 
   EXPECT_EQ(queued_tasks(pool_), 5);
+
+  EXPECT_EQ(t1->bound_pool, (void *)pool_);
+  EXPECT_EQ(t2->bound_pool, (void *)pool_);
+  EXPECT_EQ(t3->bound_pool, (void *)pool_);
+  EXPECT_EQ(t4->bound_pool, (void *)pool_);
+  EXPECT_EQ(t5->bound_pool, (void *)pool_);
 }
 
 /**
@@ -104,6 +111,21 @@ TEST_F(PoolDayTest, EnqueueTaskWithNullTask) {
 
   EXPECT_EQ(enqueue_task(pool_, nullptr), POOL_DAY_ERROR_NULL_PARAM);
   free(task);
+}
+
+/**
+ * @brief Given we have a valid pool and a task already bound to a pool, when we
+ * try to enqueue it, then nothing must happen and the suitable error code
+ * must be returned.
+ */
+TEST_F(PoolDayTest, EnqueueTaskAlreadyBound) {
+  auto another_pool = create_pool(1);
+  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+
+  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
+  EXPECT_EQ(enqueue_task(another_pool, task), POOL_DAY_ERROR_TASK_ALREADY_BOUND);
+
+  destroy_pool(&another_pool);
 }
 
 /**
@@ -362,7 +384,7 @@ TEST_F(PoolDayTest, AbortTasksWithNullPoolHandle) {
  * @brief Given we have an enqueued task, when we wait for the finish of the
  * task, then the correct return value must be returned with success.
  */
-TEST_F(PoolDayTest, WaitTaskFinish) {
+TEST_F(PoolDayTest, GetTaskResultWithSuccess) {
   int ret_val{1234};
   char param[]{ "param" };
   auto task = create_task(0, CbWrapper::TaskCb, param,
@@ -387,18 +409,22 @@ TEST_F(PoolDayTest, WaitTaskFinish) {
     thread_func(pool_);
   }
 
-  auto ret = reinterpret_cast<int *>(wait_task_finish(pool_, task));
+  auto ret = reinterpret_cast<int *>(get_task_result(pool_, task));
   EXPECT_EQ(*ret, ret_val);
+  EXPECT_EQ(task->bound_pool, nullptr);
+
+  // cleanup
+  free(task);
 }
 
 /**
  * @brief Given we have a task and a null pool handle, when we wait for
  * the finish of the task, then null must be returned.
  */
-TEST_F(PoolDayTest, WaitTaskFinishWithNullPoolHandle) {
+TEST_F(PoolDayTest, GetTaskResultWithNullPoolHandle) {
   auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
 
-  EXPECT_EQ(wait_task_finish(nullptr, task), nullptr);
+  EXPECT_EQ(get_task_result(nullptr, task), nullptr);
 
   // cleanup
   free(task);
@@ -408,6 +434,19 @@ TEST_F(PoolDayTest, WaitTaskFinishWithNullPoolHandle) {
  * @brief Given we have a null task and a valid pool handle, when we wait for
  * the finish of the task, then null must be returned.
  */
-TEST_F(PoolDayTest, WaitTaskFinishWithNullPoolTask) {
-  EXPECT_EQ(wait_task_finish(pool_, nullptr), nullptr);
+TEST_F(PoolDayTest, GetTaskResultWithNullPoolTask) {
+  EXPECT_EQ(get_task_result(pool_, nullptr), nullptr);
+}
+
+/**
+ * @brief Given we have a task not bound to the pool, when we wait for
+ * the finish of the task, then null must be returned.
+ */
+TEST_F(PoolDayTest, GetTaskResultWithWithUnboundTask) {
+  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+
+  EXPECT_EQ(get_task_result(pool_, task), nullptr);
+
+  // cleanup
+  free(task);
 }

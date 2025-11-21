@@ -88,7 +88,9 @@ void destroy_queue(task_queue_t *queue) {
       for_each_task_safe(curr, queue) {
         task_t *node = __dequeue(queue);
 
+        // TODO: call destroy_task?
         sem_destroy(&node->ready);
+
         if (node->param) {
           free(node->param);
         }
