@@ -16,6 +16,14 @@ void *CbWrapper::TaskCb(void *param) {
   return mock_->TaskCb(param);
 }
 
+void CbWrapper::OnTaskStartCb() {
+  mock_->OnTaskStartCb();
+}
+
+void CbWrapper::OnTaskEndCb(void *param) {
+  mock_->OnTaskEndCb(param);
+}
+
 TaskMock &CbWrapper::mock() {
   return *CbWrapper::mock_;
 }

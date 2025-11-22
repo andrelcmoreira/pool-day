@@ -33,11 +33,11 @@ TEST_F(QueueTest, GetQueueSizeWithEmptyQueue) {
  */
 TEST_F(QueueTest, GetQueueSizeWithNotEmptyQueue) {
   {
-    auto t1 = create_task(nullptr, nullptr);
-    auto t2 = create_task(nullptr, nullptr);
-    auto t3 = create_task(nullptr, nullptr);
-    auto t4 = create_task(nullptr, nullptr);
-    auto t5 = create_task(nullptr, nullptr);
+    auto t1 = create_task(nullptr, nullptr, nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr, nullptr, nullptr);
+    auto t3 = create_task(nullptr, nullptr, nullptr, nullptr);
+    auto t4 = create_task(nullptr, nullptr, nullptr, nullptr);
+    auto t5 = create_task(nullptr, nullptr, nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -63,8 +63,8 @@ TEST_F(QueueTest, GetQueueSizeWithNullQueue) {
  */
 TEST_F(QueueTest, EnqueueElementWithNotEmptyQueue) {
   {
-    auto t1 = create_task(nullptr, nullptr);
-    auto t2 = create_task(nullptr, nullptr);
+    auto t1 = create_task(nullptr, nullptr, nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr, nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -72,7 +72,7 @@ TEST_F(QueueTest, EnqueueElementWithNotEmptyQueue) {
     EXPECT_EQ(queue_size(queue_), 2);
   }
 
-  auto t3 = create_task(nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr, nullptr, nullptr);
 
   enqueue(queue_, t3);
 
@@ -95,8 +95,8 @@ TEST_F(QueueTest, EnqueueNullElementWithEmptyQueue) {
  */
 TEST_F(QueueTest, EnqueueNullElementWithNotEmptyQueue) {
   {
-    auto t1 = create_task(nullptr, nullptr);
-    auto t2 = create_task(nullptr, nullptr);
+    auto t1 = create_task(nullptr, nullptr, nullptr, nullptr);
+    auto t2 = create_task(nullptr, nullptr, nullptr, nullptr);
 
     enqueue(queue_, t1);
     enqueue(queue_, t2);
@@ -112,7 +112,7 @@ TEST_F(QueueTest, EnqueueNullElementWithNotEmptyQueue) {
  * then nothing must happen.
  */
 TEST_F(QueueTest, EnqueueElementWithNullQueue) {
-  auto t1 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr, nullptr, nullptr);
 
   enqueue(nullptr, t1);
   free(t1);
@@ -138,9 +138,9 @@ TEST_F(QueueTest, DequeueElementWithEmptyQueue) {
  * size of the queue must be decreased by 1.
  */
 TEST_F(QueueTest, DequeueSingleElementWithNotEmptyQueue) {
-  auto t1 = create_task(nullptr, nullptr);
-  auto t2 = create_task(nullptr, nullptr);
-  auto t3 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr, nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr, nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr, nullptr, nullptr);
 
   enqueue(queue_, t1);
   enqueue(queue_, t2);
@@ -163,10 +163,10 @@ TEST_F(QueueTest, DequeueSingleElementWithNotEmptyQueue) {
  * the operations.
  */
 TEST_F(QueueTest, DequeueMultipleElementsWithNotEmptyQueue) {
-  auto t1 = create_task(nullptr, nullptr);
-  auto t2 = create_task(nullptr, nullptr);
-  auto t3 = create_task(nullptr, nullptr);
-  auto t4 = create_task(nullptr, nullptr);
+  auto t1 = create_task(nullptr, nullptr, nullptr, nullptr);
+  auto t2 = create_task(nullptr, nullptr, nullptr, nullptr);
+  auto t3 = create_task(nullptr, nullptr, nullptr, nullptr);
+  auto t4 = create_task(nullptr, nullptr, nullptr, nullptr);
   task_t *ret;
 
   enqueue(queue_, t1);

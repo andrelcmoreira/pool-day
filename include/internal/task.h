@@ -49,12 +49,14 @@
  * @brief Pool task definition.
  */
 struct task {
-  struct task *next;     //!< Next element of the current instance.
-  struct task *prev;     //!< Previous element of the current instance.
-  void *(*task)(void *); //!< Task callback.
-  void *param;           //!< Parameter of the task callback.
-  void *ret_val;         //!< Task return value.
-  sem_t ready;           //!< Task's semaphore.
+  struct task *next;             //!< Next element of the current instance.
+  struct task *prev;             //!< Previous element of the current instance.
+  void *(*task)(void *);         //!< Task callback.
+  void *param;                   //!< Parameter of the task callback.
+  void *ret_val;                 //!< Task return value.
+  void (*on_task_start)(void);   //!< Callback executed when the task starts.
+  void (*on_task_end)(void *);   //!< Callback executed when the task ends.
+  sem_t ready;                   //!< Task's semaphore.
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task
@@ -63,13 +65,16 @@ typedef struct task task_t; //!< Structure representing an item on the task
  * @brief Create a new task.
  *
  * @note The created task doesn't require a manual release once it's bound to a
- * pool. Otherwise it can be released using the function destroy_task.
+ * pool.
  *
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
+ * @param[in] start_cb Callback executed when the task starts.
+ * @param[in] end_cb Callback executed when the task ends.
  *
  * @return Pointer to the new task.
  */
-task_t *create_task(void *(*task)(void *), void *param);
+task_t *create_task(void *(*task)(void *), void *param, void (*start_cb)(void),
+                    void (*end_cb)(void *));
 
 #endif  // TASK_H_
