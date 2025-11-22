@@ -6,6 +6,14 @@
 
 #include "pool_day.h"
 
+void task_start_callback(uint32_t tid) {
+  printf("task '%u' is starting...\n", tid);
+}
+
+void task_end_callback(uint32_t tid, void *ret_val) {
+  printf("task '%u' ended with return value: %s\n", tid, (char *)ret_val);
+}
+
 void *func(void *param) {
   char *str = (char *)param;
   char *ret = (char *)calloc(10, sizeof(char));
@@ -30,7 +38,8 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  task = create_task(func, (void *)"foo", NULL, NULL);
+  task = create_task(func, (void *)"foo", task_start_callback,
+                     task_end_callback);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
   char *ret = (char *)wait_task_finish(pool, task);

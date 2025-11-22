@@ -172,6 +172,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
 
   enqueue_task(pool_, task);
 
+  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb(_))
+    .Times(0);
   EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
     .Times(1)
     .WillOnce(
@@ -180,6 +182,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
         return ret_val;
       })
     );
+  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(_, _))
+    .Times(0);
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
@@ -201,9 +205,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithCallbacks) {
 
   enqueue_task(pool_, task);
 
-  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb())
+  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb(0)) // TODO: check tid
     .Times(1);
-
   EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
     .Times(1)
     .WillOnce(
@@ -212,8 +215,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithCallbacks) {
         return ret_val;
       })
     );
-
-  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(ret_val))
+  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(0, ret_val)) // TODO: check tid
     .Times(1);
 
   auto ret = thread_func(pool_);
@@ -235,9 +237,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithStartCallbackOnly) {
 
   enqueue_task(pool_, task);
 
-  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb())
+  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb(0)) // TODO: check tid
     .Times(1);
-
   EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
     .Times(1)
     .WillOnce(
@@ -246,8 +247,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithStartCallbackOnly) {
         return ret_val;
       })
     );
-
-  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(_))
+  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(_, _))
     .Times(0);
 
   auto ret = thread_func(pool_);
@@ -269,9 +269,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithEndCallbackOnly) {
 
   enqueue_task(pool_, task);
 
-  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb())
+  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb(0)) // TODO: check tid
     .Times(0);
-
   EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
     .Times(1)
     .WillOnce(
@@ -280,8 +279,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithEndCallbackOnly) {
         return ret_val;
       })
     );
-
-  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(ret_val))
+  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(0, ret_val)) // TODO: check tid
     .Times(1);
 
   auto ret = thread_func(pool_);
@@ -304,6 +302,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
 
   enqueue_task(pool_, task);
 
+  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb(_))
+    .Times(0);
   EXPECT_CALL(CbWrapper::mock(), TaskCb(param))
     .Times(1)
     .WillOnce(
@@ -312,6 +312,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
         return ret_val;
       })
     );
+  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(_, _))
+    .Times(0);
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
