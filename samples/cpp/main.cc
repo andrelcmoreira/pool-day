@@ -7,8 +7,8 @@ class Foo {
   public:
     Foo()
       : pool_{create_pool(2)},
-        t1_{create_task(Foo::Cb1, (void *)"hello")},
-        t2_{create_task(Foo::Cb2, (void *)"hi")} {
+        t1_{create_task(Foo::Cb1, (void *)"hello", nullptr, nullptr)},
+        t2_{create_task(Foo::Cb2, (void *)"hi", nullptr, nullptr)} {
     }
 
     void RunTasks(void) {

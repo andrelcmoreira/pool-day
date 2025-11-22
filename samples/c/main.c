@@ -30,7 +30,7 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  task = create_task(func, (void *)"foo");
+  task = create_task(func, (void *)"foo", NULL, NULL);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
   char *ret = (char *)wait_task_finish(pool, task);
