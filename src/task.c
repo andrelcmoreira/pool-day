@@ -3,13 +3,14 @@
 #include <stdlib.h>
 
 // cppcheck-suppress unusedFunction
-task_t *create_task(void *(*task)(void *), void *param,
+task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
                     void (*start_cb)(uint32_t),
                     void (*end_cb)(uint32_t, void *)) {
   task_t *node;
 
   node = (task_t *)calloc(1, sizeof(task_t));
   if (node) {
+    node->id = id;
     node->task = task;
     node->param = param; // TODO: should we deep copy the param?
     node->on_task_start = start_cb;
