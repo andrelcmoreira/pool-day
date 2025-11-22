@@ -3,8 +3,9 @@
 #include <stdlib.h>
 
 // cppcheck-suppress unusedFunction
-task_t *create_task(void *(*task)(void *), void *param, void (*start_cb)(void),
-                    void (*end_cb)(void *)) {
+task_t *create_task(void *(*task)(void *), void *param,
+                    void (*start_cb)(uint32_t),
+                    void (*end_cb)(uint32_t, void *)) {
   task_t *node;
 
   node = (task_t *)calloc(1, sizeof(task_t));

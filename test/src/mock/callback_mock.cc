@@ -16,12 +16,12 @@ void *CbWrapper::TaskCb(void *param) {
   return mock_->TaskCb(param);
 }
 
-void CbWrapper::OnTaskStartCb() {
-  mock_->OnTaskStartCb();
+void CbWrapper::OnTaskStartCb(uint32_t tid) {
+  mock_->OnTaskStartCb(tid);
 }
 
-void CbWrapper::OnTaskEndCb(void *param) {
-  mock_->OnTaskEndCb(param);
+void CbWrapper::OnTaskEndCb(uint32_t tid, void *param) {
+  mock_->OnTaskEndCb(tid, param);
 }
 
 TaskMock &CbWrapper::mock() {

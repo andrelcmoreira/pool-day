@@ -25,6 +25,7 @@
 #define TASK_H_
 
 #include <semaphore.h>
+#include <stdint.h>
 
 /**
  * @brief For-each macro implementation.
@@ -49,14 +50,15 @@
  * @brief Pool task definition.
  */
 struct task {
-  struct task *next;             //!< Next element of the current instance.
-  struct task *prev;             //!< Previous element of the current instance.
-  void *(*task)(void *);         //!< Task callback.
-  void *param;                   //!< Parameter of the task callback.
-  void *ret_val;                 //!< Task return value.
-  void (*on_task_start)(void);   //!< Callback executed when the task starts.
-  void (*on_task_end)(void *);   //!< Callback executed when the task ends.
-  sem_t ready;                   //!< Task's semaphore.
+  // TODO: ID?
+  struct task *next;                     //!< Next element of the current instance.
+  struct task *prev;                     //!< Previous element of the current instance.
+  void *(*task)(void *);                 //!< Task callback.
+  void *param;                           //!< Parameter of the task callback.
+  void *ret_val;                         //!< Task return value.
+  void (*on_task_start)(uint32_t);       //!< Callback executed when the task starts.
+  void (*on_task_end)(uint32_t, void *); //!< Callback executed when the task ends.
+  sem_t ready;                           //!< Task's semaphore.
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task
@@ -74,7 +76,8 @@ typedef struct task task_t; //!< Structure representing an item on the task
  *
  * @return Pointer to the new task.
  */
-task_t *create_task(void *(*task)(void *), void *param, void (*start_cb)(void),
-                    void (*end_cb)(void *));
+task_t *create_task(void *(*task)(void *), void *param,
+                    void (*start_cb)(uint32_t),
+                    void (*end_cb)(uint32_t, void *));
 
 #endif  // TASK_H_
