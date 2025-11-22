@@ -7,7 +7,7 @@
 #include "pool_day.h"
 
 void task_start_callback(uint32_t tid) {
-  printf("task '%u' is starting...\n", tid);
+  printf("task '%u' starting...\n", tid);
 }
 
 void task_end_callback(uint32_t tid, void *ret_val) {
@@ -38,7 +38,7 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  task = create_task(func, (void *)"foo", task_start_callback,
+  task = create_task(123, func, (void *)"foo", task_start_callback,
                      task_end_callback);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);

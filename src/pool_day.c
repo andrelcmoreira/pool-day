@@ -38,7 +38,7 @@ __static void *thread_func(void *param) {
     task_t *entry = dequeue(pool->tasks);
     if (entry) {
       if (entry->on_task_start) {
-        entry->on_task_start(0);
+        entry->on_task_start(entry->id);
       }
 
       POOL_DAY_INFO("thread '0x%x' running the task", pthread_self());
@@ -47,7 +47,7 @@ __static void *thread_func(void *param) {
 
       entry->ret_val = ret;
       if (entry->on_task_end) {
-        entry->on_task_end(0, entry->ret_val);
+        entry->on_task_end(entry->id, entry->ret_val);
       }
 
       sem_post(&entry->ready);
