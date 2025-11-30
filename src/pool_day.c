@@ -185,6 +185,7 @@ void *wait_task_finish(const pool_day_t pool, task_t *task) {
 
   ret = task->ret_val;
 
+  sem_destroy(&task->ready);
   if (task->param) {
     free(task->param);
   }

@@ -6,6 +6,8 @@
 
 #include "pool_day.h"
 
+#define DUMMY_TASK_ID 0
+
 void task_start_callback(uint32_t tid) {
   printf("task '%u' starting...\n", tid);
 }
@@ -38,7 +40,8 @@ int main(void) {
   }
 
   char str[] = "foo";
-  task_t *task = create_task(func, (void *)str, sizeof(char) * strlen(str) + 1,
+  task_t *task = create_task(DUMMY_TASK_ID, func, (void *)str,
+                             sizeof(char) * strlen(str) + 1,
                              task_start_callback, task_end_callback);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
