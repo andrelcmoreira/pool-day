@@ -414,6 +414,7 @@ TEST_F(PoolDayTest, GetTaskResultWithSuccess) {
   EXPECT_EQ(task->bound_pool, nullptr);
 
   // cleanup
+  free(task->param);
   free(task);
 }
 
