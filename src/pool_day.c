@@ -67,7 +67,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   }
 
   if (task->bound_pool) {
-    POOL_DAY_ERROR("task is already bounded to an existing pool");
+    POOL_DAY_ERROR("task is already bound to an existing pool");
     return POOL_DAY_ERROR_TASK_ALREADY_BOUND;
   }
 
@@ -184,7 +184,7 @@ void *get_task_result(const pool_day_t pool, task_t *task) {
   }
 
   if (task->bound_pool != pool) {
-    POOL_DAY_ERROR("task is not bounded to the pool");
+    POOL_DAY_ERROR("task is not bound to the pool");
     return NULL;
   }
 
@@ -192,7 +192,7 @@ void *get_task_result(const pool_day_t pool, task_t *task) {
   sem_wait(&task->ready);
   POOL_DAY_INFO("task finished");
 
-  task->bound_pool = NULL;
+  task->bound_pool = NULL; // TODO: this must occur on async flow as well?decorator?
 
   return task->ret_val;
 }
