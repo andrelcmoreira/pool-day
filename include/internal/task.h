@@ -56,7 +56,6 @@ struct task {
   void *(*task)(void *);                 //!< Task callback.
   void *param;                           //!< Parameter of the task callback.
   void *ret_val;                         //!< Task return value.
-  void *bound_pool;                      //!< Pointer to the pool which the task is bound to.
   void (*on_task_start)(uint32_t);       //!< Callback executed when the task starts.
   void (*on_task_end)(uint32_t, void *); //!< Callback executed when the task ends.
   sem_t ready;                           //!< Task's semaphore.
