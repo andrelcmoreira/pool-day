@@ -305,7 +305,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithEndCallbackOnly) {
 TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   char param[]{ "param" };
   char ret_val[]{ "hello, i'm the return of the task" };
-  auto task = create_task(CbWrapper::TaskCb, param,
+  auto task = create_task(0, CbWrapper::TaskCb, param,
                           sizeof(char) * strlen(param) + 1, nullptr, nullptr);
 
   enqueue_task(pool_, task);
