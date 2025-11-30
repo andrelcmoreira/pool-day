@@ -60,7 +60,6 @@ TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
   EXPECT_EQ(queued_tasks(pool_), 0);
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
   EXPECT_EQ(queued_tasks(pool_), 1);
-  EXPECT_EQ(task->bound_pool, (void *)pool_);
 }
 
 /**
@@ -83,12 +82,6 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
   EXPECT_EQ(enqueue_task(pool_, t5), POOL_DAY_SUCCESS);
 
   EXPECT_EQ(queued_tasks(pool_), 5);
-
-  EXPECT_EQ(t1->bound_pool, (void *)pool_);
-  EXPECT_EQ(t2->bound_pool, (void *)pool_);
-  EXPECT_EQ(t3->bound_pool, (void *)pool_);
-  EXPECT_EQ(t4->bound_pool, (void *)pool_);
-  EXPECT_EQ(t5->bound_pool, (void *)pool_);
 }
 
 /**
@@ -123,7 +116,6 @@ TEST_F(PoolDayTest, EnqueueTaskAlreadyBound) {
   auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
 
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-  EXPECT_EQ(enqueue_task(another_pool, task), POOL_DAY_ERROR_TASK_ALREADY_BOUND);
 
   destroy_pool(&another_pool);
 }
@@ -409,25 +401,11 @@ TEST_F(PoolDayTest, GetTaskResultWithSuccess) {
     thread_func(pool_);
   }
 
-  auto ret = reinterpret_cast<int *>(get_task_result(pool_, task));
+  auto ret = reinterpret_cast<int *>(get_task_result(task));
   EXPECT_EQ(*ret, ret_val);
-  EXPECT_EQ(task->bound_pool, nullptr);
 
   // cleanup
   free(task->param);
-  free(task);
-}
-
-/**
- * @brief Given we have a task and a null pool handle, when we wait for
- * the finish of the task, then null must be returned.
- */
-TEST_F(PoolDayTest, GetTaskResultWithNullPoolHandle) {
-  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
-
-  EXPECT_EQ(get_task_result(nullptr, task), nullptr);
-
-  // cleanup
   free(task);
 }
 
@@ -436,7 +414,7 @@ TEST_F(PoolDayTest, GetTaskResultWithNullPoolHandle) {
  * the finish of the task, then null must be returned.
  */
 TEST_F(PoolDayTest, GetTaskResultWithNullPoolTask) {
-  EXPECT_EQ(get_task_result(pool_, nullptr), nullptr);
+  EXPECT_EQ(get_task_result(nullptr), nullptr);
 }
 
 /**
@@ -446,7 +424,7 @@ TEST_F(PoolDayTest, GetTaskResultWithNullPoolTask) {
 TEST_F(PoolDayTest, GetTaskResultWithWithUnboundTask) {
   auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
 
-  EXPECT_EQ(get_task_result(pool_, task), nullptr);
+  EXPECT_EQ(get_task_result(task), nullptr);
 
   // cleanup
   free(task);

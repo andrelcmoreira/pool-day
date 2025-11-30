@@ -45,7 +45,7 @@ int main(void) {
                              task_start_callback, task_end_callback);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
-  char *ret = (char *)get_task_result(pool, task);
+  char *ret = (char *)get_task_result(task);
 
   printf("result = %s\n", ret);
 

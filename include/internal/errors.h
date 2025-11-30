@@ -28,8 +28,7 @@
  */
 typedef enum {
   POOL_DAY_SUCCESS,
-  POOL_DAY_ERROR_NULL_PARAM,
-  POOL_DAY_ERROR_TASK_ALREADY_BOUND
+  POOL_DAY_ERROR_NULL_PARAM
 } pool_day_retcode_t;
 
 #endif  // ERRORS_H_

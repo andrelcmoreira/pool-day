@@ -66,13 +66,8 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
-  if (task->bound_pool) {
-    POOL_DAY_ERROR("task is already bound to an existing pool");
-    return POOL_DAY_ERROR_TASK_ALREADY_BOUND;
-  }
-
-  task->bound_pool = (void *)pool;
   task->ret_val = NULL;
+  sem_init(&task->ready, 0, 0); // TODO: necessary?
 
   enqueue(pool->tasks, task);
   sem_post(&pool->lock);
@@ -177,22 +172,15 @@ uint32_t queued_tasks(pool_day_t pool) {
 }
 
 // cppcheck-suppress unusedFunction
-void *get_task_result(const pool_day_t pool, task_t *task) {
-  if (!pool || !task) {
-    POOL_DAY_ERROR("null pool handle or task");
-    return NULL;
-  }
-
-  if (task->bound_pool != pool) {
-    POOL_DAY_ERROR("task is not bound to the pool");
+void *get_task_result(task_t *task) {
+  if (!task) {
+    POOL_DAY_ERROR("null task provided");
     return NULL;
   }
 
   POOL_DAY_INFO("waiting for the finish of the task");
   sem_wait(&task->ready);
   POOL_DAY_INFO("task finished");
-
-  task->bound_pool = NULL; // TODO: this must occur on async flow as well?decorator?
 
   return task->ret_val;
 }

@@ -20,8 +20,8 @@ class Foo {
       enqueue_task(pool_, t1_);
       enqueue_task(pool_, t2_);
 
-      get_task_result(pool_, t1_);
-      get_task_result(pool_, t2_);
+      get_task_result(t1_);
+      get_task_result(t2_);
 
       destroy_task(t1_);
       destroy_task(t2_);

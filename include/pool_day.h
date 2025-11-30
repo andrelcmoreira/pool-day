@@ -86,7 +86,7 @@ uint32_t queued_tasks(pool_day_t pool);
  *
  *   enqueue_task(pool, t);
  *
- *   void *ret = get_task_result(pool, t);
+ *   void *ret = get_task_result(t);
  *
  *   destroy_task(t);
  *   destroy_pool(&pool);
@@ -95,12 +95,11 @@ uint32_t queued_tasks(pool_day_t pool);
  *
  * @note This function blocks the current thread.
  *
- * @param[in] pool Handle to the thread pool.
  * @param[in] task Task handler.
  *
  * @return The return value of the task.
  */
-void *get_task_result(pool_day_t pool, task_t *task);
+void *get_task_result(task_t *task);
 
 /**
  * @brief Abort the execution of incoming tasks.
