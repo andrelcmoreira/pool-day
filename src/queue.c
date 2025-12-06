@@ -6,6 +6,25 @@
 #include "internal/utils.h"
 
 /**
+ * @brief For-each macro implementation.
+ *
+ * @details It can be used to iterate over the queue.
+ */
+#define for_each_task(curr, queue) \
+  for (struct task *curr = queue->head; curr; curr = curr->prev)
+
+/**
+ * @brief Safe implementation of for-each macro.
+ *
+ * @details It can be used to delete elements of the queue while iterating over
+ * it.
+ */
+#define for_each_task_safe(curr, queue) \
+  for (struct task *curr = queue->head, *tmp = curr ? curr->prev : NULL; \
+    curr; \
+    curr = tmp, tmp = tmp ? tmp->prev : NULL)
+
+/**
  * @brief Task queue definition.
  */
 struct task_queue {
@@ -46,7 +65,7 @@ void enqueue(task_queue_t *queue, task_t *elem) {
 static task_t *__dequeue(task_queue_t *queue) {
   task_t *to_del = queue->head;
 
-  // if the list is not empty
+  // if the queue is not empty
   if (to_del) {
     queue->head = to_del->prev;
     // if the queue has more than one element
@@ -88,13 +107,7 @@ void destroy_queue(task_queue_t *queue) {
       for_each_task_safe(curr, queue) {
         task_t *node = __dequeue(queue);
 
-        // TODO: call destroy_task?
-        sem_destroy(&node->ready);
-
-        if (node->param) {
-          free(node->param);
-        }
-        free(node);
+        destroy_task(node);
       }
     })
 
