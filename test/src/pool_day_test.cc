@@ -60,6 +60,9 @@ TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
   EXPECT_EQ(queued_tasks(pool_), 0);
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
   EXPECT_EQ(queued_tasks(pool_), 1);
+
+  // to force the task destruction on destroy_pool call
+  task->is_orphan = true;
 }
 
 /**
@@ -82,6 +85,13 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
   EXPECT_EQ(enqueue_task(pool_, t5), POOL_DAY_SUCCESS);
 
   EXPECT_EQ(queued_tasks(pool_), 5);
+
+  // to force the task destruction on destroy_pool call
+  t1->is_orphan = true;
+  t2->is_orphan = true;
+  t3->is_orphan = true;
+  t4->is_orphan = true;
+  t5->is_orphan = true;
 }
 
 /**
@@ -118,6 +128,9 @@ TEST_F(PoolDayTest, EnqueueTaskAlreadyBound) {
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
 
   destroy_pool(&another_pool);
+
+  // to force the task destruction on destroy_pool call
+  task->is_orphan = true;
 }
 
 /**
@@ -133,13 +146,14 @@ TEST_F(PoolDayTest, GetQueuedTasksCountWithNoTasks) {
  * the number of queued tasks in the pool, then 1 must be returned.
  */
 TEST_F(PoolDayTest, GetQueuedTasksCountWithSingleTask) {
-  {
-    auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
 
-    enqueue_task(pool_, task);
-  }
+  enqueue_task(pool_, task);
 
   EXPECT_EQ(queued_tasks(pool_), 1);
+
+  // to force the task destruction on destroy_pool call
+  task->is_orphan = true;
 }
 
 /**
@@ -148,21 +162,26 @@ TEST_F(PoolDayTest, GetQueuedTasksCountWithSingleTask) {
  * returned.
  */
 TEST_F(PoolDayTest, GetQueuedTasksCountWithSeveralTasks) {
-  {
-    auto t1 = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
-    auto t2 = create_task(1, nullptr, nullptr, 0, nullptr, nullptr);
-    auto t3 = create_task(2, nullptr, nullptr, 0, nullptr, nullptr);
-    auto t4 = create_task(3, nullptr, nullptr, 0, nullptr, nullptr);
-    auto t5 = create_task(4, nullptr, nullptr, 0, nullptr, nullptr);
+  auto t1 = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+  auto t2 = create_task(1, nullptr, nullptr, 0, nullptr, nullptr);
+  auto t3 = create_task(2, nullptr, nullptr, 0, nullptr, nullptr);
+  auto t4 = create_task(3, nullptr, nullptr, 0, nullptr, nullptr);
+  auto t5 = create_task(4, nullptr, nullptr, 0, nullptr, nullptr);
 
-    enqueue_task(pool_, t1);
-    enqueue_task(pool_, t2);
-    enqueue_task(pool_, t3);
-    enqueue_task(pool_, t4);
-    enqueue_task(pool_, t5);
-  }
+  enqueue_task(pool_, t1);
+  enqueue_task(pool_, t2);
+  enqueue_task(pool_, t3);
+  enqueue_task(pool_, t4);
+  enqueue_task(pool_, t5);
 
   EXPECT_EQ(queued_tasks(pool_), 5);
+
+  // to force the task destruction on destroy_pool call
+  t1->is_orphan = true;
+  t2->is_orphan = true;
+  t3->is_orphan = true;
+  t4->is_orphan = true;
+  t5->is_orphan = true;
 }
 
 /**
@@ -351,10 +370,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
  * task is scheduled for execution, then the task's callback must not be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
-  {
-    auto task = create_task(0, CbWrapper::TaskCb, nullptr, 0, nullptr, nullptr);
-    enqueue_task(pool_, task);
-  }
+  auto task = create_task(0, CbWrapper::TaskCb, nullptr, 0, nullptr, nullptr);
+
+  enqueue_task(pool_, task);
 
   EXPECT_CALL(CbWrapper::mock(), TaskCb(_)).Times(0);
 
@@ -362,6 +380,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
+
+  // to force the task destruction on destroy_pool call
+  task->is_orphan = true;
 }
 
 /**

@@ -15,8 +15,7 @@
  */
 struct pool_day {
   uint32_t size;        //!< Size of the pool.
-  bool must_stop;       //!< Flag indicating wheter all threads must
-                        //   stop its execution.
+  bool must_stop;       //!< Flag indicating wheter all threads must stop its execution.
   sem_t lock;           //!< Pool's semaphore.
   pthread_t *threads;   //!< Threads whose makes part of the pool.
   task_queue_t *tasks;  //!< Pool's queued tasks.
@@ -37,6 +36,8 @@ __static void *thread_func(void *param) {
 
     task_t *entry = dequeue(pool->tasks);
     if (entry) {
+      entry->is_orphan = true;
+
       if (entry->on_task_start) {
         entry->on_task_start(entry->id);
       }
@@ -46,7 +47,7 @@ __static void *thread_func(void *param) {
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
 
       entry->ret_val = ret;
-      entry->executed = true;
+
       if (entry->on_task_end) {
         entry->on_task_end(entry->id, entry->ret_val);
       }
@@ -68,7 +69,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   }
 
   task->ret_val = NULL;
-  task->executed = false;
+  task->is_orphan = false;
 
   enqueue(pool->tasks, task);
   sem_post(&pool->lock);
