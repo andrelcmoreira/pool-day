@@ -33,7 +33,7 @@
  */
 struct task {
   uint32_t id;                           //!< Task identifier.
-  bool executed;                         //!< Flag indicating whether the task has been executed.
+  bool is_orphan;                        //!< Flag indicating whether the task is orphaned.
   struct task *next;                     //!< Next element of the current instance.
   struct task *prev;                     //!< Previous element of the current instance.
   void *(*task)(void *);                 //!< Task callback.

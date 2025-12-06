@@ -15,6 +15,7 @@ task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
     node->task = task;
     node->on_task_start = start_cb;
     node->on_task_end = end_cb;
+    node->is_orphan = true;
 
     if (param) {
       node->param = malloc(param_size);
@@ -29,7 +30,9 @@ task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
 
 // cppcheck-suppress unusedFunction
 void destroy_task(task_t *task) {
-  if (task && task->executed) {
+  // if the task is orphaned, it means that the user will take care of its release,
+  // otherwise it is managed by the pool
+  if (task && task->is_orphan) {
     sem_destroy(&task->ready);
 
     if (task->param) {
