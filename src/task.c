@@ -28,7 +28,6 @@ task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
   return node;
 }
 
-// cppcheck-suppress unusedFunction
 void destroy_task(task_t *task) {
   // if the task is orphaned, it means that the user will take care of its release,
   // otherwise it is managed by the pool
