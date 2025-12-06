@@ -46,6 +46,7 @@ __static void *thread_func(void *param) {
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
 
       entry->ret_val = ret;
+      entry->executed = true;
       if (entry->on_task_end) {
         entry->on_task_end(entry->id, entry->ret_val);
       }
@@ -62,12 +63,12 @@ __static void *thread_func(void *param) {
 // cppcheck-suppress unusedFunction
 pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
   if (!pool || !task) {
-    POOL_DAY_ERROR("null parameter");
+    POOL_DAY_ERROR("null parameter supplied");
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
   task->ret_val = NULL;
-  sem_init(&task->ready, 0, 0); // TODO: necessary?
+  task->executed = false;
 
   enqueue(pool->tasks, task);
   sem_post(&pool->lock);

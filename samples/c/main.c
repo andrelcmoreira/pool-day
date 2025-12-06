@@ -49,8 +49,8 @@ int main(void) {
 
   printf("result = %s\n", ret);
 
-  destroy_pool(&pool);
   destroy_task(task);
+  destroy_pool(&pool);
   free(ret);
 
   exit(EXIT_SUCCESS);

@@ -33,6 +33,7 @@
  */
 struct task {
   uint32_t id;                           //!< Task identifier.
+  bool executed;                         //!< Flag indicating whether the task has been executed.
   struct task *next;                     //!< Next element of the current instance.
   struct task *prev;                     //!< Previous element of the current instance.
   void *(*task)(void *);                 //!< Task callback.
@@ -43,8 +44,8 @@ struct task {
   sem_t ready;                           //!< Task's semaphore.
 };
 
-typedef struct task task_t; //!< Structure representing an item on the task
-                            // queue.
+typedef struct task task_t; //!< Structure representing an item on the task queue.
+
 /**
  * @brief Create a new task.
  *

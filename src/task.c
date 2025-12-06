@@ -29,7 +29,7 @@ task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
 
 // cppcheck-suppress unusedFunction
 void destroy_task(task_t *task) {
-  if (task) {
+  if (task && task->executed) {
     sem_destroy(&task->ready);
 
     if (task->param) {
