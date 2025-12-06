@@ -25,26 +25,8 @@
 #define TASK_H_
 
 #include <semaphore.h>
+#include <stdbool.h>
 #include <stdint.h>
-
-/**
- * @brief For-each macro implementation.
- *
- * @details It can be used to iterate over the list.
- */
-#define for_each_task(curr, list) \
-  for (struct task *curr = list->head; curr; curr = curr->prev)
-
-/**
- * @brief Safe implementation of for-each macro.
- *
- * @details It can be used to delete elements of the list while iterating over
- * it.
- */
-#define for_each_task_safe(curr, list) \
-  for (struct task *curr = list->head, *tmp = curr ? curr->prev : NULL; \
-    curr; \
-    curr = tmp, tmp = tmp ? tmp->prev : NULL)
 
 /**
  * @brief Pool task definition.
@@ -62,7 +44,7 @@ struct task {
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task
-                            // list.
+                            // queue.
 /**
  * @brief Create a new task.
  *
