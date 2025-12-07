@@ -21,6 +21,7 @@ void task_end_callback(uint32_t tid, void *param, void *ret_val) {
 
   task_finished = true;
   printf("task '%u' ended with return value: %s\n", tid, (char *)ret_val);
+  free(ret_val);
 }
 
 void *func(void *param) {
