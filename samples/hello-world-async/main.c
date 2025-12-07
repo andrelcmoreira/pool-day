@@ -9,6 +9,20 @@
 
 #define HELLO_WORLD_TASK_ID 0
 
+volatile bool task_finished = false;
+
+void task_start_callback(uint32_t tid, void *param) {
+  (void)param;
+  printf("task '%u' starting...\n", tid);
+}
+
+void task_end_callback(uint32_t tid, void *param, void *ret_val) {
+  (void)param;
+
+  task_finished = true;
+  printf("task '%u' ended with return value: %s\n", tid, (char *)ret_val);
+}
+
 void *func(void *param) {
   char *str = (char *)param;
   char *ret = (char *)calloc(10, sizeof(char));
@@ -32,22 +46,22 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  char str[] = "foo";
-  task_t task = create_sync_task(HELLO_WORLD_TASK_ID, func, (void *)str,
-                                 sizeof(char) * strlen(str) + 1);
+  char str[] = "hello, world!";
+  task_t task = create_async_task(HELLO_WORLD_TASK_ID, func, (void *)str,
+                                  sizeof(char) * strlen(str) + 1, false,
+                                  task_start_callback, task_end_callback);
+
   if (!task) {
     // handle error
     exit(EXIT_FAILURE);
   }
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
-  char *ret = (char *)get_task_result(task);
 
-  printf("result = %s\n", ret);
+  while(!task_finished);
 
   destroy_task(task);
   destroy_pool(&pool);
-  free(ret);
 
   exit(EXIT_SUCCESS);
 }
