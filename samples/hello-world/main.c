@@ -7,7 +7,7 @@
 #include "pool_day.h"
 #include "task.h"
 
-#define DUMMY_TASK_ID 0
+#define HELLO_WORLD_TASK_ID 0
 
 void *func(void *param) {
   char *str = (char *)param;
@@ -33,8 +33,12 @@ int main(void) {
   }
 
   char str[] = "foo";
-  task_t task = create_sync_task(DUMMY_TASK_ID, func, (void *)str,
+  task_t task = create_sync_task(HELLO_WORLD_TASK_ID, func, (void *)str,
                                  sizeof(char) * strlen(str) + 1);
+  if (!task) {
+    // handle error
+    exit(EXIT_FAILURE);
+  }
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
   char *ret = (char *)get_task_result(task);
