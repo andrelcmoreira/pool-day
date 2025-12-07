@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(pool-day-sample-c)
+project(pool-day-sample-hello-world)
 
-set(PROJECT_NAME "pool-day-sample-c")
+set(PROJECT_NAME "pool-day-sample-hello-world")
 set(SOURCES main.c)
 
 set(CMAKE_C_FLAGS "-Wall -Werror -Wextra")

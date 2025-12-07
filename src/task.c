@@ -39,7 +39,7 @@ task_t create_async_task(uint32_t id, void *(*task)(void *), void *param,
 
 void destroy_task(task_t task) {
   // if the task is orphaned, it means that the user will take care of its release,
-  // otherwise it is managed by the pool
+  // otherwise its destruction is managed by the pool
   if (task && task->is_orphan) {
     sem_destroy(&task->ready);
 
