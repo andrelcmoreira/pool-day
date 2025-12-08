@@ -27,17 +27,17 @@
  * @brief Log severity.
  */
 typedef enum {
-  POOL_DAY_INFO_INFO,
-  POOL_DAY_INFO_ERROR
+  POOL_DAY_DEBUG_SEVERITY,
+  POOL_DAY_ERROR_SEVERITY
 } pool_day_log_severity_t;
 
 #ifdef LIB_LOGGING
-#define POOL_DAY_INFO(...) \
-  __log_msg(POOL_DAY_INFO_INFO, __FILE__, __func__, __LINE__, __VA_ARGS__)
+#define POOL_DAY_DEBUG(...) \
+  __log_msg(POOL_DAY_DEBUG_SEVERITY, __FILE__, __func__, __LINE__, __VA_ARGS__)
 #define POOL_DAY_ERROR(...) \
-  __log_msg(POOL_DAY_INFO_ERROR, __FILE__, __func__, __LINE__, __VA_ARGS__)
+  __log_msg(POOL_DAY_ERROR_SEVERITY, __FILE__, __func__, __LINE__, __VA_ARGS__)
 #else
-#define POOL_DAY_INFO(...)
+#define POOL_DAY_DEBUG(...)
 #define POOL_DAY_ERROR(...)
 #endif  // LIB_LOGGING
 
