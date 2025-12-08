@@ -7,8 +7,8 @@
 
 #include "internal/utils.h"
 
-#define GET_LOG_FILE(sev)    (sev == POOL_DAY_INFO_INFO) ? stdout : stderr
-#define GET_LOG_TAG(sev)     (sev == POOL_DAY_INFO_INFO) ? "INFO" : "ERROR"
+#define GET_LOG_FILE(sev)    (sev == POOL_DAY_DEBUG_SEVERITY) ? stdout : stderr
+#define GET_LOG_TAG(sev)     (sev == POOL_DAY_DEBUG_SEVERITY) ? "DEBUG" : "ERROR"
 #define GET_FILE_NAME(path)  strrchr(path, '/') + 1
 
 #define LOG_FMT           "%s:%d\t| %s\t| %s:"
