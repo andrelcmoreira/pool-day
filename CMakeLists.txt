@@ -41,7 +41,7 @@ if(BUILD_DOCUMENTATION)
 endif(BUILD_DOCUMENTATION)
 
 if(ENABLE_LOGGING)
-  add_definitions(-DLIB_LOGGING)
+  add_definitions(-DENABLE_LOGGING)
   list(APPEND SOURCES "src/logger.c")
 endif(ENABLE_LOGGING)
 
