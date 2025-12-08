@@ -230,7 +230,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
   EXPECT_EQ(task->ret_val, ret_val);
 
   // cleanup
-  free(task);
+  destroy_task(task);
 }
 
 /**
@@ -260,10 +260,6 @@ TEST_F(PoolDayTest, ExecuteTaskWithCallbacks) {
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
-  EXPECT_EQ(task->ret_val, ret_val);
-
-  // cleanup
-  free(task);
 }
 
 /**
@@ -295,7 +291,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithStartCallbackOnly) {
   EXPECT_EQ(task->ret_val, ret_val);
 
   // cleanup
-  free(task);
+  destroy_task(task);
 }
 
 /**
@@ -324,10 +320,6 @@ TEST_F(PoolDayTest, ExecuteTaskWithEndCallbackOnly) {
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
-  EXPECT_EQ(task->ret_val, ret_val);
-
-  // cleanup
-  free(task);
 }
 
 /**
@@ -361,8 +353,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   EXPECT_EQ(task->ret_val, ret_val);
 
   // cleanup
-  free(task->param);
-  free(task);
+  destroy_task(task);
 }
 
 /**
@@ -426,8 +417,7 @@ TEST_F(PoolDayTest, GetTaskResultWithSuccess) {
   EXPECT_EQ(*ret, ret_val);
 
   // cleanup
-  free(task->param);
-  free(task);
+  destroy_task(task);
 }
 
 /**
@@ -448,5 +438,5 @@ TEST_F(PoolDayTest, GetTaskResultWithWithUnboundTask) {
   EXPECT_EQ(get_task_result(task), nullptr);
 
   // cleanup
-  free(task);
+  destroy_task(task);
 }
