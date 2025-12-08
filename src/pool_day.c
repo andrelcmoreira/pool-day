@@ -47,12 +47,12 @@ __static void *thread_func(void *param) {
       POOL_DAY_INFO("thread '0x%x' finished the task", pthread_self());
 
       entry->ret_val = ret;
-
       if (entry->on_task_end) {
         entry->on_task_end(entry->id, entry->ret_val);
+        destroy_task(entry);
+      } else {
+        sem_post(&entry->ready);
       }
-
-      sem_post(&entry->ready);
     }
   }
 
