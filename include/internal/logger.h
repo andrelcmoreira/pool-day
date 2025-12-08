@@ -31,7 +31,7 @@ typedef enum {
   POOL_DAY_ERROR_SEVERITY
 } pool_day_log_severity_t;
 
-#ifdef LIB_LOGGING
+#ifdef ENABLE_LOGGING
 #define POOL_DAY_DEBUG(...) \
   __log_msg(POOL_DAY_DEBUG_SEVERITY, __FILE__, __func__, __LINE__, __VA_ARGS__)
 #define POOL_DAY_ERROR(...) \
@@ -39,7 +39,7 @@ typedef enum {
 #else
 #define POOL_DAY_DEBUG(...)
 #define POOL_DAY_ERROR(...)
-#endif  // LIB_LOGGING
+#endif  // ENABLE_LOGGING
 
 /**
  * @brief Log a message to the screen.
