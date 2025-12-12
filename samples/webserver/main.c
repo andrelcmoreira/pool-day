@@ -9,15 +9,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "pool_day.h"
+#include <pool_day.h>
 
-#define HANDLE_REQUEST_TASK_ID 0
 #define MAX_VERB_SIZE          7
 #define MAX_BUFFER_SIZE        4096
 
 #define DEFAULT_ROOT_DIR       "./www"
 #define DEFAULT_PORT           8080
-#define DEFAULT_MAX_CLIENTS    10
+#define DEFAULT_MAX_CLIENTS    100
 
 #define STR(x) #x
 #define MAKE_ERROR_BODY(status_code, msg) \
@@ -55,8 +54,7 @@ void assemble_reply(char *buffer, size_t buffer_size, int status_code,
   const char *reply_fmt =
     "HTTP/1.1 %d %s\r\n"
     "Content-Type: text/html\r\n"
-    "\r\n"
-    "%s\r\n";
+    "\r\n%s";
 
   snprintf(buffer, buffer_size, reply_fmt, status_code, status_str, body);
 }
@@ -106,7 +104,7 @@ void handle_get_request(char *reply_buffer, size_t buffer_size,
 
 void *handle_client(void *param) {
   char buffer[MAX_BUFFER_SIZE] = {0};
-  int client_fd = *(int *)(param);
+  uint32_t client_fd = *(uint32_t *)(param);
   request_t req;
 
   memset(&req, 0, sizeof(request_t));
@@ -126,7 +124,6 @@ void *handle_client(void *param) {
   }
 
   close(client_fd);
-  free(param);
 
   return NULL;
 }
@@ -135,7 +132,7 @@ void parse_args(int argc, char **argv) {
   int opt;
 
   if (argc == 1) {
-    // Set default values
+    // default config
     cfg.max_clients = DEFAULT_MAX_CLIENTS;
     cfg.port = DEFAULT_PORT;
     memcpy(cfg.root_dir, DEFAULT_ROOT_DIR, strlen(DEFAULT_ROOT_DIR) + 1);
@@ -206,12 +203,12 @@ int run_server(void) {
     int client_fd = accept(server_fd, NULL, NULL);
 
     if (client_fd > 0) {
-      int *fd_ptr = malloc(sizeof(int));
+      uint32_t *fd_ptr = malloc(sizeof(uint32_t));
 
-      *fd_ptr = client_fd;
-      task_t *task = create_task(HANDLE_REQUEST_TASK_ID, handle_client,
-                                 (void *)fd_ptr, sizeof(int),
-                                 task_start_callback, task_end_callback);
+      *fd_ptr = (uint32_t)client_fd;
+      task_t *task = create_task(client_fd, handle_client, (void *)fd_ptr,
+                                 sizeof(uint32_t), task_start_callback,
+                                 task_end_callback);
 
       if (!task) {
         printf("[-] failed to create the request task\n");
