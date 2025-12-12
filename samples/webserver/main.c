@@ -196,7 +196,7 @@ int run_server(void) {
 
       *fd_ptr = client_fd;
       task_t *task = create_task(HANDLE_REQUEST_TASK_ID, handle_client,
-                                 (void *)fd_ptr, sizeof(request_t),
+                                 (void *)fd_ptr, sizeof(int),
                                  task_start_callback, task_end_callback);
 
       if (!task) {
