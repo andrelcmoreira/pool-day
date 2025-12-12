@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <sys/stat.h>
 #include <getopt.h>
 #include <linux/limits.h>
 #include <netinet/in.h>
@@ -7,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "pool_day.h"
@@ -50,29 +50,29 @@ void parse_request(const char *request_buffer, request_t *req) {
   sscanf(request_buffer, "%s %s", req->verb, req->resource);
 }
 
-void assemble_reply(char *buffer, int status_code, const char *status_str,
-                    const char *body) {
+void assemble_reply(char *buffer, size_t buffer_size, int status_code,
+                    const char *status_str, const char *body) {
   const char *reply_fmt =
     "HTTP/1.1 %d %s\r\n"
     "Content-Type: text/html\r\n"
     "\r\n"
     "%s\r\n";
 
-  sprintf(buffer, reply_fmt, status_code, status_str, body);
+  snprintf(buffer, buffer_size, reply_fmt, status_code, status_str, body);
 }
 
-char *get_resource(const char *res) {
-  char resource[PATH_MAX * 2] = {0}; // FIXME
+char *get_resource(const char *res_name) {
+  char res_path[PATH_MAX * 2] = {0}; // FIXME
   struct stat st;
 
-  snprintf(resource, sizeof(resource), "%s/%s", cfg.root_dir, res);
+  snprintf(res_path, sizeof(res_path), "%s/%s", cfg.root_dir, res_name);
 
-  FILE *file = fopen(resource, "r");
+  FILE *file = fopen(res_path, "r");
   if (!file) {
     return NULL;
   }
 
-  stat(resource, &st);
+  stat(res_path, &st);
 
   char *content = calloc(1, st.st_size + 1);
   if (!content) {
@@ -80,20 +80,26 @@ char *get_resource(const char *res) {
     return NULL;
   }
 
-  fread(content, 1, st.st_size, file);
+  if (!fread(content, 1, st.st_size, file)) {
+    free(content);
+    fclose(file);
+    return NULL;
+  }
+
   fclose(file);
 
   return content;
 }
 
-void handle_get_request(char *reply_buffer, const char *resource) {
+void handle_get_request(char *reply_buffer, size_t buffer_size,
+                        const char *resource) {
   char *res = get_resource(resource);
 
   if (res) {
-    assemble_reply(reply_buffer, 200, "OK", res);
+    assemble_reply(reply_buffer, buffer_size, 200, "OK", res);
     free(res);
   } else {
-    assemble_reply(reply_buffer, 404, "Not Found",
+    assemble_reply(reply_buffer, buffer_size, 404, "Not Found",
                    MAKE_ERROR_BODY(404, Not Found));
   }
 }
@@ -113,7 +119,7 @@ void *handle_client(void *param) {
 
     memset(buffer, 0, sizeof(buffer));
     if (!strcmp(req.verb, "GET")) {
-      handle_get_request(buffer, req.resource);
+      handle_get_request(buffer, MAX_BUFFER_SIZE, req.resource);
 
       send(client_fd, buffer, strlen(buffer), 0);
     }
@@ -128,10 +134,14 @@ void *handle_client(void *param) {
 void parse_args(int argc, char **argv) {
   int opt;
 
-  // Set default values
-  cfg.max_clients = DEFAULT_MAX_CLIENTS;
-  cfg.port = DEFAULT_PORT;
-  memcpy(cfg.root_dir, DEFAULT_ROOT_DIR, strlen(DEFAULT_ROOT_DIR) + 1);
+  if (argc == 1) {
+    // Set default values
+    cfg.max_clients = DEFAULT_MAX_CLIENTS;
+    cfg.port = DEFAULT_PORT;
+    memcpy(cfg.root_dir, DEFAULT_ROOT_DIR, strlen(DEFAULT_ROOT_DIR) + 1);
+
+    return;
+  }
 
   while ((opt = getopt(argc, argv, "m:p:r:")) != -1) {
     switch (opt) {
@@ -219,6 +229,7 @@ int run_server(void) {
     }
   }
 
+  close(server_fd);
   destroy_pool(&pool);
 
   return 0;
