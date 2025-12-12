@@ -86,6 +86,18 @@ char *get_resource(const char *res) {
   return content;
 }
 
+void handle_get_request(char *reply_buffer, const char *resource) {
+  char *res = get_resource(resource);
+
+  if (res) {
+    assemble_reply(reply_buffer, 200, "OK", res);
+    free(res);
+  } else {
+    assemble_reply(reply_buffer, 404, "Not Found",
+                   MAKE_ERROR_BODY(404, Not Found));
+  }
+}
+
 void *handle_client(void *param) {
   char buffer[MAX_BUFFER_SIZE] = {0};
   int client_fd = *(int *)(param);
@@ -99,17 +111,9 @@ void *handle_client(void *param) {
 
     printf("[+] received request: %s %s\n", req.verb, req.resource);
 
+    memset(buffer, 0, sizeof(buffer));
     if (!strcmp(req.verb, "GET")) {
-      char *res = get_resource(req.resource);
-
-      memset(buffer, 0, sizeof(buffer));
-      if (res) {
-        assemble_reply(buffer, 200, "OK", res);
-        free(res);
-      } else {
-        assemble_reply(buffer, 404, "Not Found",
-                       MAKE_ERROR_BODY(404, Not Found));
-      }
+      handle_get_request(buffer, req.resource);
 
       send(client_fd, buffer, strlen(buffer), 0);
     }
