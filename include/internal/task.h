@@ -32,16 +32,16 @@
  * @brief Pool task definition.
  */
 struct task {
-  uint32_t id;                           //!< Task identifier.
-  bool is_orphan;                        //!< Flag indicating whether the task is orphaned.
-  struct task *next;                     //!< Next element of the current instance.
-  struct task *prev;                     //!< Previous element of the current instance.
-  void *(*task)(void *);                 //!< Task callback.
-  void *param;                           //!< Parameter of the task callback.
-  void *ret_val;                         //!< Task return value.
-  void (*on_task_start)(uint32_t);       //!< Callback executed when the task starts.
-  void (*on_task_end)(uint32_t, void *); //!< Callback executed when the task ends.
-  sem_t ready;                           //!< Task's semaphore.
+  uint32_t id;                                    //!< Task identifier.
+  bool is_orphan;                                 //!< Flag indicating whether the task is orphaned.
+  struct task *next;                              //!< Next element of the current instance.
+  struct task *prev;                              //!< Previous element of the current instance.
+  void *(*task)(void *);                          //!< Task callback.
+  void *param;                                    //!< Parameter of the task callback.
+  void *ret_val;                                  //!< Task return value.
+  void (*on_task_start)(uint32_t, void *);        //!< Callback executed when the task starts.
+  void (*on_task_end)(uint32_t, void *, void *);  //!< Callback executed when the task ends.
+  sem_t ready;                                    //!< Task's semaphore.
 };
 
 typedef struct task task_t; //!< Structure representing an item on the task queue.
@@ -62,8 +62,8 @@ typedef struct task task_t; //!< Structure representing an item on the task queu
  * @return Pointer to the new task.
  */
 task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
-                    size_t param_size, void (*start_cb)(uint32_t),
-                    void (*end_cb)(uint32_t, void *));
+                    size_t param_size, void (*start_cb)(uint32_t, void *),
+                    void (*end_cb)(uint32_t, void *, void *));
 
 /**
  * @brief Destroy a task.
