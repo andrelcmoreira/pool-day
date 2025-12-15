@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <arpa/inet.h>
 #include <getopt.h>
 #include <linux/limits.h>
 #include <netinet/in.h>
@@ -33,21 +34,27 @@ typedef struct {
   char resource[PATH_MAX];
 } request_t;
 
-static server_cfg_t cfg;
+typedef struct {
+  uint32_t fd;
+  struct in_addr addr;
+  const char *root_dir;
+} client_t;
 
-// TODO: what parameters should be useful here?
-static void task_start_callback(uint32_t tid, void *param) {
-  (void)param;
-  printf("[+] task '%u' starting...\n", tid);
+static void on_client_connected(uint32_t tid, void *param) {
+  client_t *cli = (client_t *)param;
+
+  printf("[+] task[%u]: client connected from %s\n", tid, inet_ntoa(cli->addr));
 }
 
-static void task_end_callback(uint32_t tid, void *param, void *ret_val) {
-  (void)param;
-  printf("[+] task '%u' ended with return value: %s\n", tid, (char *)ret_val);
+static void on_client_disconnected(uint32_t tid, void *param, void *ret_val) {
+  client_t *cli = (client_t *)param;
+
+  printf("[+] task[%u]: client disconnected from %s, result = %s\n", tid,
+         inet_ntoa(cli->addr), (char *)ret_val);
 }
 
 static void parse_request(const char *request_buffer, request_t *req) {
-  // Simple parsing logic for demonstration purposes
+  // simple parsing logic for demonstration purposes
   sscanf(request_buffer, "%s %s", req->verb, req->resource);
 }
 
@@ -61,11 +68,11 @@ static void assemble_reply(char *buffer, size_t buffer_size, int status_code,
   snprintf(buffer, buffer_size, reply_fmt, status_code, status_str, body);
 }
 
-static char *get_resource(const char *res_name) {
+static char *get_resource(const char *res_name, const char *root_dir) {
   char res_path[PATH_MAX * 2] = {0}; // FIXME
   struct stat st;
 
-  snprintf(res_path, sizeof(res_path), "%s/%s", cfg.root_dir, res_name);
+  snprintf(res_path, sizeof(res_path), "%s/%s", root_dir, res_name);
 
   FILE *file = fopen(res_path, "r");
   if (!file) {
@@ -92,8 +99,8 @@ static char *get_resource(const char *res_name) {
 }
 
 static void handle_get_request(char *reply_buffer, size_t buffer_size,
-                               const char *resource) {
-  char *res = get_resource(resource);
+                               const char *resource, const char *root_dir) {
+  char *res = get_resource(resource, root_dir);
 
   if (res) {
     assemble_reply(reply_buffer, buffer_size, 200, "OK", res);
@@ -106,12 +113,12 @@ static void handle_get_request(char *reply_buffer, size_t buffer_size,
 
 static void *handle_client(void *param) {
   char buffer[MAX_BUFFER_SIZE] = {0};
-  uint32_t client_fd = *(uint32_t *)(param);
+  client_t *cli = (client_t *)param;
   request_t req;
 
   memset(&req, 0, sizeof(request_t));
 
-  ssize_t received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
+  ssize_t received = recv(cli->fd, buffer, sizeof(buffer) - 1, 0);
   if (received > 0) {
     parse_request(buffer, &req);
 
@@ -119,45 +126,48 @@ static void *handle_client(void *param) {
 
     memset(buffer, 0, sizeof(buffer));
     if (!strcmp(req.verb, "GET")) {
-      handle_get_request(buffer, MAX_BUFFER_SIZE, req.resource);
+      handle_get_request(buffer, MAX_BUFFER_SIZE, req.resource, cli->root_dir);
 
-      send(client_fd, buffer, strlen(buffer), 0);
+      send(cli->fd, buffer, strlen(buffer), 0);
     }
   }
 
-  close(client_fd);
+  close(cli->fd);
 
   return NULL;
 }
 
-static void parse_args(int argc, char **argv) {
+static void parse_args(int argc, char **argv, server_cfg_t *cfg) {
   int opt;
-
-  if (argc == 1) {
-    // default config
-    cfg.max_clients = DEFAULT_MAX_CLIENTS;
-    cfg.port = DEFAULT_PORT;
-    memcpy(cfg.root_dir, DEFAULT_ROOT_DIR, strlen(DEFAULT_ROOT_DIR) + 1);
-
-    return;
-  }
 
   while ((opt = getopt(argc, argv, "m:p:r:")) != -1) {
     switch (opt) {
     case 'm':
-      cfg.max_clients = (uint32_t)atoi(optarg);
+      cfg->max_clients = (uint32_t)atoi(optarg);
       break;
     case 'p':
-      cfg.port = (uint16_t)atoi(optarg);
+      cfg->port = (uint16_t)atoi(optarg);
       break;
     case 'r':
-      memcpy(cfg.root_dir, optarg, strlen(optarg) + 1);
+      memcpy(cfg->root_dir, optarg, strlen(optarg) + 1);
       break;
     }
   }
+
+  if (!cfg->max_clients) {
+    cfg->max_clients = DEFAULT_MAX_CLIENTS;
+  }
+
+  if (!cfg->port) {
+    cfg->port = DEFAULT_PORT;
+  }
+
+  if (cfg->root_dir[0] == '\0') {
+    memcpy(cfg->root_dir, DEFAULT_ROOT_DIR, strlen(DEFAULT_ROOT_DIR) + 1);
+  }
 }
 
-static int create_socket(int *sock_fd) {
+static int setup_socket(int *sock_fd, const server_cfg_t *cfg) {
   struct sockaddr_in server_addr;
 
   *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -169,14 +179,14 @@ static int create_socket(int *sock_fd) {
 
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_port = htons(cfg.port);
+  server_addr.sin_port = htons(cfg->port);
 
   if (bind(*sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
     close(*sock_fd);
     return 1;
   }
 
-  if (listen(*sock_fd, cfg.max_clients) < 0) {
+  if (listen(*sock_fd, cfg->max_clients) < 0) {
     close(*sock_fd);
     return 1;
   }
@@ -184,46 +194,44 @@ static int create_socket(int *sock_fd) {
   return 0;
 }
 
-static int run_server(void) {
+static int run_server(const server_cfg_t *cfg) {
   int server_fd;
   pool_day_t pool;
+  struct sockaddr_in cli_addr;
+  socklen_t cli_len = sizeof(cli_addr);
 
-  if (create_socket(&server_fd) != 0) {
+  if (setup_socket(&server_fd, cfg) != 0) {
     printf("[-] failed to setup server socket\n");
     return 1;
   }
 
-  if (!(pool = create_pool(cfg.max_clients))) {
+  if (!(pool = create_pool(cfg->max_clients))) {
     close(server_fd);
     return 1;
   }
 
   printf("[+] starting server with max_clients=%u, port=%u, root_dir=%s\n",
-         cfg.max_clients, cfg.port, cfg.root_dir);
+         cfg->max_clients, cfg->port, cfg->root_dir);
 
   while (1) {
-    int client_fd = accept(server_fd, NULL, NULL);
+    int client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &cli_len);
 
     if (client_fd > 0) {
-      uint32_t *fd_ptr = malloc(sizeof(uint32_t));
+      client_t *cli_ptr = calloc(1, sizeof(client_t));
 
-      *fd_ptr = (uint32_t)client_fd;
-      task_t *task = create_task(client_fd, handle_client, (void *)fd_ptr,
-                                 sizeof(uint32_t), task_start_callback,
-                                 task_end_callback);
+      cli_ptr->fd = (uint32_t)client_fd;
+      cli_ptr->root_dir = cfg->root_dir;
+      memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
 
-      if (!task) {
-        printf("[-] failed to create the request task\n");
-        close(client_fd);
-        free(fd_ptr);
-        continue;
-      }
+      task_t *task = create_task(client_fd, handle_client, (void *)cli_ptr,
+                                 sizeof(client_t), on_client_connected,
+                                 on_client_disconnected);
 
       if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
         printf("[-] failed to enqueue the request task\n");
         destroy_task(task);
         close(client_fd);
-        free(fd_ptr);
+        free(cli_ptr);
       }
     }
   }
@@ -235,7 +243,9 @@ static int run_server(void) {
 }
 
 int main(int argc, char **argv) {
-  parse_args(argc, argv);
+  server_cfg_t cfg;
 
-  return run_server();
+  memset(&cfg, 0, sizeof(server_cfg_t));
+  parse_args(argc, argv, &cfg);
+  return run_server(&cfg);
 }
