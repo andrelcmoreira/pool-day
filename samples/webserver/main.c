@@ -36,21 +36,23 @@ typedef struct {
 static server_cfg_t cfg;
 
 // TODO: what parameters should be useful here?
-void task_start_callback(uint32_t tid) {
+static void task_start_callback(uint32_t tid, void *param) {
+  (void)param;
   printf("[+] task '%u' starting...\n", tid);
 }
 
-void task_end_callback(uint32_t tid, void *ret_val) {
+static void task_end_callback(uint32_t tid, void *param, void *ret_val) {
+  (void)param;
   printf("[+] task '%u' ended with return value: %s\n", tid, (char *)ret_val);
 }
 
-void parse_request(const char *request_buffer, request_t *req) {
+static void parse_request(const char *request_buffer, request_t *req) {
   // Simple parsing logic for demonstration purposes
   sscanf(request_buffer, "%s %s", req->verb, req->resource);
 }
 
-void assemble_reply(char *buffer, size_t buffer_size, int status_code,
-                    const char *status_str, const char *body) {
+static void assemble_reply(char *buffer, size_t buffer_size, int status_code,
+                           const char *status_str, const char *body) {
   const char *reply_fmt =
     "HTTP/1.1 %d %s\r\n"
     "Content-Type: text/html\r\n"
@@ -59,7 +61,7 @@ void assemble_reply(char *buffer, size_t buffer_size, int status_code,
   snprintf(buffer, buffer_size, reply_fmt, status_code, status_str, body);
 }
 
-char *get_resource(const char *res_name) {
+static char *get_resource(const char *res_name) {
   char res_path[PATH_MAX * 2] = {0}; // FIXME
   struct stat st;
 
@@ -89,8 +91,8 @@ char *get_resource(const char *res_name) {
   return content;
 }
 
-void handle_get_request(char *reply_buffer, size_t buffer_size,
-                        const char *resource) {
+static void handle_get_request(char *reply_buffer, size_t buffer_size,
+                               const char *resource) {
   char *res = get_resource(resource);
 
   if (res) {
@@ -102,7 +104,7 @@ void handle_get_request(char *reply_buffer, size_t buffer_size,
   }
 }
 
-void *handle_client(void *param) {
+static void *handle_client(void *param) {
   char buffer[MAX_BUFFER_SIZE] = {0};
   uint32_t client_fd = *(uint32_t *)(param);
   request_t req;
@@ -128,7 +130,7 @@ void *handle_client(void *param) {
   return NULL;
 }
 
-void parse_args(int argc, char **argv) {
+static void parse_args(int argc, char **argv) {
   int opt;
 
   if (argc == 1) {
@@ -155,7 +157,7 @@ void parse_args(int argc, char **argv) {
   }
 }
 
-int create_socket(int *sock_fd) {
+static int create_socket(int *sock_fd) {
   struct sockaddr_in server_addr;
 
   *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -182,7 +184,7 @@ int create_socket(int *sock_fd) {
   return 0;
 }
 
-int run_server(void) {
+static int run_server(void) {
   int server_fd;
   pool_day_t pool;
 
