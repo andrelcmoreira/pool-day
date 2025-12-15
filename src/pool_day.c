@@ -39,7 +39,7 @@ __static void *thread_func(void *param) {
       entry->is_orphan = true;
 
       if (entry->on_task_start) {
-        entry->on_task_start(entry->id);
+        entry->on_task_start(entry->id, entry->param);
       }
 
       POOL_DAY_DEBUG("thread '0x%x' running the task '0x%x'", pthread_self(),
@@ -52,7 +52,7 @@ __static void *thread_func(void *param) {
       if (entry->on_task_end) {
         POOL_DAY_DEBUG("thread '0x%x' running async teardown for task '0x%x'",
                        pthread_self(), entry->id);
-        entry->on_task_end(entry->id, entry->ret_val);
+        entry->on_task_end(entry->id, entry->param, entry->ret_val);
         destroy_task(entry);
       } else {
         POOL_DAY_DEBUG("thread '0x%x' running sync teardown for task '0x%x'",
