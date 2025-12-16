@@ -36,17 +36,17 @@ extern "C" {
  * @brief Pool task definition.
  */
 struct task {
-  uint32_t id;                                    //!< Task identifier.
-  bool is_orphan;                                 //!< Flag indicating whether the task is orphaned.
-  bool auto_release;                              //!< Flag indicating whether the task must be released after its execution.
-  struct task *next;                              //!< Next element of the current instance.
-  struct task *prev;                              //!< Previous element of the current instance.
-  void *(*task)(void *);                          //!< Task callback.
-  void *param;                                    //!< Parameter of the task callback.
-  void *ret_val;                                  //!< Task return value.
-  void (*on_task_start)(uint32_t, void *);        //!< Callback executed when the task starts.
-  void (*on_task_end)(uint32_t, void *, void *);  //!< Callback executed when the task ends.
-  sem_t ready;                                    //!< Task's semaphore.
+  uint32_t id;                                          //!< Task identifier.
+  bool is_orphan;                                       //!< Flag indicating whether the task is orphaned.
+  bool auto_release;                                    //!< Flag indicating whether the task must be released after its execution.
+  struct task *next;                                    //!< Next element of the current instance.
+  struct task *prev;                                    //!< Previous element of the current instance.
+  void *(*task)(void *);                                //!< Task callback.
+  void *param;                                          //!< Parameter of the task callback.
+  void *ret_val;                                        //!< Task return value.
+  void (*on_task_start)(uint32_t, const void *);        //!< Callback executed when the task starts.
+  void (*on_task_end)(uint32_t, const void *, void *);  //!< Callback executed when the task ends.
+  sem_t ready;                                          //!< Task's semaphore.
 };
 
 typedef struct task *task_t; //!< Structure representing an item on the task queue.

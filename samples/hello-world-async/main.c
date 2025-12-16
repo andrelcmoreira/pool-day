@@ -11,12 +11,12 @@
 
 volatile bool task_finished = false;
 
-void task_start_callback(uint32_t tid, void *param) {
+void task_start_callback(uint32_t tid, const void *param) {
   (void)param;
   printf("task '%u' starting...\n", tid);
 }
 
-void task_end_callback(uint32_t tid, void *param, void *ret_val) {
+void task_end_callback(uint32_t tid, const void *param, void *ret_val) {
   (void)param;
 
   task_finished = true;

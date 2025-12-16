@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <arpa/inet.h>
 #include <getopt.h>
 #include <linux/limits.h>
@@ -37,25 +36,26 @@ typedef struct {
 typedef struct {
   uint32_t fd;
   struct in_addr addr;
-  const char *root_dir;
 } client_t;
 
-static void on_client_connected(uint32_t tid, void *param) {
-  client_t *cli = (client_t *)param;
+static void on_client_connected(uint32_t tid, const void *param) {
+  const client_t *cli = (client_t *)param;
 
   printf("[+] task[%u]: client connected from %s\n", tid, inet_ntoa(cli->addr));
 }
 
-static void on_client_disconnected(uint32_t tid, void *param, void *ret_val) {
-  client_t *cli = (client_t *)param;
+static void on_client_disconnected(uint32_t tid, const void *param,
+                                   void *ret_val) {
+  const client_t *cli = (client_t *)param;
 
-  printf("[+] task[%u]: client disconnected from %s, result = %s\n", tid,
-         inet_ntoa(cli->addr), (char *)ret_val);
+  printf("[+] task[%u]: client disconnected from %s, result=%u\n", tid,
+         inet_ntoa(cli->addr), *((uint16_t *)ret_val));
+  free(ret_val);
 }
 
-static void parse_request(const char *request_buffer, request_t *req) {
+static void parse_request(const char *buffer, request_t *req) {
   // simple parsing logic for demonstration purposes
-  sscanf(request_buffer, "%s %s", req->verb, req->resource);
+  sscanf(buffer, "%s %s", req->verb, req->resource);
 }
 
 static void assemble_reply(char *buffer, size_t buffer_size, int status_code,
@@ -68,18 +68,15 @@ static void assemble_reply(char *buffer, size_t buffer_size, int status_code,
   snprintf(buffer, buffer_size, reply_fmt, status_code, status_str, body);
 }
 
-static char *get_resource(const char *res_name, const char *root_dir) {
-  char res_path[PATH_MAX * 2] = {0}; // FIXME
+static char *get_resource(const char *res_name) {
   struct stat st;
 
-  snprintf(res_path, sizeof(res_path), "%s/%s", root_dir, res_name);
-
-  FILE *file = fopen(res_path, "r");
+  FILE *file = fopen(res_name, "r");
   if (!file) {
     return NULL;
   }
 
-  stat(res_path, &st);
+  stat(res_name, &st);
 
   char *content = calloc(1, st.st_size + 1);
   if (!content) {
@@ -98,22 +95,28 @@ static char *get_resource(const char *res_name, const char *root_dir) {
   return content;
 }
 
-static void handle_get_request(char *reply_buffer, size_t buffer_size,
-                               const char *resource, const char *root_dir) {
-  char *res = get_resource(resource, root_dir);
+static int handle_get_request(char *reply_buffer, size_t buffer_size,
+                                   const char *resource) {
+  char *res = get_resource(resource);
+  int status_code;
 
   if (res) {
-    assemble_reply(reply_buffer, buffer_size, 200, "OK", res);
+    status_code = 200;
+    assemble_reply(reply_buffer, buffer_size, status_code, "OK", res);
     free(res);
   } else {
-    assemble_reply(reply_buffer, buffer_size, 404, "Not Found",
-                   MAKE_ERROR_BODY(404, Not Found));
+    status_code = 404;
+    assemble_reply(reply_buffer, buffer_size, status_code, "Not Found",
+                   MAKE_ERROR_BODY(status_code, Not Found));
   }
+
+  return status_code;
 }
 
 static void *handle_client(void *param) {
   char buffer[MAX_BUFFER_SIZE] = {0};
   client_t *cli = (client_t *)param;
+  int *ret = calloc(1, sizeof(int));
   request_t req;
 
   memset(&req, 0, sizeof(request_t));
@@ -126,7 +129,7 @@ static void *handle_client(void *param) {
 
     memset(buffer, 0, sizeof(buffer));
     if (!strcmp(req.verb, "GET")) {
-      handle_get_request(buffer, MAX_BUFFER_SIZE, req.resource, cli->root_dir);
+      *ret = handle_get_request(buffer, MAX_BUFFER_SIZE, &req.resource[1]);
 
       send(cli->fd, buffer, strlen(buffer), 0);
     }
@@ -134,7 +137,7 @@ static void *handle_client(void *param) {
 
   close(cli->fd);
 
-  return NULL;
+  return (void *)ret;
 }
 
 static void parse_args(int argc, char **argv, server_cfg_t *cfg) {
@@ -213,6 +216,8 @@ static int run_server(const server_cfg_t *cfg) {
   printf("[+] starting server with max_clients=%u, port=%u, root_dir=%s\n",
          cfg->max_clients, cfg->port, cfg->root_dir);
 
+  chdir(cfg->root_dir);
+
   while (1) {
     int client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &cli_len);
 
@@ -220,7 +225,6 @@ static int run_server(const server_cfg_t *cfg) {
       client_t *cli_ptr = calloc(1, sizeof(client_t));
 
       cli_ptr->fd = (uint32_t)client_fd;
-      cli_ptr->root_dir = cfg->root_dir;
       memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
 
       task_t *task = create_task(client_fd, handle_client, (void *)cli_ptr,
