@@ -6,8 +6,8 @@
 class TaskMock {
  public:
   MOCK_METHOD(void *, TaskCb, (void *));
-  MOCK_METHOD(void, OnTaskStartCb, (uint32_t, void *));
-  MOCK_METHOD(void, OnTaskEndCb, (uint32_t, void *, void *));
+  MOCK_METHOD(void, OnTaskStartCb, (uint32_t, const void *));
+  MOCK_METHOD(void, OnTaskEndCb, (uint32_t, const void *, void *));
 };
 
 class CbWrapper {
@@ -16,8 +16,8 @@ class CbWrapper {
   ~CbWrapper();
 
   static void *TaskCb(void *param);
-  static void OnTaskStartCb(uint32_t tid, void *param);
-  static void OnTaskEndCb(uint32_t tid, void *param, void *ret_val);
+  static void OnTaskStartCb(uint32_t tid, const void *param);
+  static void OnTaskEndCb(uint32_t tid, const void *param, void *ret_val);
   static TaskMock &mock();
 
  private:
