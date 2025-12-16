@@ -38,6 +38,14 @@ typedef struct {
   struct in_addr addr;
 } client_t;
 
+// TODO:
+// - select
+// - error handling
+// - const and restrict
+// - better request parsing?
+// - logging?
+// - graceful server exit
+
 static void on_client_connected(uint32_t tid, const void *param) {
   const client_t *cli = (client_t *)param;
 
@@ -96,7 +104,7 @@ static char *get_resource(const char *res_name) {
 }
 
 static int handle_get_request(char *reply_buffer, size_t buffer_size,
-                                   const char *resource) {
+                              const char *resource) {
   char *res = get_resource(resource);
   int status_code;
 
@@ -107,7 +115,7 @@ static int handle_get_request(char *reply_buffer, size_t buffer_size,
   } else {
     status_code = 404;
     assemble_reply(reply_buffer, buffer_size, status_code, "Not Found",
-                   MAKE_ERROR_BODY(status_code, Not Found));
+                   MAKE_ERROR_BODY(404, Not Found));
   }
 
   return status_code;
@@ -140,7 +148,7 @@ static void *handle_client(void *param) {
   return (void *)ret;
 }
 
-static void parse_args(int argc, char **argv, server_cfg_t *cfg) {
+static void parse_args(int argc, char **argv, server_cfg_t *restrict cfg) {
   int opt;
 
   while ((opt = getopt(argc, argv, "m:p:r:")) != -1) {
@@ -170,7 +178,7 @@ static void parse_args(int argc, char **argv, server_cfg_t *cfg) {
   }
 }
 
-static int setup_socket(int *sock_fd, const server_cfg_t *cfg) {
+static int setup_socket(int *restrict sock_fd, const server_cfg_t *cfg) {
   struct sockaddr_in server_addr;
 
   *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
