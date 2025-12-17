@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "pool_day.h"
+#include "task.h"
 
 class Foo {
   public:
@@ -57,8 +58,8 @@ class Foo {
     }
 
     pool_day_t pool_;
-    task_t *t1_;
-    task_t *t2_;
+    task_t t1_;
+    task_t t2_;
 };
 
 int main(void) {

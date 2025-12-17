@@ -1,15 +1,17 @@
-#include "internal/task.h"
+#include "task.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-// cppcheck-suppress unusedFunction
-task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
-                    size_t param_size, void (*start_cb)(uint32_t, void *),
-                    void (*end_cb)(uint32_t, void *, void *)) {
-  task_t *node;
+#include "internal/task_def.h"
 
-  node = (task_t *)calloc(1, sizeof(task_t));
+// cppcheck-suppress unusedFunction
+task_t create_task(uint32_t id, void *(*task)(void *), void *param,
+                   size_t param_size, void (*start_cb)(uint32_t, void *),
+                   void (*end_cb)(uint32_t, void *, void *)) {
+  task_t node;
+
+  node = (task_t)calloc(1, sizeof(*node));
   if (node) {
     node->id = id;
     node->task = task;
@@ -28,7 +30,7 @@ task_t *create_task(uint32_t id, void *(*task)(void *), void *param,
   return node;
 }
 
-void destroy_task(task_t *task) {
+void destroy_task(task_t task) {
   // if the task is orphaned, it means that the user will take care of its release,
   // otherwise it is managed by the pool
   if (task && task->is_orphan) {

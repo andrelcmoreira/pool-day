@@ -26,10 +26,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef struct task task_t; //!< Structure representing an item on the task
-                            // queue.
 typedef struct task_queue task_queue_t; //!< Structure representing the queue
                                         // itself.
+typedef struct task *task_t; //!< Structure representing an item on the task
+                             // queue.
 
 /**
  * @brief Get the queue size.
@@ -50,7 +50,7 @@ uint32_t queue_size(task_queue_t *queue);
  * @param[in,out] queue Pointer to the queue.
  * @param[in]     task Pointer to the task to be enqueued.
  */
-void enqueue(task_queue_t *queue, task_t *task);
+void enqueue(task_queue_t *queue, task_t task);
 
 /**
  * @brief Dequeue a task from the queue.
@@ -61,7 +61,7 @@ void enqueue(task_queue_t *queue, task_t *task);
  *
  * @return The head task.
  */
-task_t *dequeue(task_queue_t *queue);
+task_t dequeue(task_queue_t *queue);
 
 /**
  * @brief Initialize the queue.

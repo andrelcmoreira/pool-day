@@ -2,8 +2,9 @@
 #include <stdlib.h>
 
 #include "internal/queue.h"
-#include "internal/task.h"
+#include "internal/task_def.h"
 #include "internal/utils.h"
+#include "task.h"
 
 /**
  * @brief For-each macro implementation.
@@ -28,8 +29,8 @@
  * @brief Task queue definition.
  */
 struct task_queue {
-  task_t *tail;           //!< Tail of the queue.
-  task_t *head;           //!< Head of the queue.
+  task_t tail;           //!< Tail of the queue.
+  task_t head;           //!< Head of the queue.
   pthread_mutex_t mutex;  //!< Mutex of the queue.
 };
 
@@ -47,7 +48,7 @@ uint32_t queue_size(task_queue_t *queue) {
   return size;
 }
 
-void enqueue(task_queue_t *queue, task_t *elem) {
+void enqueue(task_queue_t *queue, task_t elem) {
   if (queue && elem) {
     THREAD_SAFE_ZONE(&queue->mutex, {
       // if the queue is empty
@@ -62,8 +63,8 @@ void enqueue(task_queue_t *queue, task_t *elem) {
   }
 }
 
-static task_t *__dequeue(task_queue_t *queue) {
-  task_t *to_del = queue->head;
+static task_t __dequeue(task_queue_t *queue) {
+  task_t to_del = queue->head;
 
   // if the queue is not empty
   if (to_del) {
@@ -80,8 +81,8 @@ static task_t *__dequeue(task_queue_t *queue) {
   return to_del;
 }
 
-task_t *dequeue(task_queue_t *queue) {
-  task_t *to_del = NULL;
+task_t dequeue(task_queue_t *queue) {
+  task_t to_del = NULL;
 
   if (queue) {
     THREAD_SAFE_ZONE(&queue->mutex, {
@@ -105,7 +106,7 @@ void destroy_queue(task_queue_t *queue) {
   if (queue) {
     THREAD_SAFE_ZONE(&queue->mutex, {
       for_each_task_safe(curr, queue) {
-        task_t *node = __dequeue(queue);
+        task_t node = __dequeue(queue);
 
         destroy_task(node);
       }
