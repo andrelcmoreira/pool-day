@@ -4,11 +4,12 @@
 #include <semaphore.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "internal/logger.h"
 #include "internal/queue.h"
+#include "internal/task_def.h"
 #include "internal/utils.h"
+#include "task.h"
 
 /**
  * @brief Main structure of the library, it defines a handle to the pool.
@@ -34,7 +35,7 @@ __static void *thread_func(void *param) {
       break;
     }
 
-    task_t *entry = dequeue(pool->tasks);
+    task_t entry = dequeue(pool->tasks);
     if (entry) {
       entry->is_orphan = true;
 
@@ -68,7 +69,7 @@ __static void *thread_func(void *param) {
 }
 
 // cppcheck-suppress unusedFunction
-pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task) {
+pool_day_retcode_t enqueue_task(pool_day_t pool, task_t task) {
   if (!pool || !task) {
     POOL_DAY_ERROR("null parameter supplied");
     return POOL_DAY_ERROR_NULL_PARAM;
@@ -180,7 +181,7 @@ uint32_t queued_tasks(pool_day_t pool) {
 }
 
 // cppcheck-suppress unusedFunction
-void *get_task_result(task_t *task) {
+void *get_task_result(task_t task) {
   if (!task) {
     POOL_DAY_ERROR("null task provided");
     return NULL;

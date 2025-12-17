@@ -3,7 +3,9 @@
 #include "mock/callback_mock.h"
 
 extern "C" {
+#include "internal/task_def.h"
 #include "pool_day.h"
+#include "task.h"
 
 extern void *thread_func(void *param);
 }

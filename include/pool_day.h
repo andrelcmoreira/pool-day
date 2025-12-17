@@ -31,9 +31,9 @@ extern "C" {
 #endif  // __cplusplus
 
 #include "internal/errors.h"
-#include "internal/task.h"
 
 typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
+typedef struct task *task_t;          //!< Handle to the task.
 
 /**
  * @brief Enqueue a new task into the pool.
@@ -43,7 +43,7 @@ typedef struct pool_day *pool_day_t;  //!< Handle to the pool.
  *
  * @return POOL_DAY_SUCCESS on success; otherwise the suitable error code.
  */
-pool_day_retcode_t enqueue_task(pool_day_t pool, task_t *task);
+pool_day_retcode_t enqueue_task(pool_day_t pool, task_t task);
 
 /**
  * @brief Create a new pool according to the specified size.
@@ -81,8 +81,7 @@ uint32_t queued_tasks(pool_day_t pool);
  *
  * pool = create_pool(size);
  * if (pool) {
- *   task_t *t = create_task(id, callback, (void *)param, param_size,
- *                           start_cb, end_cb);
+ *   task_t t = create_task(id, callback, (void *)param, param_size, NULL, NULL);
  *
  *   enqueue_task(pool, t);
  *
@@ -99,7 +98,7 @@ uint32_t queued_tasks(pool_day_t pool);
  *
  * @return The return value of the task.
  */
-void *get_task_result(task_t *task);
+void *get_task_result(task_t task);
 
 /**
  * @brief Abort the execution of incoming tasks.

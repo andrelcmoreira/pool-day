@@ -2,7 +2,7 @@
 
 extern "C" {
 #include "internal/queue.h"
-#include "internal/task.h"
+#include "task.h"
 }
 
 class QueueTest : public ::testing::Test {
@@ -167,7 +167,7 @@ TEST_F(QueueTest, DequeueMultipleElementsWithNotEmptyQueue) {
   auto t2 = create_task(1, nullptr, nullptr, 0, nullptr, nullptr);
   auto t3 = create_task(2, nullptr, nullptr, 0, nullptr, nullptr);
   auto t4 = create_task(3, nullptr, nullptr, 0, nullptr, nullptr);
-  task_t *ret;
+  task_t ret;
 
   enqueue(queue_, t1);
   enqueue(queue_, t2);

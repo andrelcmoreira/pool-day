@@ -5,18 +5,9 @@
 #include <unistd.h>
 
 #include "pool_day.h"
+#include "task.h"
 
 #define DUMMY_TASK_ID 0
-
-void task_start_callback(uint32_t tid, void *param) {
-  (void)param;
-  printf("task '%u' starting...\n", tid);
-}
-
-void task_end_callback(uint32_t tid, void *param, void *ret_val) {
-  (void)param;
-  printf("task '%u' ended with return value: %s\n", tid, (char *)ret_val);
-}
 
 void *func(void *param) {
   char *str = (char *)param;
@@ -42,9 +33,8 @@ int main(void) {
   }
 
   char str[] = "foo";
-  task_t *task = create_task(DUMMY_TASK_ID, func, (void *)str,
-                             sizeof(char) * strlen(str) + 1,
-                             task_start_callback, task_end_callback);
+  task_t task = create_task(DUMMY_TASK_ID, func, (void *)str,
+                            sizeof(char) * strlen(str) + 1, NULL, NULL);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
   char *ret = (char *)get_task_result(task);
