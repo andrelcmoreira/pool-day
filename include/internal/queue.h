@@ -48,7 +48,7 @@ uint32_t queue_size(task_queue_t *queue);
  * @note This function is thread-safe.
  *
  * @param[in,out] queue Pointer to the queue.
- * @param[in]     task Pointer to the task to be enqueued.
+ * @param[in]     task Handle to the task to be enqueued.
  */
 void enqueue(task_queue_t *queue, task_t task);
 
