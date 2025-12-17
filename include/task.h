@@ -46,7 +46,7 @@ typedef struct task *task_t; //!< Handle to the task.
  * @param[in] start_cb Callback executed when the task starts.
  * @param[in] end_cb Callback executed when the task ends.
  *
- * @return Pointer to the new task.
+ * @return Handle to the new task.
  */
 task_t create_task(uint32_t id, void *(*task)(void *), void *param,
                    size_t param_size, void (*start_cb)(uint32_t, void *),
@@ -55,7 +55,7 @@ task_t create_task(uint32_t id, void *(*task)(void *), void *param,
 /**
  * @brief Destroy a task.
  *
- * @param[in] task Pointer to the task to be destroyed.
+ * @param[in] task Handle to the task to be destroyed.
  */
 void destroy_task(task_t task);
 

@@ -94,7 +94,7 @@ uint32_t queued_tasks(pool_day_t pool);
  *
  * @note This function blocks the current thread.
  *
- * @param[in] task Task handler.
+ * @param[in] task Task handle.
  *
  * @return The return value of the task.
  */
