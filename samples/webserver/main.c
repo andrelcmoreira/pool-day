@@ -9,7 +9,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <pool_day.h>
+#include "pool_day.h"
+#include "task.h"
 
 #define MAX_VERB_SIZE          7
 #define MAX_BUFFER_SIZE        4096
@@ -235,9 +236,9 @@ static int run_server(const server_cfg_t *cfg) {
       cli_ptr->fd = (uint32_t)client_fd;
       memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
 
-      task_t *task = create_task(client_fd, handle_client, (void *)cli_ptr,
-                                 sizeof(client_t), on_client_connected,
-                                 on_client_disconnected);
+      task_t task = create_task(client_fd, handle_client, (void *)cli_ptr,
+                                sizeof(client_t), on_client_connected,
+                                on_client_disconnected);
 
       if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
         printf("[-] failed to enqueue the request task\n");

@@ -69,8 +69,8 @@ task_t create_sync_task(uint32_t id, void *(*task)(void *), void *param,
  */
 task_t create_async_task(uint32_t id, void *(*task)(void *), void *param,
                          size_t param_size, bool auto_release,
-                         void (*start_cb)(uint32_t, void *),
-                         void (*end_cb)(uint32_t, void *, void *));
+                         void (*start_cb)(uint32_t, const void *),
+                         void (*end_cb)(uint32_t, const void *, void *));
 
 /**
  * @brief Destroy a task.
