@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "pool_day.h"
+#include "task.h"
 
 #define HELLO_WORLD_TASK_ID 0
 
@@ -32,8 +33,8 @@ int main(void) {
   }
 
   char str[] = "hello, world!";
-  task_t *task = create_task(HELLO_WORLD_TASK_ID, func, (void *)str,
-                             sizeof(char) * strlen(str) + 1, NULL, NULL);
+  task_t task = create_task(HELLO_WORLD_TASK_ID, func, (void *)str,
+                            sizeof(char) * strlen(str) + 1, NULL, NULL);
 
   if (!task) {
     // handle error
