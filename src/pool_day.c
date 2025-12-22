@@ -51,15 +51,12 @@ __static void *thread_func(void *param) {
 
       entry->ret_val = ret;
       if (entry->on_task_end) {
-        POOL_DAY_DEBUG("thread '0x%x' running async teardown for task '0x%x'",
+        POOL_DAY_DEBUG("thread '0x%x' executing end callback for task '0x%x'",
                        pthread_self(), entry->id);
         entry->on_task_end(entry->id, entry->param, entry->ret_val);
-        destroy_task(entry);
-      } else {
-        POOL_DAY_DEBUG("thread '0x%x' running sync teardown for task '0x%x'",
-                       pthread_self(), entry->id);
-        sem_post(&entry->ready);
       }
+
+      sem_post(&entry->ready);
     }
   }
 
@@ -192,4 +189,8 @@ void *get_task_result(task_t task) {
   POOL_DAY_DEBUG("task finished");
 
   return task->ret_val;
+}
+
+void wait_task_finish(task_t task) {
+  (void)get_task_result(task);
 }
