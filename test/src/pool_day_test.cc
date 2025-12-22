@@ -262,6 +262,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithCallbacks) {
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
+
+  // cleanup
+  destroy_task(task);
 }
 
 /**
@@ -322,6 +325,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithEndCallbackOnly) {
 
   auto ret = thread_func(pool_);
   EXPECT_EQ(ret, nullptr);
+
+  // cleanup
+  destroy_task(task);
 }
 
 /**

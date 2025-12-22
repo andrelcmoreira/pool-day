@@ -101,6 +101,15 @@ uint32_t queued_tasks(pool_day_t pool);
 void *get_task_result(task_t task);
 
 /**
+ * @brief Wait for the finish of a given task without retrieving its result.
+ *
+ * @note This function blocks the current thread.
+ *
+ * @param[in] task Task handle.
+ */
+void wait_task_finish(task_t task);
+
+/**
  * @brief Abort the execution of incoming tasks.
  *
  * @param[out] pool Handle to the thread pool.
