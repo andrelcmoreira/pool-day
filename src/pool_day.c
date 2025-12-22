@@ -177,7 +177,6 @@ uint32_t queued_tasks(pool_day_t pool) {
   return pool ? queue_size(pool->tasks) : 0;
 }
 
-// cppcheck-suppress unusedFunction
 void *get_task_result(task_t task) {
   if (!task) {
     POOL_DAY_ERROR("null task provided");
@@ -191,6 +190,7 @@ void *get_task_result(task_t task) {
   return task->ret_val;
 }
 
+// cppcheck-suppress unusedFunction
 void wait_task_finish(task_t task) {
   (void)get_task_result(task);
 }
