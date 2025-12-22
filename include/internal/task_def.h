@@ -38,6 +38,7 @@ extern "C" {
 struct task {
   uint32_t id;                                    //!< Task identifier.
   bool is_orphan;                                 //!< Flag indicating whether the task is orphaned.
+  bool auto_release;                              //!< Flag indicating whether the task must be released after its execution.
   struct task *next;                              //!< Next element of the current instance.
   struct task *prev;                              //!< Previous element of the current instance.
   void *(*task)(void *);                          //!< Task callback.
