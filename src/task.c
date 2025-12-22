@@ -7,7 +7,8 @@
 
 // cppcheck-suppress unusedFunction
 task_t create_task(uint32_t id, void *(*task)(void *), void *param,
-                   size_t param_size, void (*start_cb)(uint32_t, void *),
+                   size_t param_size, bool auto_release,
+                   void (*start_cb)(uint32_t, void *),
                    void (*end_cb)(uint32_t, void *, void *)) {
   task_t node;
 
@@ -18,6 +19,7 @@ task_t create_task(uint32_t id, void *(*task)(void *), void *param,
     node->on_task_start = start_cb;
     node->on_task_end = end_cb;
     node->is_orphan = true;
+    node->auto_release = auto_release;
 
     if (param) {
       node->param = malloc(param_size);

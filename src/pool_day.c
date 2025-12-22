@@ -57,6 +57,9 @@ __static void *thread_func(void *param) {
       }
 
       sem_post(&entry->ready);
+      if (entry->auto_release) {
+        destroy_task(entry);
+      }
     }
   }
 

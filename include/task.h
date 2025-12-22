@@ -24,6 +24,7 @@
 #ifndef TASK_H_
 #define TASK_H_
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -43,13 +44,16 @@ typedef struct task *task_t; //!< Handle to the task.
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
  * @param[in] param_size Size of the task parameter.
+ * @param[in] auto_release Flag indicating whether the task must be
+ * released after its execution.
  * @param[in] start_cb Callback executed when the task starts.
  * @param[in] end_cb Callback executed when the task ends.
  *
  * @return Handle to the new task.
  */
 task_t create_task(uint32_t id, void *(*task)(void *), void *param,
-                   size_t param_size, void (*start_cb)(uint32_t, void *),
+                   size_t param_size, bool auto_release,
+                   void (*start_cb)(uint32_t, void *),
                    void (*end_cb)(uint32_t, void *, void *));
 
 /**
