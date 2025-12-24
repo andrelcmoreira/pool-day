@@ -36,30 +36,35 @@ __static void *thread_func(void *param) {
     }
 
     task_t entry = dequeue(pool->tasks);
-    if (entry) {
-      entry->is_orphan = true;
+    if (!entry) {
+      POOL_DAY_DEBUG("thread '0x%x' found no task to execute", pthread_self());
+      continue;
+    }
 
-      if (entry->on_task_start) {
-        entry->on_task_start(entry->id, entry->param);
-      }
+    entry->is_orphan = true;
 
-      POOL_DAY_DEBUG("thread '0x%x' running the task '0x%x'", pthread_self(),
-                     entry->id);
-      void *ret = entry->task(entry->param);
-      POOL_DAY_DEBUG("thread '0x%x' finished the task '0x%x'", pthread_self(),
-                     entry->id);
+    if (entry->on_task_start) {
+      POOL_DAY_DEBUG("thread '0x%x' executing start callback for task '0x%x'",
+                     pthread_self(), entry->id);
+      entry->on_task_start(entry->id, entry->param);
+    }
 
-      entry->ret_val = ret;
-      if (entry->on_task_end) {
-        POOL_DAY_DEBUG("thread '0x%x' executing end callback for task '0x%x'",
-                       pthread_self(), entry->id);
-        entry->on_task_end(entry->id, entry->param, entry->ret_val);
-      }
+    POOL_DAY_DEBUG("thread '0x%x' running the task '0x%x'", pthread_self(),
+                   entry->id);
+    void *ret = entry->task(entry->param);
+    POOL_DAY_DEBUG("thread '0x%x' finished the task '0x%x'", pthread_self(),
+                   entry->id);
 
-      sem_post(&entry->ready);
-      if (entry->auto_release) {
-        destroy_task(entry);
-      }
+    entry->ret_val = ret;
+    if (entry->on_task_end) {
+      POOL_DAY_DEBUG("thread '0x%x' executing end callback for task '0x%x'",
+                     pthread_self(), entry->id);
+      entry->on_task_end(entry->id, entry->param, entry->ret_val);
+    }
+
+    sem_post(&entry->ready);
+    if (entry->auto_release) {
+      destroy_task(entry);
     }
   }
 
