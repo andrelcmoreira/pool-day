@@ -9,12 +9,10 @@ class Foo {
   public:
     Foo()
       : pool_{create_pool(2)},
-        t1_{create_task(0, Foo::Cb1, (void *)"hello",
-                        sizeof(char) * std::strlen("hello") + 1, nullptr,
-                        nullptr)},
-        t2_{create_task(1, Foo::Cb2, (void *)"hi",
-                        sizeof(char) * std::strlen("hi") + 1, nullptr,
-                        nullptr)} {
+        t1_{create_sync_task(0, Foo::Cb1, (void *)"hello",
+                             sizeof(char) * std::strlen("hello") + 1)},
+        t2_{create_sync_task(1, Foo::Cb2, (void *)"hi",
+                             sizeof(char) * std::strlen("hi") + 1)} {
     }
 
     void RunTasks(void) {

@@ -35,9 +35,9 @@ extern "C" {
 typedef struct task *task_t; //!< Handle to the task.
 
 /**
- * @brief Create a new task.
+ * @brief Create a new synchronous task.
  *
- * @note The created task doesn't require a manual release once it's bound to a
+ * @note The created task requires a manual release once it's bound to a
  * pool.
  *
  * @param[in] id Task identifier.
@@ -51,10 +51,27 @@ typedef struct task *task_t; //!< Handle to the task.
  *
  * @return Handle to the new task.
  */
-task_t create_task(uint32_t id, void *(*task)(void *), void *param,
-                   size_t param_size, bool auto_release,
-                   void (*start_cb)(uint32_t, void *),
-                   void (*end_cb)(uint32_t, void *, void *));
+task_t create_sync_task(uint32_t id, void *(*task)(void *), void *param,
+                        size_t param_size);
+
+/**
+ * @brief Create a new asynchronous task.
+ *
+ * @param[in] id Task identifier.
+ * @param[in] task Task callback.
+ * @param[in] param Task parameter.
+ * @param[in] param_size Size of the task parameter.
+ * @param[in] auto_release Flag indicating whether the task must be
+ * released after its execution.
+ * @param[in] start_cb Callback executed when the task starts.
+ * @param[in] end_cb Callback executed when the task ends.
+ *
+ * @return Handle to the new task.
+ */
+task_t create_async_task(uint32_t id, void *(*task)(void *), void *param,
+                         size_t param_size, bool auto_release,
+                         void (*start_cb)(uint32_t, void *),
+                         void (*end_cb)(uint32_t, void *, void *));
 
 /**
  * @brief Destroy a task.

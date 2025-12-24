@@ -57,7 +57,7 @@ TEST_F(PoolDayTest, CreatePollWithInvalidSize) {
  * it, then it must be added to the pool's task queue.
  */
 TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
-  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+  auto task = create_sync_task(0, nullptr, nullptr, 0);
 
   EXPECT_EQ(queued_tasks(pool_), 0);
   EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
@@ -72,11 +72,11 @@ TEST_F(PoolDayTest, EnqueueSingleTaskWithPoolEmpty) {
  * it, then they must be added to the pool's task queue.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
-  auto t1 = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t2 = create_task(1, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t3 = create_task(2, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t4 = create_task(3, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t5 = create_task(4, nullptr, nullptr, 0, nullptr, nullptr);
+  auto t1 = create_sync_task(0, nullptr, nullptr, 0);
+  auto t2 = create_sync_task(1, nullptr, nullptr, 0);
+  auto t3 = create_sync_task(2, nullptr, nullptr, 0);
+  auto t4 = create_sync_task(3, nullptr, nullptr, 0);
+  auto t5 = create_sync_task(4, nullptr, nullptr, 0);
 
   EXPECT_EQ(queued_tasks(pool_), 0);
 
@@ -101,7 +101,7 @@ TEST_F(PoolDayTest, EnqueueTaskWithPoolNotEmpty) {
  * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
-  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+  auto task = create_sync_task(0, nullptr, nullptr, 0);
 
   EXPECT_EQ(enqueue_task(nullptr, task), POOL_DAY_ERROR_NULL_PARAM);
   free(task);
@@ -112,27 +112,10 @@ TEST_F(PoolDayTest, EnqueueTaskWithNullPool) {
  * then nothing must happen and the suitable error code must be returned.
  */
 TEST_F(PoolDayTest, EnqueueTaskWithNullTask) {
-  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+  auto task = create_sync_task(0, nullptr, nullptr, 0);
 
   EXPECT_EQ(enqueue_task(pool_, nullptr), POOL_DAY_ERROR_NULL_PARAM);
   free(task);
-}
-
-/**
- * @brief Given we have a valid pool and a task already bound to a pool, when we
- * try to enqueue it, then nothing must happen and the suitable error code
- * must be returned.
- */
-TEST_F(PoolDayTest, EnqueueTaskAlreadyBound) {
-  auto another_pool = create_pool(1);
-  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
-
-  EXPECT_EQ(enqueue_task(pool_, task), POOL_DAY_SUCCESS);
-
-  destroy_pool(&another_pool);
-
-  // to force the task destruction on destroy_pool call
-  task->is_orphan = true;
 }
 
 /**
@@ -148,7 +131,7 @@ TEST_F(PoolDayTest, GetQueuedTasksCountWithNoTasks) {
  * the number of queued tasks in the pool, then 1 must be returned.
  */
 TEST_F(PoolDayTest, GetQueuedTasksCountWithSingleTask) {
-  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+  auto task = create_sync_task(0, nullptr, nullptr, 0);
 
   enqueue_task(pool_, task);
 
@@ -164,11 +147,11 @@ TEST_F(PoolDayTest, GetQueuedTasksCountWithSingleTask) {
  * returned.
  */
 TEST_F(PoolDayTest, GetQueuedTasksCountWithSeveralTasks) {
-  auto t1 = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t2 = create_task(1, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t3 = create_task(2, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t4 = create_task(3, nullptr, nullptr, 0, nullptr, nullptr);
-  auto t5 = create_task(4, nullptr, nullptr, 0, nullptr, nullptr);
+  auto t1 = create_sync_task(0, nullptr, nullptr, 0);
+  auto t2 = create_sync_task(1, nullptr, nullptr, 0);
+  auto t3 = create_sync_task(2, nullptr, nullptr, 0);
+  auto t4 = create_sync_task(3, nullptr, nullptr, 0);
+  auto t5 = create_sync_task(4, nullptr, nullptr, 0);
 
   enqueue_task(pool_, t1);
   enqueue_task(pool_, t2);
@@ -209,7 +192,7 @@ TEST_F(PoolDayTest, DestroyPollWithNullHandle) {
  * scheduled for execution, then the task's callback must be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
-  auto task = create_task(0, CbWrapper::TaskCb, nullptr, 0, nullptr, nullptr);
+  auto task = create_sync_task(0, CbWrapper::TaskCb, nullptr, 0);
   char ret_val[]{ "hello, i'm the return of the task" };
 
   enqueue_task(pool_, task);
@@ -241,8 +224,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithNullParameterWithSuccess) {
  * suitable times.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithCallbacks) {
-  auto task = create_task(0, CbWrapper::TaskCb, nullptr, 0,
-                          CbWrapper::OnTaskStartCb, CbWrapper::OnTaskEndCb);
+  auto task = create_async_task(0, CbWrapper::TaskCb, nullptr, 0, false,
+                                CbWrapper::OnTaskStartCb,
+                                CbWrapper::OnTaskEndCb);
   char ret_val[]{ "hello, i'm the return of the task" };
 
   enqueue_task(pool_, task);
@@ -272,8 +256,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithCallbacks) {
  * scheduled for execution, then the task's start callback must be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithStartCallbackOnly) {
-  auto task = create_task(0, CbWrapper::TaskCb, nullptr, 0,
-                          CbWrapper::OnTaskStartCb, nullptr);
+  auto task = create_async_task(0, CbWrapper::TaskCb, nullptr, 0, false,
+                                CbWrapper::OnTaskStartCb, nullptr);
   char ret_val[]{ "hello, i'm the return of the task" };
 
   enqueue_task(pool_, task);
@@ -304,8 +288,8 @@ TEST_F(PoolDayTest, ExecuteTaskWithStartCallbackOnly) {
  * scheduled for execution, then the task's end callback must be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithEndCallbackOnly) {
-  auto task = create_task(0, CbWrapper::TaskCb, nullptr, 0, nullptr,
-                          CbWrapper::OnTaskEndCb);
+  auto task = create_async_task(0, CbWrapper::TaskCb, nullptr, 0, false,
+                                nullptr, CbWrapper::OnTaskEndCb);
   char ret_val[]{ "hello, i'm the return of the task" };
 
   enqueue_task(pool_, task);
@@ -338,8 +322,9 @@ TEST_F(PoolDayTest, ExecuteTaskWithEndCallbackOnly) {
 TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
   char param[]{ "param" };
   char ret_val[]{ "hello, i'm the return of the task" };
-  auto task = create_task(0, CbWrapper::TaskCb, param,
-                          sizeof(char) * strlen(param) + 1, nullptr, nullptr);
+  auto task = create_async_task(0, CbWrapper::TaskCb, param,
+                                sizeof(char) * strlen(param) + 1, false,
+                                nullptr, nullptr);
 
   enqueue_task(pool_, task);
 
@@ -369,7 +354,7 @@ TEST_F(PoolDayTest, ExecuteTaskWithParameterWithSuccess) {
  * task is scheduled for execution, then the task's callback must not be called.
  */
 TEST_F(PoolDayTest, ExecuteTaskWithMustStopSet) {
-  auto task = create_task(0, CbWrapper::TaskCb, nullptr, 0, nullptr, nullptr);
+  auto task = create_sync_task(0, CbWrapper::TaskCb, nullptr, 0);
 
   enqueue_task(pool_, task);
 
@@ -399,8 +384,8 @@ TEST_F(PoolDayTest, AbortTasksWithNullPoolHandle) {
 TEST_F(PoolDayTest, GetTaskResultWithSuccess) {
   int ret_val{1234};
   char param[]{ "param" };
-  auto task = create_task(0, CbWrapper::TaskCb, param,
-                          sizeof(char) * strlen(param) + 1, nullptr, nullptr);
+  auto task = create_sync_task(0, CbWrapper::TaskCb, param,
+                               sizeof(char) * strlen(param) + 1);
 
   {
     enqueue_task(pool_, task);
@@ -441,7 +426,7 @@ TEST_F(PoolDayTest, GetTaskResultWithNullPoolTask) {
  * the finish of the task, then null must be returned.
  */
 TEST_F(PoolDayTest, GetTaskResultWithWithUnboundTask) {
-  auto task = create_task(0, nullptr, nullptr, 0, nullptr, nullptr);
+  auto task = create_sync_task(0, nullptr, nullptr, 0);
 
   EXPECT_EQ(get_task_result(task), nullptr);
 
