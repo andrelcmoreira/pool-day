@@ -33,8 +33,8 @@ int main(void) {
   }
 
   char str[] = "foo";
-  task_t task = create_task(DUMMY_TASK_ID, func, (void *)str,
-                            sizeof(char) * strlen(str) + 1, NULL, NULL);
+  task_t task = create_sync_task(DUMMY_TASK_ID, func, (void *)str,
+                                 sizeof(char) * strlen(str) + 1);
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
   char *ret = (char *)get_task_result(task);

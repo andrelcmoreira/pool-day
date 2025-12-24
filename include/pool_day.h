@@ -81,7 +81,7 @@ uint32_t queued_tasks(pool_day_t pool);
  *
  * pool = create_pool(size);
  * if (pool) {
- *   task_t t = create_task(id, callback, (void *)param, param_size, NULL, NULL);
+ *   task_t t = create_sync_task(id, callback, (void *)param, param_size);
  *
  *   enqueue_task(pool, t);
  *
