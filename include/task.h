@@ -44,10 +44,6 @@ typedef struct task *task_t; //!< Handle to the task.
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
  * @param[in] param_size Size of the task parameter.
- * @param[in] auto_release Flag indicating whether the task must be
- * released after its execution.
- * @param[in] start_cb Callback executed when the task starts.
- * @param[in] end_cb Callback executed when the task ends.
  *
  * @return Handle to the new task.
  */
