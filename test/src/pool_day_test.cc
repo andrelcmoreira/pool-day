@@ -252,6 +252,36 @@ TEST_F(PoolDayTest, ExecuteTaskWithCallbacks) {
 }
 
 /**
+ * @brief Given the pool has one task with callbacks with 'auto release' set,
+ * when the task is scheduled for execution, then the task's callbacks must be
+ * called at the suitable times and the task must be destroyed.
+ */
+TEST_F(PoolDayTest, ExecuteTaskWithCallbacksAndAutoRelease) {
+  auto task = create_async_task(0, CbWrapper::TaskCb, nullptr, 0, true,
+                                CbWrapper::OnTaskStartCb,
+                                CbWrapper::OnTaskEndCb);
+  char ret_val[]{ "hello, i'm the return of the task" };
+
+  enqueue_task(pool_, task);
+
+  EXPECT_CALL(CbWrapper::mock(), OnTaskStartCb(task->id, task->param))
+    .Times(1);
+  EXPECT_CALL(CbWrapper::mock(), TaskCb(nullptr))
+    .Times(1)
+    .WillOnce(
+      InvokeWithoutArgs([&]() {
+        abort_tasks(pool_);  // to break the thread loop
+        return ret_val;
+      })
+    );
+  EXPECT_CALL(CbWrapper::mock(), OnTaskEndCb(task->id, task->param, ret_val))
+    .Times(1);
+
+  auto ret = thread_func(pool_);
+  EXPECT_EQ(ret, nullptr);
+}
+
+/**
  * @brief Given the pool has one task with only start callback, when the task is
  * scheduled for execution, then the task's start callback must be called.
  */
