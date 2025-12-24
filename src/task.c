@@ -5,12 +5,12 @@
 
 #include "internal/task_def.h"
 
+// cppcheck-suppress unusedFunction
 task_t create_sync_task(uint32_t id, void *(*task)(void *), void *param,
                         size_t param_size) {
   return create_async_task(id, task, param, param_size, false, NULL, NULL);
 }
 
-// cppcheck-suppress unusedFunction
 task_t create_async_task(uint32_t id, void *(*task)(void *), void *param,
                          size_t param_size, bool auto_release,
                          void (*start_cb)(uint32_t, void *),
