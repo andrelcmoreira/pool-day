@@ -33,8 +33,8 @@ int main(void) {
   }
 
   char str[] = "hello, world!";
-  task_t task = create_task(HELLO_WORLD_TASK_ID, func, (void *)str,
-                            sizeof(char) * strlen(str) + 1, NULL, NULL);
+  task_t task = create_sync_task(HELLO_WORLD_TASK_ID, func, (void *)str,
+                                 sizeof(char) * strlen(str) + 1);
 
   if (!task) {
     // handle error
