@@ -9,8 +9,6 @@
 
 #define HELLO_WORLD_TASK_ID 0
 
-volatile bool task_finished = false;
-
 void task_start_callback(uint32_t tid, const void *param) {
   (void)param;
   printf("task '%u' starting...\n", tid);
@@ -19,7 +17,6 @@ void task_start_callback(uint32_t tid, const void *param) {
 void task_end_callback(uint32_t tid, const void *param, void *ret_val) {
   (void)param;
 
-  task_finished = true;
   printf("task '%u' ended with return value: %s\n", tid, (char *)ret_val);
   free(ret_val);
 }
@@ -59,7 +56,7 @@ int main(void) {
 
   assert(enqueue_task(pool, task) == POOL_DAY_SUCCESS);
 
-  while(!task_finished);
+  wait_task_finish(task);
 
   destroy_task(task);
   destroy_pool(&pool);
