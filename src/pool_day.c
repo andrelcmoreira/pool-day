@@ -81,6 +81,10 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t task) {
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
+  POOL_DAY_DEBUG("task ID: %u", task->id);
+  POOL_DAY_DEBUG("task callback: %p", task->task);
+  POOL_DAY_DEBUG("task parameter: %p", task->param);
+
   task->ret_val = NULL;
   task->is_orphan = false;
 
