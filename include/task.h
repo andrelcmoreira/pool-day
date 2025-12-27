@@ -53,12 +53,15 @@ task_t create_sync_task(uint32_t id, void *(*task)(void *), void *param,
 /**
  * @brief Create a new asynchronous task.
  *
+ * @note When the 'auto_release' parameter is set to false, the created task
+ * requires a manual release once it's bound to a pool.
+ *
  * @param[in] id Task identifier.
  * @param[in] task Task callback.
  * @param[in] param Task parameter.
  * @param[in] param_size Size of the task parameter.
- * @param[in] auto_release Flag indicating whether the task must be
- * released after its execution.
+ * @param[in] auto_release Flag indicating whether the task must be released
+ * after its execution.
  * @param[in] start_cb Callback executed when the task starts.
  * @param[in] end_cb Callback executed when the task ends.
  *

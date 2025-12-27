@@ -26,8 +26,8 @@ __static void *thread_func(void *param) {
   pool_day_t pool = (pool_day_t)param;
 
   while (!pool->must_stop) {
+    POOL_DAY_DEBUG("thread '0x%x' waiting...", pthread_self());
     sem_wait(&pool->lock);
-
     POOL_DAY_DEBUG("thread '0x%x' woke up", pthread_self());
 
     if (pool->must_stop) {
@@ -55,15 +55,16 @@ __static void *thread_func(void *param) {
     POOL_DAY_DEBUG("thread '0x%x' finished the task '0x%x'", pthread_self(),
                    entry->id);
 
-    entry->ret_val = ret;
     if (entry->on_task_end) {
       POOL_DAY_DEBUG("thread '0x%x' executing end callback for task '0x%x'",
                      pthread_self(), entry->id);
-      entry->on_task_end(entry->id, entry->param, entry->ret_val);
+      entry->on_task_end(entry->id, entry->param, ret);
     }
 
-    sem_post(&entry->ready);
-    if (entry->auto_release) {
+    if (!entry->auto_release) {
+      entry->ret_val = ret;
+      sem_post(&entry->ready);
+    } else {
       destroy_task(entry);
     }
   }
