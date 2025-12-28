@@ -196,6 +196,12 @@ void *get_task_result(task_t task) {
     return NULL;
   }
 
+  if (task->auto_release) {
+    POOL_DAY_ERROR(
+      "the result of a task with 'auto_release' option set can't be retrieved");
+    return NULL;
+  }
+
   POOL_DAY_DEBUG("waiting for the finish of the task");
   sem_wait(&task->ready);
   POOL_DAY_DEBUG("task finished");
