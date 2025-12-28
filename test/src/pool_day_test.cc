@@ -463,3 +463,18 @@ TEST_F(PoolDayTest, GetTaskResultWithWithUnboundTask) {
   // cleanup
   destroy_task(task);
 }
+
+/**
+ * @brief Given we have a task with the 'auto_release' option set, when we wait
+ * for the finish of the task, then null must be returned.
+ */
+TEST_F(PoolDayTest, GetTaskResultWithAutoReleaseSet) {
+  auto task = create_async_task(0, nullptr, nullptr, 0, true,
+                                CbWrapper::OnTaskStartCb,
+                                CbWrapper::OnTaskEndCb);
+
+  EXPECT_EQ(get_task_result(task), nullptr);
+
+  // cleanup
+  destroy_task(task);
+}
