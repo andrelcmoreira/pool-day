@@ -87,12 +87,15 @@ uint32_t queued_tasks(pool_day_t pool);
  *
  *   void *ret = get_task_result(t);
  *
+ *   handle_ret(ret);
+ *
  *   destroy_task(t);
  *   destroy_pool(&pool);
  * }
  * @endcode
  *
- * @note This function blocks the current thread.
+ * @note This function blocks the current thread and its usage is not safe for
+ * tasks with 'auto_release' option set.
  *
  * @param[in] task Task handle.
  *
@@ -103,7 +106,25 @@ void *get_task_result(task_t task);
 /**
  * @brief Wait for the finish of a given task without retrieving its result.
  *
- * @note This function blocks the current thread.
+ * Sample:
+ * @code{.c}
+ * pool_day_t pool;
+ *
+ * pool = create_pool(size);
+ * if (pool) {
+ *   task_t t = create_sync_task(id, callback, (void *)param, param_size);
+ *
+ *   enqueue_task(pool, t);
+ *
+ *   wait_task_finish(t);
+ *
+ *   destroy_task(t);
+ *   destroy_pool(&pool);
+ * }
+ * @endcode
+ *
+ * @note This function blocks the current thread and its usage is not safe for
+ * tasks with 'auto_release' option set.
  *
  * @param[in] task Task handle.
  */
