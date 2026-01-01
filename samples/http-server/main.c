@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <errno.h>
 #include <getopt.h>
 #include <linux/limits.h>
 #include <netinet/in.h>
@@ -42,7 +43,6 @@ typedef struct {
 // TODO:
 // - select
 // - graceful server exit
-// - error handling
 // - const and restrict
 
 static void on_client_connected(uint32_t tid, const void *param) {
@@ -60,7 +60,8 @@ static void on_client_disconnected(uint32_t tid, const void *param,
   free(ret_val);
 }
 
-static void parse_request(const char *buffer, request_t *req) {
+static void parse_request(const char *restrict buffer,
+                          request_t *restrict req) {
   // simple parsing logic for demonstration purposes
   sscanf(buffer, "%s %s", req->verb, req->resource);
 }
@@ -80,6 +81,7 @@ static char *get_resource(const char *res_name) {
 
   FILE *file = fopen(res_name, "r");
   if (!file) {
+    printf("[-] file to open the requested resource: %s\n", strerror(errno));
     return NULL;
   }
 
@@ -87,11 +89,14 @@ static char *get_resource(const char *res_name) {
 
   char *content = calloc(1, st.st_size + 1);
   if (!content) {
+    printf(
+      "[-] no memory available to put the requested resource's content on\n");
     fclose(file);
     return NULL;
   }
 
   if (!fread(content, 1, st.st_size, file)) {
+    printf("[-] file to read the requested resource\n");
     free(content);
     fclose(file);
     return NULL;
@@ -178,25 +183,28 @@ static void parse_args(int argc, char **argv, server_cfg_t *restrict cfg) {
 }
 
 static int setup_socket(int *restrict sock_fd, const server_cfg_t *cfg) {
-  struct sockaddr_in server_addr;
+  struct sockaddr_in addr;
 
   *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (*sock_fd < 0) {
+    printf("[-] fail to create the server socket: %s\n", strerror(errno));
     return 1;
   }
 
-  memset(&server_addr, 0, sizeof(server_addr));
+  memset(&addr, 0, sizeof(addr));
 
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_port = htons(cfg->port);
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = INADDR_ANY;
+  addr.sin_port = htons(cfg->port);
 
-  if (bind(*sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+  if (bind(*sock_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+    printf("[-] fail to create the server socket: %s\n", strerror(errno));
     close(*sock_fd);
     return 1;
   }
 
   if (listen(*sock_fd, cfg->max_clients) < 0) {
+    printf("[-] fail to create the server socket: %s\n", strerror(errno));
     close(*sock_fd);
     return 1;
   }
@@ -204,7 +212,7 @@ static int setup_socket(int *restrict sock_fd, const server_cfg_t *cfg) {
   return 0;
 }
 
-static int run_server(const server_cfg_t *cfg) {
+static int run_server(const server_cfg_t *restrict cfg) {
   int server_fd;
   pool_day_t pool;
   struct sockaddr_in cli_addr;
@@ -216,6 +224,7 @@ static int run_server(const server_cfg_t *cfg) {
   }
 
   if (!(pool = create_pool(cfg->max_clients))) {
+    printf("[-] fail to setup the server pool\n");
     close(server_fd);
     return 1;
   }
@@ -223,28 +232,33 @@ static int run_server(const server_cfg_t *cfg) {
   printf("[+] starting server with max_clients=%u, port=%u, root_dir=%s\n",
          cfg->max_clients, cfg->port, cfg->root_dir);
 
-  chdir(cfg->root_dir);
+  if (chdir(cfg->root_dir)) {
+    printf("[-] fail to run the server: %s\n", strerror(errno));
+    return 1;
+  }
 
   while (1) {
     int client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &cli_len);
 
-    if (client_fd > 0) {
-      client_t *cli_ptr = calloc(1, sizeof(client_t));
+    if (client_fd == -1) {
+      printf("[-] failed to accept the incoming client: %s\n", strerror(errno));
+      continue;
+    }
 
-      cli_ptr->fd = (uint32_t)client_fd;
-      memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
+    client_t *cli_ptr = calloc(1, sizeof(client_t));
 
-      task_t task = create_async_task(client_fd, handle_client, (void *)cli_ptr,
-                                      sizeof(client_t), true,
-                                      on_client_connected,
-                                      on_client_disconnected);
+    cli_ptr->fd = (uint32_t)client_fd;
+    memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
 
-      if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
-        printf("[-] failed to enqueue the request task\n");
-        destroy_task(task);
-        close(client_fd);
-        free(cli_ptr);
-      }
+    task_t task = create_async_task(client_fd, handle_client, (void *)cli_ptr,
+                                    sizeof(client_t), true, on_client_connected,
+                                    on_client_disconnected);
+
+    if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
+      printf("[-] failed to enqueue the request task\n");
+      destroy_task(task);
+      close(client_fd);
+      free(cli_ptr);
     }
   }
 
