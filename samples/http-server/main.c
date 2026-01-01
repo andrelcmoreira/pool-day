@@ -41,23 +41,21 @@ typedef struct {
 
 // TODO:
 // - select
+// - graceful server exit
 // - error handling
 // - const and restrict
-// - better request parsing?
-// - logging?
-// - graceful server exit
 
 static void on_client_connected(uint32_t tid, const void *param) {
   const client_t *cli = (client_t *)param;
 
-  printf("[+] task[%u]: client connected from %s\n", tid, inet_ntoa(cli->addr));
+  printf("[+] task[%u]: client connected, ip=%s\n", tid, inet_ntoa(cli->addr));
 }
 
 static void on_client_disconnected(uint32_t tid, const void *param,
                                    void *ret_val) {
   const client_t *cli = (client_t *)param;
 
-  printf("[+] task[%u]: client disconnected from %s, result=%u\n", tid,
+  printf("[+] task[%u]: client disconnected ip=%s, result=%u\n", tid,
          inet_ntoa(cli->addr), *((uint16_t *)ret_val));
   free(ret_val);
 }

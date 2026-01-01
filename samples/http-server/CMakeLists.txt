@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(webserver)
+project(http-server)
 
-set(PROJECT_NAME "webserver")
+set(PROJECT_NAME "http-server")
 set(SOURCES main.c)
 
 set(CMAKE_C_FLAGS "-Wall -Werror -Wextra")
