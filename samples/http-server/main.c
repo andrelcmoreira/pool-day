@@ -42,7 +42,7 @@ typedef struct {
   struct in_addr addr;
 } client_t;
 
-void sig_handler(int signum) {
+static void sig_handler(int signum) {
   (void)signum;
 }
 
@@ -61,8 +61,8 @@ static void on_client_disconnected(uint32_t tid, const void *param,
   free(ret_val);
 }
 
-static void parse_request(const char *restrict buffer,
-                          request_t *restrict req) {
+static void parse_request(const char *buffer,
+                          request_t *req) {
   // simple parsing logic for demonstration purposes
   sscanf(buffer, "%s %s", req->verb, req->resource);
 }
@@ -153,7 +153,7 @@ static void *handle_client(void *param) {
   return (void *)ret;
 }
 
-static void parse_args(int argc, char **argv, server_cfg_t *restrict cfg) {
+static void parse_args(int argc, char **argv, server_cfg_t *cfg) {
   int opt;
 
   while ((opt = getopt(argc, argv, "m:p:r:")) != -1) {
@@ -183,7 +183,7 @@ static void parse_args(int argc, char **argv, server_cfg_t *restrict cfg) {
   }
 }
 
-static int setup_socket(int *restrict sock_fd, const server_cfg_t *cfg) {
+static int setup_socket(int *sock_fd, const server_cfg_t *cfg) {
   struct sockaddr_in addr;
 
   *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -213,7 +213,7 @@ static int setup_socket(int *restrict sock_fd, const server_cfg_t *cfg) {
   return 0;
 }
 
-static int run_server(const server_cfg_t *restrict cfg) {
+static int run_server(const server_cfg_t *cfg) {
   int ret, server_fd;
   pool_day_t pool;
   struct sockaddr_in cli_addr;
@@ -258,12 +258,10 @@ static int run_server(const server_cfg_t *restrict cfg) {
         continue;
       }
 
-      client_t *cli_ptr = calloc(1, sizeof(client_t));
-
-      cli_ptr->fd = (uint32_t)client_fd;
-      memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
-
-      task_t task = create_async_task(client_fd, handle_client, (void *)cli_ptr,
+      task_t task = create_async_task(client_fd, handle_client,
+                                      (void *)&((client_t) {
+                                        .fd = (uint32_t)client_fd,
+                                        .addr = cli_addr.sin_addr }),
                                       sizeof(client_t), true,
                                       on_client_connected,
                                       on_client_disconnected);
@@ -272,7 +270,6 @@ static int run_server(const server_cfg_t *restrict cfg) {
         printf("[-] failed to enqueue the request task\n");
         destroy_task(task);
         close(client_fd);
-        free(cli_ptr);
       }
     }
   }
@@ -289,6 +286,7 @@ int main(int argc, char **argv) {
   memset(&cfg, 0, sizeof(server_cfg_t));
 
   signal(SIGINT, sig_handler);
+  signal(SIGTERM, sig_handler);
 
   parse_args(argc, argv, &cfg);
   return run_server(&cfg);
