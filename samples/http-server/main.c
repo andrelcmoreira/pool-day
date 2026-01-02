@@ -6,9 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "pool_day.h"
 #include "task.h"
@@ -40,10 +42,9 @@ typedef struct {
   struct in_addr addr;
 } client_t;
 
-// TODO:
-// - select
-// - graceful server exit
-// - const and restrict
+void sig_handler(int signum) {
+  (void)signum;
+}
 
 static void on_client_connected(uint32_t tid, const void *param) {
   const client_t *cli = (client_t *)param;
@@ -213,10 +214,11 @@ static int setup_socket(int *restrict sock_fd, const server_cfg_t *cfg) {
 }
 
 static int run_server(const server_cfg_t *restrict cfg) {
-  int server_fd;
+  int ret, server_fd;
   pool_day_t pool;
   struct sockaddr_in cli_addr;
   socklen_t cli_len = sizeof(cli_addr);
+  fd_set set;
 
   if (setup_socket(&server_fd, cfg) != 0) {
     printf("[-] failed to setup server socket\n");
@@ -238,27 +240,40 @@ static int run_server(const server_cfg_t *restrict cfg) {
   }
 
   while (1) {
-    int client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &cli_len);
+    FD_ZERO(&set);
+    FD_SET(server_fd, &set);
 
-    if (client_fd == -1) {
-      printf("[-] failed to accept the incoming client: %s\n", strerror(errno));
-      continue;
+    ret = select(server_fd + 1, &set, NULL, NULL, NULL);
+    if ((ret == -1) && (errno == EINTR)) {
+      printf("[-] exiting server...\n");
+      break;
     }
 
-    client_t *cli_ptr = calloc(1, sizeof(client_t));
+    if (FD_ISSET(server_fd, &set)) {
+      int client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &cli_len);
 
-    cli_ptr->fd = (uint32_t)client_fd;
-    memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
+      if (client_fd == -1) {
+        printf("[-] failed to accept the incoming client: %s\n",
+               strerror(errno));
+        continue;
+      }
 
-    task_t task = create_async_task(client_fd, handle_client, (void *)cli_ptr,
-                                    sizeof(client_t), true, on_client_connected,
-                                    on_client_disconnected);
+      client_t *cli_ptr = calloc(1, sizeof(client_t));
 
-    if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
-      printf("[-] failed to enqueue the request task\n");
-      destroy_task(task);
-      close(client_fd);
-      free(cli_ptr);
+      cli_ptr->fd = (uint32_t)client_fd;
+      memcpy(&cli_ptr->addr, &cli_addr.sin_addr, sizeof(struct in_addr));
+
+      task_t task = create_async_task(client_fd, handle_client, (void *)cli_ptr,
+                                      sizeof(client_t), true,
+                                      on_client_connected,
+                                      on_client_disconnected);
+
+      if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
+        printf("[-] failed to enqueue the request task\n");
+        destroy_task(task);
+        close(client_fd);
+        free(cli_ptr);
+      }
     }
   }
 
@@ -272,6 +287,9 @@ int main(int argc, char **argv) {
   server_cfg_t cfg;
 
   memset(&cfg, 0, sizeof(server_cfg_t));
+
+  signal(SIGINT, sig_handler);
+
   parse_args(argc, argv, &cfg);
   return run_server(&cfg);
 }
