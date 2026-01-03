@@ -16,7 +16,7 @@
 #include "task.h"
 
 #define MAX_VERB_SIZE          7
-#define MAX_BUFFER_SIZE        4096
+#define MAX_BUFFER_SIZE        4096 * 50
 
 #define DEFAULT_ROOT_DIR       "./www"
 #define DEFAULT_PORT           8080
@@ -49,15 +49,16 @@ static void sig_handler(int signum) {
 static void on_client_connected(uint32_t tid, const void *param) {
   const client_t *cli = (client_t *)param;
 
-  printf("[+] task[%u]: client connected, ip=%s\n", tid, inet_ntoa(cli->addr));
+  fprintf(stdout, "[+] task[%u]: client connected, ip=%s\n", tid,
+          inet_ntoa(cli->addr));
 }
 
 static void on_client_disconnected(uint32_t tid, const void *param,
                                    void *ret_val) {
   const client_t *cli = (client_t *)param;
 
-  printf("[+] task[%u]: client disconnected ip=%s, result=%u\n", tid,
-         inet_ntoa(cli->addr), *((uint16_t *)ret_val));
+  fprintf(stdout, "[+] task[%u]: client disconnected ip=%s, result=%u\n", tid,
+          inet_ntoa(cli->addr), *((uint16_t *)ret_val));
   free(ret_val);
 }
 
@@ -82,7 +83,8 @@ static char *get_resource(const char *res_name) {
 
   FILE *file = fopen(res_name, "r");
   if (!file) {
-    printf("[-] fail to open the requested resource: %s\n", strerror(errno));
+    fprintf(stderr, "[-] fail to open the requested resource: %s\n",
+            strerror(errno));
     return NULL;
   }
 
@@ -90,14 +92,14 @@ static char *get_resource(const char *res_name) {
 
   char *content = calloc(1, st.st_size + 1);
   if (!content) {
-    printf(
+    fprintf(stderr,
       "[-] no memory available to put the requested resource's content on\n");
     fclose(file);
     return NULL;
   }
 
   if (!fread(content, 1, st.st_size, file)) {
-    printf("[-] fail to read the requested resource\n");
+    fprintf(stderr, "[-] fail to read the requested resource\n");
     free(content);
     fclose(file);
     return NULL;
@@ -138,7 +140,7 @@ static void *handle_client(void *param) {
   if (received > 0) {
     parse_request(buffer, &req);
 
-    printf("[+] received request: %s %s\n", req.verb, req.resource);
+    fprintf(stdout, "[+] received request: %s %s\n", req.verb, req.resource);
 
     memset(buffer, 0, sizeof(buffer));
     if (!strcmp(req.verb, "GET")) {
@@ -188,7 +190,8 @@ static int setup_socket(int *sock_fd, const server_cfg_t *cfg) {
 
   *sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (*sock_fd < 0) {
-    printf("[-] fail to create the server socket: %s\n", strerror(errno));
+    fprintf(stderr, "[-] fail to create the server socket: %s\n",
+            strerror(errno));
     return 1;
   }
 
@@ -199,13 +202,15 @@ static int setup_socket(int *sock_fd, const server_cfg_t *cfg) {
   addr.sin_port = htons(cfg->port);
 
   if (bind(*sock_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    printf("[-] fail to create the server socket: %s\n", strerror(errno));
+    fprintf(stderr, "[-] fail to create the server socket: %s\n",
+            strerror(errno));
     close(*sock_fd);
     return 1;
   }
 
   if (listen(*sock_fd, cfg->max_clients) < 0) {
-    printf("[-] fail to create the server socket: %s\n", strerror(errno));
+    fprintf(stderr, "[-] fail to create the server socket: %s\n",
+            strerror(errno));
     close(*sock_fd);
     return 1;
   }
@@ -221,21 +226,22 @@ static int run_server(const server_cfg_t *cfg) {
   fd_set set;
 
   if (setup_socket(&server_fd, cfg) != 0) {
-    printf("[-] failed to setup server socket\n");
+    fprintf(stderr, "[-] failed to setup server socket\n");
     return 1;
   }
 
   if (!(pool = create_pool(cfg->max_clients))) {
-    printf("[-] fail to setup the server pool\n");
+    fprintf(stderr, "[-] fail to setup the server pool\n");
     close(server_fd);
     return 1;
   }
 
-  printf("[+] starting server with max_clients=%u, port=%u, root_dir=%s\n",
-         cfg->max_clients, cfg->port, cfg->root_dir);
+  fprintf(stdout,
+          "[+] starting server with max_clients=%u, port=%u, root_dir=%s\n",
+          cfg->max_clients, cfg->port, cfg->root_dir);
 
   if (chdir(cfg->root_dir)) {
-    printf("[-] fail to run the server: %s\n", strerror(errno));
+    fprintf(stderr, "[-] fail to run the server: %s\n", strerror(errno));
     return 1;
   }
 
@@ -245,7 +251,7 @@ static int run_server(const server_cfg_t *cfg) {
 
     ret = select(server_fd + 1, &set, NULL, NULL, NULL);
     if ((ret == -1) && (errno == EINTR)) {
-      printf("[-] exiting server...\n");
+      fprintf(stdout, "[+] exiting server...\n");
       break;
     }
 
@@ -253,8 +259,8 @@ static int run_server(const server_cfg_t *cfg) {
       int client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &cli_len);
 
       if (client_fd == -1) {
-        printf("[-] failed to accept the incoming client: %s\n",
-               strerror(errno));
+        fprintf(stderr, "[-] failed to accept the incoming client: %s\n",
+                strerror(errno));
         continue;
       }
 
@@ -267,7 +273,7 @@ static int run_server(const server_cfg_t *cfg) {
                                       on_client_disconnected);
 
       if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
-        printf("[-] failed to enqueue the request task\n");
+        fprintf(stderr, "[-] failed to enqueue the request task\n");
         destroy_task(task);
         close(client_fd);
       }
