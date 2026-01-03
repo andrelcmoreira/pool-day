@@ -1,6 +1,6 @@
 ## http-server
 
-This is an extremely simple static http server built with the library. For demonstration purposes, it only handles GET requests. Supported command line options:
+This is an extremely simple static http server built with the library. Supported command line options:
 
 - `-m`: Maximum number of concurrent clients (default: 100)
 - `-p`: Port number to listen on (default: 8080)

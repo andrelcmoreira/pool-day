@@ -81,9 +81,8 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t task) {
     return POOL_DAY_ERROR_NULL_PARAM;
   }
 
-  POOL_DAY_DEBUG("task ID: %u", task->id);
-  POOL_DAY_DEBUG("task callback: %p", task->task);
-  POOL_DAY_DEBUG("task parameter: %p", task->param);
+  POOL_DAY_DEBUG("task id=%u, callback=%p, parameter=%p", task->id, task->task,
+                 task->param);
 
   task->ret_val = NULL;
   task->is_orphan = false;
@@ -100,7 +99,7 @@ pool_day_retcode_t enqueue_task(pool_day_t pool, task_t task) {
 pool_day_t create_pool(uint32_t pool_size) {
   pool_day_t pool;
 
-  POOL_DAY_DEBUG("pool size: %u", pool_size);
+  POOL_DAY_DEBUG("pool_size=%u", pool_size);
 
   if (!pool_size) {
     POOL_DAY_ERROR("bad pool size");
