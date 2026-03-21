@@ -5,7 +5,7 @@
  * macros to handle it.
  *
  * @authors
- * Copyright (C) 2023 André L. C. Moreira <andrelcmoreira@disroot.org>
+ * Copyright (C) 2023 André L. C. Moreira <andrelcmoreira@proton.me>
  *
  * @copyright
  * This program is free software: you can redistribute it and/or modify
