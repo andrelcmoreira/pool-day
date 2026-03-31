@@ -82,7 +82,7 @@ static char *get_resource(const char *res_name) {
 
   FILE *file = fopen(res_name, "r");
   if (!file) {
-    printf("[-] file to open the requested resource: %s\n", strerror(errno));
+    printf("[-] fail to open the requested resource: %s\n", strerror(errno));
     return NULL;
   }
 
@@ -97,7 +97,7 @@ static char *get_resource(const char *res_name) {
   }
 
   if (!fread(content, 1, st.st_size, file)) {
-    printf("[-] file to read the requested resource\n");
+    printf("[-] fail to read the requested resource\n");
     free(content);
     fclose(file);
     return NULL;
