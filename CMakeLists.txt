@@ -14,7 +14,7 @@ set(SOURCES src/task.c src/queue.c src/pool_day.c)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -Wpedantic")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g3")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O3 -s")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O3")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake")
 
@@ -52,3 +52,9 @@ install(TARGETS ${PROJECT_NAME} DESTINATION /usr/lib)
 install(FILES include/pool_day.h DESTINATION /usr/include/pool_day)
 install(FILES include/task.h DESTINATION /usr/include/pool_day)
 install(FILES include/internal/errors.h DESTINATION /usr/include/pool_day/internal)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_STRIP} $<TARGET_FILE:${PROJECT_NAME}>
+  )
+endif()
