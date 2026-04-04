@@ -26,6 +26,7 @@
 #define CONTENT_TYPE_IMAGE_PNG  "image/png"
 #define CONTENT_TYPE_IMAGE_JPEG "image/jpeg"
 #define CONTENT_TYPE_IMAGE_GIF  "image/gif"
+#define CONTENT_TYPE_IMAGE_SVG  "image/svg+xml"
 #define CONTENT_TYPE_TEXT_CSS   "text/css"
 #define CONTENT_TYPE_APP_JS     "application/javascript"
 #define CONTENT_TYPE_APP_OCTET  "application/octet-stream"
@@ -94,6 +95,10 @@ static const char *get_content_type(const char *path) {
 
   if (!strcmp(ext, ".gif")) {
     return CONTENT_TYPE_IMAGE_GIF;
+  }
+
+  if (!strcmp(ext, ".svg")) {
+    return CONTENT_TYPE_IMAGE_SVG;
   }
 
   if (!strcmp(ext, ".css")) {
