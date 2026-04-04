@@ -190,14 +190,13 @@ static char *get_resource(const char *path, size_t *len) {
 static int handle_get_request(char **reply_buffer, size_t *reply_buffer_size,
                               const char *resource) {
   size_t header_len;
+  size_t res_len;
 
   if (strstr(resource, "..")) {
     return 400;
   }
 
-  size_t res_len;
   char *res = get_resource(resource, &res_len);
-
   if (res) {
     const char *content_type = get_content_type(resource);
     char *header = build_http_header(200, "OK", content_type, res_len,
@@ -272,7 +271,6 @@ static void *handle_new_connection(void *param) {
   }
 
   ssize_t received = recv(cli->fd, req_buffer, MAX_BUFFER_SIZE - 1, 0);
-
   if (received > 0) {
     char *reply_buffer = NULL;
     size_t reply_len = 0;
@@ -365,6 +363,9 @@ static int setup_server(int *sock_fd, const server_cfg_t *cfg,
 
 static int server_mainloop(int server_fd, pool_day_t pool) {
   fd_set set;
+  int client_fd;
+  struct sockaddr_in cli_addr;
+  socklen_t len = sizeof(cli_addr);
 
   while (1) {
     FD_ZERO(&set);
@@ -375,10 +376,7 @@ static int server_mainloop(int server_fd, pool_day_t pool) {
     }
 
     if (FD_ISSET(server_fd, &set)) {
-      struct sockaddr_in cli_addr;
-      socklen_t len = sizeof(cli_addr);
-
-      int client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &len);
+      client_fd = accept(server_fd, (struct sockaddr *)&cli_addr, &len);
       if (client_fd < 0) {
         continue;
       }
@@ -391,7 +389,11 @@ static int server_mainloop(int server_fd, pool_day_t pool) {
                                       on_client_connected,
                                       on_client_disconnected);
 
-      enqueue_task(pool, task);
+      if (enqueue_task(pool, task) != POOL_DAY_SUCCESS) {
+        fprintf(stderr, "[-] fail to enqueue the request task\n");
+        destroy_task(task);
+        close(client_fd);
+      }
     }
   }
 
@@ -413,6 +415,8 @@ static int run_server(const server_cfg_t *cfg) {
   if (chdir(cfg->root_dir)) {
     fprintf(stderr, "[-] fail to run the server on '%s': %s\n", cfg->root_dir,
             strerror(errno));
+    close(server_fd);
+    destroy_pool(&pool);
     return 1;
   }
 
