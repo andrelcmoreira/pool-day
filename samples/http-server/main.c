@@ -119,7 +119,6 @@ static void parse_request(const char *buffer, request_t *req) {
 static char *build_http_header(int status_code, const char *status_str,
                                const char *content_type, size_t content_length,
                                size_t *header_len) {
-
   const char *fmt =
     "HTTP/1.1 %d %s\r\n"
     "Content-Type: %s\r\n"
@@ -227,7 +226,6 @@ static int handle_get_request(char **reply_buffer, size_t *reply_buffer_size,
 static int handle_request(const char *req_buffer,
                           char **reply_buffer,
                           size_t *reply_buffer_len) {
-
   request_t req;
 
   memset(&req, 0, sizeof(request_t));
