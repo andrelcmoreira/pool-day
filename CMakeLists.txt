@@ -7,6 +7,7 @@ option(BUILD_UNIT_TESTS "build the unit tests of the library" OFF)
 option(BUILD_DOCUMENTATION "build the documentation of the library" OFF)
 option(BUILD_COVERAGE "build the coverage data" OFF)
 option(ENABLE_LOGGING "enable library logs" OFF)
+option(BUILD_PYTHON_BINDINGS "build the library's python bindings" OFF)
 
 set(PROJECT_NAME "pool-day")
 set(SOURCES src/task.c src/queue.c src/pool_day.c)
@@ -44,6 +45,10 @@ if(ENABLE_LOGGING)
   add_definitions(-DENABLE_LOGGING)
   list(APPEND SOURCES "src/logger.c")
 endif(ENABLE_LOGGING)
+
+if(BUILD_PYTHON_BINDINGS)
+  add_subdirectory(python)
+endif(BUILD_PYTHON_BINDINGS)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME} pthread)

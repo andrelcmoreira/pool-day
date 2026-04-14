@@ -20,10 +20,11 @@ $ sudo cmake --install build
 Additional flags can be supplied as parameter to cmake according to the table
 below:
 
-|      Flag      |                 Description          |
-|----------------|--------------------------------------|
-|  BUILD_SAMPLES | Build the library's samples          |
-| ENABLE_LOGGING | Enable the library's logging feature |
+|        Flag         |                 Description            |
+|---------------------|----------------------------------------|
+|    BUILD_SAMPLES    | Build the library's samples            |
+|   ENABLE_LOGGING    | Enable the library's logging feature   |
+|BUILD_PYTHON_BINDINGS| Build the library's python bindings    |
 
 #### Support
 
