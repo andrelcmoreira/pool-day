@@ -48,30 +48,41 @@ class PoolDay:
         """
         return _pd_handle.queued_tasks(self._pool)
 
-    def wait_task_finish(self, task: CTask) -> TaskResult:
+    def wait_task_finish(self, task: CTask) -> None:
         """
         Wait for a task to finish.
 
         :task: The task instance.
+        """
+        _pd_handle.wait_task_finish(self._pool, task)
+
+    def get_task_result(self, task: CTask) -> TaskResult:
+        """
+        Get a task result.
+
+        :task: The task instance.
         :return: The return value of the task's callback function.
         """
-        ret = _pd_handle.wait_task_finish(self._pool, task)
+        ret = _pd_handle.get_task_result(self._pool, task)
 
-        print(f'wait_task_finish ret: {ret}')
+        print(f'get_task_result ret: {ret}')
 
         return to_result(ret)
 
 
-def create_task(cb, param) -> CTask:
+def create_sync_task(cb, param) -> CTask:
     """
-    Create a new task instance.
+    Create a new sync task instance.
 
     :cb: The callback function.
     :param: The parameter passed to the callback function.
 
     :return: A new task instance.
     """
-    return _pd_handle.create_task(cb, param)
+    return _pd_handle.create_sync_task(cb, param)
+
+
+# TODO: create_async_task
 
 
 @contextmanager

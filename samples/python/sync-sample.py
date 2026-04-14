@@ -1,6 +1,6 @@
 from time import sleep
 
-from pool_day import create_pool, create_task, pool_day_callback
+from pool_day import create_pool, create_sync_task, pool_day_callback
 
 
 @pool_day_callback
@@ -15,18 +15,19 @@ def thread_cb(param):
 
 def main():
     with create_pool(2) as pool:
-        t1 = create_task(thread_cb, 1)
-        t2 = create_task(thread_cb, 2)
-        t3 = create_task(thread_cb, 3)
+        t1 = create_sync_task(thread_cb, 1)
+        t2 = create_sync_task(thread_cb, 2)
+        t3 = create_sync_task(thread_cb, 3)
 
         print('task 1 enqueued, ret =', pool.enqueue_task(t1))
         print('task 2 enqueued, ret =', pool.enqueue_task(t2))
         print('task 3 enqueued, ret =', pool.enqueue_task(t3))
         print('number of queued tasks =', pool.queued_tasks())
 
-        ret = pool.wait_task_finish(t3)
+        ret = pool.get_task_result(t3)
+
         print(type(ret))
-        #print(ret)
+        print(ret)
 
 
 if __name__ == "__main__":

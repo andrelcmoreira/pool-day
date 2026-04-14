@@ -6,9 +6,10 @@ from ctypes import byref
 from ctypes import (
     Structure,
     c_int,
-    c_uint8,
+    c_uint32,
     c_void_p,
-    c_int
+    c_int,
+    c_size_t,
 )
 from dataclasses import dataclass
 from typing import Any
@@ -50,7 +51,7 @@ def to_result(ptr: c_void_p) -> TaskResult:
 _pd_handle = cdll('/usr/lib/libpool-day.so')
 
 # create_pool
-_pd_handle.create_pool.argtypes = [c_uint8]
+_pd_handle.create_pool.argtypes = [c_uint32]
 _pd_handle.create_pool.restype = c_pointer(CPoolDay)
 
 # destroy_pool
@@ -67,12 +68,19 @@ _pd_handle.enqueue_task.restype = c_int
 
 # queued_tasks
 _pd_handle.queued_tasks.argtypes = [c_pointer(CPoolDay)]
-_pd_handle.queued_tasks.restype = c_uint8
+_pd_handle.queued_tasks.restype = c_uint32
 
-# create_task
-_pd_handle.create_task.argtypes = [c_void_p, c_void_p]
-_pd_handle.create_task.restype = c_pointer(CTask)
+# create_sync_task
+_pd_handle.create_sync_task.argtypes = [c_uint32, c_void_p, c_void_p, c_size_t]
+_pd_handle.create_sync_task.restype = c_pointer(CTask)
+
+# create_async_task
+_pd_handle.create_async_task.argtypes = [c_uint32, c_void_p, c_void_p, c_size_t, c_void_p, c_void_p]
+_pd_handle.create_async_task.restype = c_pointer(CTask)
 
 # wait_task_finish
-_pd_handle.wait_task_finish.argtypes = [c_pointer(CPoolDay), c_pointer(CTask)]
+_pd_handle.wait_task_finish.argtypes = [c_pointer(CTask)]
 _pd_handle.wait_task_finish.restype = c_void_p
+
+# get_task_result
+_pd_handle.get_task_result.argtypes = [c_pointer(CTask)]
